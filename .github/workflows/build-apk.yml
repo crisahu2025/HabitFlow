@@ -1,0 +1,80 @@
+name: Compilar APK Android HabitFlow
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del Repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Configurar Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Configurar Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Instalar Dependencias
+        run: |
+          npm install
+
+      - name: Preparar Web Assets para Capacitor
+        run: |
+          node scripts/prepare_www.js
+
+      - name: Sincronizar Capacitor Android
+        run: |
+          npx cap sync android
+
+      - name: Dar permisos de ejecución a gradlew
+        run: |
+          chmod +x android/gradlew
+
+      - name: Compilar APK de Android (Debug)
+        run: |
+          cd android
+          ./gradlew assembleDebug --stacktrace
+
+      - name: Renombrar APK
+        run: |
+          cp android/app/build/outputs/apk/debug/app-debug.apk HabitFlow.apk
+
+      - name: Subir Artifact APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: HabitFlow-Android-APK
+          path: HabitFlow.apk
+          retention-days: 30
+
+      - name: Crear Release con el APK
+        uses: softprops/action-gh-release@v2
+        if: github.ref == 'refs/heads/main'
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: HabitFlow v1.0.${{ github.run_number }} (APK Instalable)
+          body: |
+            ### 📱 Nueva Versión de HabitFlow para Android
+            - ✅ APK nativo compilado con alarmas de fondo.
+            - ✅ Sistema de usuarios y perfiles personalizados.
+            - ✅ Horarios adaptables y sabiduría de Frank Suárez (MetabolismoTV).
+            
+            **Descargá e instalá el archivo HabitFlow.apk directamente en tu celular:**
+          files: HabitFlow.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

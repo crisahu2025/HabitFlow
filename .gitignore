@@ -4,6 +4,12 @@ node_modules/
 # Vercel
 .vercel/
 
+# Android build outputs & gradle cache
+android/.gradle/
+android/app/build/
+android/build/
+*.apk
+
 # Environment files
 .env
 .env*.local
@@ -12,5 +18,3 @@ node_modules/
 # Operating System Files
 .DS_Store
 Thumbs.db
-
-.vercel

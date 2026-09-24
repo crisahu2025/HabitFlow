@@ -1,0 +1,27 @@
+{
+  "name": "habitflow",
+  "version": "1.0.0",
+  "description": "**Code Ahumada**   *Desarrollado para el Director Cristian*",
+  "main": "sw.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/crisahu2025/HabitFlow.git"
+  },
+  "keywords": [],
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/crisahu2025/HabitFlow/issues"
+  },
+  "homepage": "https://github.com/crisahu2025/HabitFlow#readme",
+  "dependencies": {
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/app": "^8.1.1",
+    "@capacitor/cli": "^8.5.2",
+    "@capacitor/core": "^8.5.2",
+    "@capacitor/haptics": "^8.0.2",
+    "@capacitor/local-notifications": "^8.3.1"
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "name": "HabitFlow - Hidratación y Hábitos Saludables",
+  "short_name": "HabitFlow",
+  "description": "Tu asistente diario de hidratación, recordatorios inteligentes y hábitos del metabolismo.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "id": "habitflow-codeahumada",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0b1329",
+  "theme_color": "#0284c7",
+  "lang": "es-419",
+  "categories": [
+    "health",
+    "lifestyle",
+    "fitness",
+    "productivity"
+  ],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "+250 ml (Vaso Frank)",
+      "short_name": "+250ml",
+      "description": "Registrar vaso de agua estándar al instante",
+      "url": "./index.html?quick=250",
+      "icons": [
+        {
+          "src": "icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "+500 ml (Botella)",
+      "short_name": "+500ml",
+      "description": "Registrar botella de 500 ml de agua",
+      "url": "./index.html?quick=500",
+      "icons": [
+        {
+          "src": "icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Horarios y Recordatorios",
+      "short_name": "Horarios",
+      "description": "Ver horarios y configurar intervalos",
+      "url": "./index.html?tab=schedule",
+      "icons": [
+        {
+          "src": "icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}
