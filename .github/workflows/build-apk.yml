@@ -67,14 +67,10 @@ jobs:
           name: HabitFlow v1.0.${{ github.run_number }} (APK Instalable)
           body: |
             ### 📱 HabitFlow v1.0.${{ github.run_number }} para Android
-            - 🔑 **Firma Criptográfica Fija (Keystore Permanente):** Resuelve permanentemente el conflicto de instalación entre versiones.
-            - ⚙️ **Nueva Pestaña de Ajustes (Configuración):** Edición de perfil, peso y meta personalizada con fórmula de Frank Suárez.
-            - 🌙 / ☀️ **Modo Nocturno y Modo Soleado:** Alternancia instantánea de tema oscuro y claro.
-            - 📊 **Tus Cosas:** Estadísticas acumuladas históricas (litros totales, racha máxima, vasos y energía celular ATP).
-            - 🤖 **Logo Oficial 3D:** Creado con Nano Banana Pro e implementado en todas las resoluciones Android.
-            - 🔔 **Recordatorios de Fondo:** Motor nativo de notificaciones locales de hidratación.
-            
-            > ⚠️ **Aviso de instalación por única vez:** Si tenés una versión previa instalada en tu teléfono, por favor desinstalala primero antes de instalar este APK para que Android adopte la firma criptográfica permanente. A partir de esta versión, todas las futuras actualizaciones se instalarán encima automáticamente sin desinstalar.
+            - 🪟 **Aislamiento Nativo de Pantallas:** Cada pestaña (Agua, Horarios, Progreso, Hábitos y Ajustes) ahora funciona como una pantalla independiente con vista exclusiva, eliminando por completo la tira larga.
+            - ⚡ **Transición y Fluidez:** Animaciones de entrada suaves al cambiar de pantalla.
+            - 🔑 **Firma Criptográfica Permanente:** Se instala de forma directa encima de la versión v1.0.6.
+            - ⚙️ **Configuración y Perfil:** Edición de peso, fórmula de Frank Suárez, Modo Soleado/Nocturno y Tus Cosas.
             
             **Descargá e instalá el archivo HabitFlow.apk:**
           files: HabitFlow.apk

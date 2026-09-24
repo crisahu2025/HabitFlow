@@ -212,23 +212,33 @@ html, body {
   box-shadow: 0 0 12px rgba(52, 211, 153, 0.4);
 }
 
-/* Transición suave entre pestañas */
+/* ======================================================== */
+/* VISTAS DE PANTALLA ESTILO APP NATIVA (AISLAMIENTO TOTAL) */
+/* ======================================================== */
 .tab-content {
-  display: none;
-  animation: fadeIn 0.25s ease-out forwards;
-}
-.tab-content.active {
-  display: block;
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  overflow: hidden !important;
 }
 
-@keyframes fadeIn {
-  from {
+.tab-content.active {
+  display: flex !important;
+  visibility: visible !important;
+  height: auto !important;
+  overflow: visible !important;
+  flex-direction: column !important;
+  animation: tabViewEnter 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes tabViewEnter {
+  0% {
     opacity: 0;
-    transform: translateY(6px);
+    transform: translateY(10px) scale(0.99);
   }
-  to {
+  100% {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 

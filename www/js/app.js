@@ -1048,7 +1048,7 @@ class HabitFlowApp {
     }
 
     // Botón de Editar Perfil
-    const btnOpenEdit = document.getElementById('btn-open-edit-profile');
+    const btnOpenEdit = document.getElementById('btn-settings-edit-profile') || document.getElementById('btn-open-edit-profile');
     if (btnOpenEdit) {
       btnOpenEdit.addEventListener('click', () => {
         this.openEditProfileModal();
