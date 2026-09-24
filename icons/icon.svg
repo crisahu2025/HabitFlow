@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Fondo Gradiente -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b1329"/>
+      <stop offset="50%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#0369a1"/>
+    </linearGradient>
+
+    <!-- Gradiente de la Gota Principal -->
+    <linearGradient id="dropGrad" x1="0%" y1="0%" x2="70%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="45%" stop-color="#0284c7"/>
+      <stop offset="100%" stop-color="#0369a1"/>
+    </linearGradient>
+
+    <!-- Gradiente del Brillo Superior -->
+    <linearGradient id="glowGrad" x1="20%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Gradiente de la Ola Interna -->
+    <linearGradient id="waveGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#0284c7" stop-opacity="0.95"/>
+    </linearGradient>
+
+    <!-- Sombra suave de la gota -->
+    <filter id="dropShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#0284c7" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+
+  <!-- Fondo Cuadrado con bordes suaves -->
+  <rect width="512" height="512" rx="115" fill="url(#bgGrad)"/>
+
+  <!-- Anillo exterior sutil de energía -->
+  <circle cx="256" cy="256" r="215" fill="none" stroke="#38bdf8" stroke-width="3" stroke-opacity="0.25" stroke-dasharray="8 6"/>
+
+  <!-- Gota de Agua Principal -->
+  <g filter="url(#dropShadow)">
+    <path d="M 256,70
+             C 256,70 120,240 120,335
+             C 120,410 180,455 256,455
+             C 332,455 392,410 392,335
+             C 392,240 256,70 256,70 Z"
+          fill="url(#dropGrad)"/>
+
+    <!-- Ola interna estilizada en la base -->
+    <path d="M 125,350
+             C 160,375 200,340 256,360
+             C 310,380 350,355 387,350
+             C 390,365 385,395 370,415
+             C 345,445 305,455 256,455
+             C 200,455 160,445 138,415
+             C 126,395 122,370 125,350 Z"
+          fill="url(#waveGrad)"/>
+
+    <!-- Brillo curvo en el hombro de la gota -->
+    <path d="M 256,105
+             C 230,150 165,260 160,320
+             C 155,370 185,410 215,420
+             C 190,400 175,365 180,325
+             C 185,275 240,165 256,105 Z"
+          fill="url(#glowGrad)"/>
+
+    <!-- Chispa de vitalidad / Reflejo superior -->
+    <ellipse cx="230" cy="180" rx="14" ry="24" transform="rotate(-25 230 180)" fill="#ffffff" opacity="0.65"/>
+    <circle cx="210" cy="225" r="8" fill="#ffffff" opacity="0.45"/>
+  </g>
+
+  <!-- Ondas concéntricas de pulso saludable en la base -->
+  <ellipse cx="256" cy="460" rx="90" ry="12" fill="none" stroke="#38bdf8" stroke-width="2.5" opacity="0.3"/>
+</svg>

@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>HabitFlow - Hidratación y Hábitos Saludables</title>
+  
+  <!-- PWA & Mobile Meta Tags -->
+  <meta name="theme-color" content="#0284c7">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="HabitFlow">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" type="image/svg+xml" href="./icons/icon.svg">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              400: '#38bdf8',
+              500: '#0284c7',
+              600: '#0369a1',
+              900: '#0c4a6e',
+              950: '#082f49'
+            },
+            dark: {
+              bg: '#070d1e',
+              surface: '#0f1a36',
+              border: '#1e293b'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts: Inter / Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Custom Stylesheets con Versionado -->
+  <link rel="stylesheet" href="./css/styles.css?v=1.0">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-[#070d1e] text-slate-100 min-h-screen selection:bg-sky-500/30">
+
+  <!-- CONTENEDOR MÓVIL PRINCIPAL (Centrado en Desktop como Smartphone flotante) -->
+  <div class="max-w-md mx-auto min-h-screen flex flex-col relative px-4 pt-4 pb-28 md:shadow-2xl md:border-x md:border-slate-800/60 md:bg-[#091124]">
+
+    <!-- ======================================================== -->
+    <!-- HEADER SUPERIOR DE LA APP -->
+    <!-- ======================================================== -->
+    <header class="flex items-center justify-between py-2 mb-3">
+      <!-- Marca HabitFlow con Icono Gota -->
+      <div class="flex items-center gap-2.5">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-sky-600 to-cyan-400 p-0.5 shadow-lg shadow-sky-500/20">
+          <div class="w-full h-full bg-[#0b1329] rounded-[14px] flex items-center justify-center">
+            <svg class="w-5 h-5 text-sky-400" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
+            </svg>
+          </div>
+        </div>
+        <div>
+          <h1 class="text-base font-extrabold tracking-tight bg-gradient-to-r from-white via-sky-100 to-sky-400 bg-clip-text text-transparent">HabitFlow</h1>
+          <p class="text-[10px] text-slate-400 font-medium">Code Ahumada</p>
+        </div>
+      </div>
+
+      <!-- Acciones de Cabecera: Racha y Calculadora Frank -->
+      <div class="flex items-center gap-2">
+        <!-- Racha de días -->
+        <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-bold" title="Racha de días cumpliendo tu meta">
+          <span>🔥</span>
+          <span id="streak-count-badge">0 días</span>
+        </div>
+
+        <!-- Botón Calculadora Frank Suárez -->
+        <button id="btn-open-frank-calc" type="button" class="p-2 rounded-xl bg-sky-500/10 border border-sky-400/20 text-sky-400 hover:bg-sky-500/20 active:scale-95 transition-all" title="Calculadora de Agua de Frank Suárez">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- BANNER DE INSTALACIÓN PWA (Móvil / Escritorio) -->
+    <div id="pwa-install-banner" class="hidden mb-3 p-3.5 rounded-2xl glass-card border border-sky-500/30 flex items-center justify-between gap-3 animate-pulse">
+      <div class="flex items-center gap-2.5 min-w-0">
+        <span class="text-xl">📲</span>
+        <div class="min-w-0">
+          <p class="text-xs font-bold text-white truncate">Instalar HabitFlow</p>
+          <p class="text-[11px] text-slate-300 truncate">Agregala a tu celular para usarla offline</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-1.5 shrink-0">
+        <button onclick="triggerPwaInstall()" class="px-3 py-1.5 rounded-xl bg-sky-500 text-white font-bold text-xs shadow-md shadow-sky-500/30 active:scale-95 transition-all">Instalar</button>
+        <button onclick="dismissPwaBanner()" class="text-slate-400 hover:text-white p-1 text-xs">✕</button>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 1: AGUA (HOY) -->
+    <!-- ======================================================== -->
+    <section id="tab-water" class="tab-content active flex flex-col gap-4">
+
+      <!-- Tarjeta Temporizador en Vivo: Próximo Vaso -->
+      <div id="next-reminder-card" class="glass-card p-3 rounded-2xl border border-sky-900/40 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center shrink-0">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <div>
+            <p class="text-[11px] uppercase tracking-wider font-semibold text-slate-400">Próximo Vaso</p>
+            <p id="next-reminder-time" class="text-xs font-bold text-white">08:30 hs</p>
+          </div>
+        </div>
+        <div class="text-right">
+          <span id="next-reminder-countdown" class="text-xs font-bold px-2.5 py-1 rounded-full bg-sky-500/20 text-sky-300 border border-sky-400/30">
+            en 45m
+          </span>
+        </div>
+      </div>
+
+      <!-- ESFERA CENTRAL DE AGUA CON OLEAJE ANIMADO -->
+      <div class="flex flex-col items-center justify-center my-2">
+        <div id="main-water-circle" class="water-circle-container cursor-pointer select-none" onclick="window.app.addWater(250, 'Vaso rápido (250 ml)')" title="Tocá para sumar un vaso rápido de 250 ml">
+          
+          <!-- Brillo de vidrio satinado superior -->
+          <div class="water-glass-sheen"></div>
+
+          <!-- Masa de agua líquida animada -->
+          <div id="water-level-body" class="water-body">
+            <!-- Olas ondulantes en la superficie -->
+            <div class="water-wave-1"></div>
+            <div class="water-wave-2"></div>
+          </div>
+
+          <!-- Contenido Informativo Flotante Central -->
+          <div class="relative z-20 text-center flex flex-col items-center drop-shadow-md">
+            <!-- Porcentaje -->
+            <span id="water-percentage-label" class="text-4xl font-black text-white tracking-tight leading-none mb-1">0%</span>
+            
+            <!-- Cantidad actual -->
+            <span id="water-amount-label" class="text-lg font-bold text-sky-200 leading-tight">0 ml</span>
+            
+            <!-- Meta diaria -->
+            <span id="water-goal-label" class="text-[11px] font-semibold text-sky-300/80">Meta: 2.000 ml</span>
+
+            <!-- Vasos según Frank Suárez -->
+            <div class="mt-2 px-2.5 py-0.5 rounded-full bg-slate-950/60 border border-sky-400/30 backdrop-blur-sm">
+              <span id="water-glasses-count" class="text-[10px] font-medium text-sky-200">0 de 8 vasos</span>
+            </div>
+          </div>
+        </div>
+
+        <p class="text-[11px] text-slate-400 mt-3 font-medium flex items-center gap-1">
+          <span>💡</span> Tocá la esfera o los botones abajo para registrar
+        </p>
+      </div>
+
+      <!-- BOTONES RÁPIDOS DE INGESTA -->
+      <div class="flex flex-col gap-2.5">
+        <div class="flex items-center justify-between">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Registrar Agua</h3>
+          <button id="btn-custom-water-modal" type="button" class="text-xs font-semibold text-sky-400 hover:text-sky-300 flex items-center gap-1">
+            <span>+ Cantidad libre</span>
+          </button>
+        </div>
+
+        <!-- Grilla de 4 recipientes frecuentes -->
+        <div class="grid grid-cols-4 gap-2">
+          <!-- Vaso chico 200 ml -->
+          <button type="button" data-ml="200" data-label="Vaso chico" class="btn-quick-water quick-drink-btn p-2.5 rounded-2xl flex flex-col items-center justify-center gap-1 text-center">
+            <span class="text-lg">🥛</span>
+            <span class="text-xs font-bold text-white">+200</span>
+            <span class="text-[9px] text-slate-400">Chico</span>
+          </button>
+
+          <!-- Vaso normal 250 ml (Fórmula Frank) -->
+          <button type="button" data-ml="250" data-label="Vaso estándar" class="btn-quick-water quick-drink-btn p-2.5 rounded-2xl flex flex-col items-center justify-center gap-1 text-center border-sky-500/40 bg-sky-950/30">
+            <span class="text-lg">🥤</span>
+            <span class="text-xs font-bold text-sky-300">+250</span>
+            <span class="text-[9px] text-sky-200 font-semibold">Frank ⚖️</span>
+          </button>
+
+          <!-- Botella 500 ml -->
+          <button type="button" data-ml="500" data-label="Botella 500 ml" class="btn-quick-water quick-drink-btn p-2.5 rounded-2xl flex flex-col items-center justify-center gap-1 text-center">
+            <span class="text-lg">🍶</span>
+            <span class="text-xs font-bold text-white">+500</span>
+            <span class="text-[9px] text-slate-400">Botella</span>
+          </button>
+
+          <!-- Termo / Botellón 750 ml -->
+          <button type="button" data-ml="750" data-label="Termo 750 ml" class="btn-quick-water quick-drink-btn p-2.5 rounded-2xl flex flex-col items-center justify-center gap-1 text-center">
+            <span class="text-lg">🫙</span>
+            <span class="text-xs font-bold text-white">+750</span>
+            <span class="text-[9px] text-slate-400">Termo</span>
+          </button>
+        </div>
+
+        <!-- Botón Compensador de Diuréticos Frank Suárez: Café / Mate -->
+        <button type="button" data-ml="250" data-label="Compensación Café/Mate" class="btn-quick-water glass-card p-2.5 rounded-xl border border-amber-500/20 hover:border-amber-500/40 flex items-center justify-between text-left transition-all active:scale-[0.98]">
+          <div class="flex items-center gap-2.5">
+            <span class="text-lg p-1.5 rounded-lg bg-amber-500/10 text-amber-300">☕</span>
+            <div>
+              <p class="text-xs font-bold text-white">¿Tomaste café o mate?</p>
+              <p class="text-[10px] text-amber-300/80">Consejo Frank: compensar diurético con +1 vaso</p>
+            </div>
+          </div>
+          <span class="text-xs font-bold px-2 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30">+250 ml</span>
+        </button>
+      </div>
+
+      <!-- HISTORIAL DEL DÍA -->
+      <div class="mt-2 flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Tomas de Hoy</h3>
+            <span id="today-history-count" class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-800 text-slate-300">0 tomas</span>
+          </div>
+          <button id="btn-undo-drink" type="button" class="text-xs font-medium text-slate-400 hover:text-white flex items-center gap-1 transition-colors">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a5 5 0 015 5v2a2 2 0 01-2 2h-1m-12-9l4-4m-4 4l4 4"/>
+            </svg>
+            <span>Deshacer último</span>
+          </button>
+        </div>
+
+        <!-- Lista dinámica de tomas -->
+        <div id="today-history-list" class="flex flex-col gap-1.5 max-h-48 overflow-y-auto pr-1"></div>
+
+        <!-- Mensaje de estado vacío -->
+        <div id="today-history-empty" class="glass-card p-6 rounded-2xl text-center flex flex-col items-center justify-center gap-2 border border-slate-800/80">
+          <span class="text-2xl opacity-60">💧</span>
+          <p class="text-xs font-medium text-slate-400">Aún no registraste vasos hoy</p>
+          <p class="text-[11px] text-slate-500">Tocá cualquier vaso rápido para iniciar tu hidratación</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 2: HORARIOS Y RECORDATORIOS -->
+    <!-- ======================================================== -->
+    <section id="tab-schedule" class="tab-content flex flex-col gap-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-base font-extrabold text-white">Horarios y Alarmas</h2>
+          <p class="text-xs text-slate-400">Adaptá tus recordatorios a tu rutina diaria</p>
+        </div>
+      </div>
+
+      <!-- Selector de Modo de Horario (Intervalo vs Fijos) -->
+      <div class="p-1 rounded-2xl bg-slate-900 border border-slate-800 flex items-center">
+        <button id="btn-mode-interval" type="button" class="flex-1 py-2 rounded-xl text-xs font-bold transition-all bg-sky-500 text-white">
+          Intervalo Dinámico
+        </button>
+        <button id="btn-mode-fixed" type="button" class="flex-1 py-2 rounded-xl text-xs font-bold text-slate-300 transition-all">
+          Horarios Fijos
+        </button>
+      </div>
+
+      <!-- PANEL A: MODO INTERVALO DINÁMICO -->
+      <div id="panel-schedule-interval" class="glass-card p-4 rounded-2xl border border-slate-800 flex flex-col gap-3">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-[11px] font-semibold text-slate-400 uppercase tracking-wide block mb-1">Hora Inicio</label>
+            <input id="input-start-time" type="time" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold text-sm focus:border-sky-400 focus:outline-none" value="08:00">
+          </div>
+          <div>
+            <label class="text-[11px] font-semibold text-slate-400 uppercase tracking-wide block mb-1">Hora Fin</label>
+            <input id="input-end-time" type="time" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold text-sm focus:border-sky-400 focus:outline-none" value="22:00">
+          </div>
+        </div>
+
+        <div>
+          <label class="text-[11px] font-semibold text-slate-400 uppercase tracking-wide block mb-1">Frecuencia de Recordatorio</label>
+          <select id="select-interval-mins" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold text-sm focus:border-sky-400 focus:outline-none">
+            <option value="30">Cada 30 minutos (Intensivo)</option>
+            <option value="45">Cada 45 minutos</option>
+            <option value="60">Cada 1 hora</option>
+            <option value="90" selected>Cada 1 hora y media (Recomendado Frank)</option>
+            <option value="120">Cada 2 horas</option>
+            <option value="180">Cada 3 horas</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- PANEL B: MODO HORARIOS FIJOS -->
+      <div id="panel-schedule-fixed" class="glass-card p-4 rounded-2xl border border-slate-800 flex flex-col gap-3 hidden">
+        <div class="flex items-center gap-2">
+          <input id="input-new-fixed-time" type="time" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold text-sm focus:border-sky-400 focus:outline-none" value="11:00">
+          <button id="btn-add-fixed-time" type="button" class="px-4 py-2 bg-sky-500 hover:bg-sky-400 rounded-xl font-bold text-xs text-white shrink-0 active:scale-95 transition-all">
+            + Añadir Hora
+          </button>
+        </div>
+
+        <div id="fixed-times-list" class="flex flex-col gap-1.5 max-h-48 overflow-y-auto pr-1"></div>
+      </div>
+
+      <!-- GRILLA VISUAL DE HORARIOS CALCULADOS DE HOY -->
+      <div class="flex flex-col gap-2">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Horarios Activos para Hoy</h3>
+        <div id="schedule-times-grid" class="grid grid-cols-3 gap-2"></div>
+      </div>
+
+      <!-- CANALES DE ALERTA Y CONFIGURACIÓN -->
+      <div class="glass-card p-4 rounded-2xl border border-slate-800 flex flex-col gap-3.5">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Canales de Alerta</h3>
+
+        <!-- Switch Notificaciones Nativas -->
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-xs font-bold text-white">Notificaciones de Celular</p>
+            <p class="text-[10px] text-slate-400">Avisos nativos del sistema aunque la pantalla esté bloqueada</p>
+          </div>
+          <button id="switch-notifications" type="button" class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out bg-sky-500">
+            <span class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out translate-x-5"></span>
+          </button>
+        </div>
+
+        <!-- Switch Sonido de Gota (Web Audio API) -->
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-xs font-bold text-white">Sonido de Gota Natural</p>
+            <p class="text-[10px] text-slate-400">Síntesis de audio 100% offline y relajante</p>
+          </div>
+          <button id="switch-sound" type="button" class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out bg-sky-500">
+            <span class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out translate-x-5"></span>
+          </button>
+        </div>
+
+        <!-- Switch Vibración Háptica -->
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-xs font-bold text-white">Vibración Háptica Móvil</p>
+            <p class="text-[10px] text-slate-400">Pulso vibratorio en el bolsillo al momento de tomar agua</p>
+          </div>
+          <button id="switch-haptic" type="button" class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out bg-sky-500">
+            <span class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out translate-x-5"></span>
+          </button>
+        </div>
+
+        <!-- Switch Pausa Almuerzo (Consejo Frank) -->
+        <div class="flex items-center justify-between border-t border-slate-800/80 pt-3">
+          <div>
+            <p class="text-xs font-bold text-white">Pausa Digestiva (Frank Suárez)</p>
+            <p class="text-[10px] text-slate-400">No avisar entre 13:00 y 14:00 para proteger el ácido gástrico</p>
+          </div>
+          <button id="switch-meal-pause" type="button" class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out bg-sky-500">
+            <span class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out translate-x-5"></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- BOTÓN DESTACADO: PROBAR NOTIFICACIÓN Y SONIDO AHORA -->
+      <button id="btn-test-alert" type="button" class="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-400 hover:to-cyan-400 text-white font-bold text-sm shadow-lg shadow-sky-500/25 flex items-center justify-center gap-2 active:scale-95 transition-all">
+        <svg class="w-5 h-5 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+        </svg>
+        <span>Probar Notificación y Sonido Ahora</span>
+      </button>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 3: PROGRESO Y ESTADÍSTICAS -->
+    <!-- ======================================================== -->
+    <section id="tab-progress" class="tab-content flex flex-col gap-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-base font-extrabold text-white">Progreso Semanal</h2>
+          <p class="text-xs text-slate-400">Tu constancia de hidratación en los últimos 7 días</p>
+        </div>
+      </div>
+
+      <!-- GRÁFICO DE BARRAS SEMANAL -->
+      <div class="glass-card p-4 rounded-2xl border border-slate-800 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-slate-300">Cumplimiento Diario (%)</span>
+          <span class="text-[11px] text-emerald-400 font-semibold flex items-center gap-1">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Verde: Meta cumplida
+          </span>
+        </div>
+
+        <!-- Contenedor dinámico de barras -->
+        <div id="weekly-chart-bars" class="flex items-end justify-between gap-2 pt-2 pb-1"></div>
+      </div>
+
+      <!-- TARJETAS DE MÉTRICAS -->
+      <div class="grid grid-cols-2 gap-2.5">
+        <div class="glass-card p-3.5 rounded-2xl border border-slate-800">
+          <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wide block">Total Semanal</span>
+          <p id="stat-weekly-total" class="text-xl font-extrabold text-sky-300 mt-1">0.0 L</p>
+          <span class="text-[10px] text-slate-400">Litros consumidos</span>
+        </div>
+
+        <div class="glass-card p-3.5 rounded-2xl border border-slate-800">
+          <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wide block">Promedio Diario</span>
+          <p id="stat-daily-avg" class="text-xl font-extrabold text-cyan-300 mt-1">0 ml</p>
+          <span class="text-[10px] text-slate-400">Mililitros por día</span>
+        </div>
+
+        <div class="glass-card p-3.5 rounded-2xl border border-slate-800">
+          <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wide block">Metas Logradas</span>
+          <p id="stat-days-met" class="text-xl font-extrabold text-emerald-400 mt-1">0 de 7 días</p>
+          <span class="text-[10px] text-slate-400">100% completado</span>
+        </div>
+
+        <div class="glass-card p-3.5 rounded-2xl border border-slate-800">
+          <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wide block">Racha Actual</span>
+          <p id="stat-streak-progress" class="text-xl font-extrabold text-amber-400 mt-1">0 días 🔥</p>
+          <span class="text-[10px] text-slate-400">Días consecutivos</span>
+        </div>
+      </div>
+
+      <!-- MÉTRICA CIENTÍFICA: ATP CELULAR ESTIMADO (Frank Suárez) -->
+      <div class="glass-card p-4 rounded-2xl border border-sky-500/20 bg-gradient-to-br from-sky-950/30 to-slate-900/60 flex items-center gap-3">
+        <div class="w-12 h-12 rounded-2xl bg-sky-500/20 text-sky-400 flex items-center justify-center text-2xl shrink-0">
+          ⚡
+        </div>
+        <div>
+          <h4 class="text-xs font-bold uppercase tracking-wider text-sky-300">Energía Celular Producida</h4>
+          <p id="stat-frank-atp" class="text-sm font-extrabold text-white mt-0.5">~0 x 10 Julios ATP</p>
+          <p class="text-[10px] text-slate-400 leading-snug mt-0.5">Calculado con base en la hidrólisis de ATP promovida por tu ingesta de agua.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 4: MÁS HÁBITOS Y SABIDURÍA FRANK SUÁREZ -->
+    <!-- ======================================================== -->
+    <section id="tab-habits" class="tab-content flex flex-col gap-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-base font-extrabold text-white">Hábitos y Metabolismo</h2>
+          <p class="text-xs text-slate-400">Sabiduría de Frank Suárez y hábitos saludables Code Ahumada</p>
+        </div>
+      </div>
+
+      <!-- SECCIÓN: CONSEJOS DE FRANK SUÁREZ -->
+      <div class="flex flex-col gap-2.5">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-base">📚</span>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-sky-300">Tips de Frank Suárez</h3>
+          </div>
+          <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300">El Poder del Metabolismo</span>
+        </div>
+
+        <!-- Contenedor dinámico de tips -->
+        <div id="frank-tips-container" class="flex flex-col gap-2.5"></div>
+      </div>
+
+      <!-- SECCIÓN: HÁBITOS COMPLEMENTARIOS (Ecosistema Code Ahumada) -->
+      <div class="flex flex-col gap-2.5 mt-2">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-base">⚡</span>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300">Módulos de Hábitos</h3>
+          </div>
+          <span class="text-[10px] font-semibold text-slate-400">Activables</span>
+        </div>
+
+        <!-- Contenedor dinámico de hábitos extra -->
+        <div id="extra-habits-container" class="flex flex-col gap-2.5"></div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- BARRA DE NAVEGACIÓN INFERIOR FIJA (Estilo App Nativa) -->
+    <!-- ======================================================== -->
+    <nav class="bottom-nav flex items-center justify-around py-2.5">
+      <!-- Tab 1: Agua -->
+      <button type="button" data-tab="water" class="nav-tab-btn active flex-1 flex flex-col items-center gap-1">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
+        </svg>
+        <span class="text-[10px] font-bold">Agua</span>
+      </button>
+
+      <!-- Tab 2: Horarios -->
+      <button type="button" data-tab="schedule" class="nav-tab-btn flex-1 flex flex-col items-center gap-1">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <span class="text-[10px] font-bold">Horarios</span>
+      </button>
+
+      <!-- Tab 3: Progreso -->
+      <button type="button" data-tab="progress" class="nav-tab-btn flex-1 flex flex-col items-center gap-1">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+        </svg>
+        <span class="text-[10px] font-bold">Progreso</span>
+      </button>
+
+      <!-- Tab 4: Más Hábitos -->
+      <button type="button" data-tab="habits" class="nav-tab-btn flex-1 flex flex-col items-center gap-1">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+        </svg>
+        <span class="text-[10px] font-bold">Hábitos</span>
+      </button>
+    </nav>
+
+    <!-- TOAST FLOTANTE DE NOTIFICACIONES EN PANTALLA -->
+    <div id="habitflow-toast" class="fixed top-6 left-1/2 -translate-x-1/2 max-w-xs w-[90%] glass-card px-4 py-3 rounded-2xl border border-sky-400/40 text-xs font-bold text-center text-white shadow-2xl transition-all duration-300 opacity-0 pointer-events-none translate-y-4 z-50"></div>
+
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL: CALCULADORA FRANK SUÁREZ -->
+  <!-- ======================================================== -->
+  <div id="frank-calc-modal" class="app-modal hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md items-center justify-center p-4">
+    <div class="glass-card max-w-sm w-full p-5 rounded-3xl border border-sky-400/30 flex flex-col gap-4 animate-scaleUp">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl">⚖️</span>
+          <div>
+            <h3 class="text-sm font-extrabold text-white">Calculadora Frank Suárez</h3>
+            <p class="text-[10px] text-sky-300">Fórmula de Metabolismo TV</p>
+          </div>
+        </div>
+        <button type="button" class="btn-close-modal text-slate-400 hover:text-white p-1 text-sm">✕</button>
+      </div>
+
+      <!-- Explicación de la fórmula -->
+      <div class="p-3 rounded-2xl bg-sky-950/40 border border-sky-500/20 text-xs text-slate-300 leading-relaxed">
+        <p><strong class="text-white">Fórmula oficial:</strong> Tu peso en kilogramos dividido 7 determina cuántos vasos de 250 ml necesita tu cuerpo para encender tu metabolismo.</p>
+      </div>
+
+      <!-- Input de Peso -->
+      <div>
+        <label class="text-xs font-semibold text-slate-400 block mb-1.5">Tu peso actual en Kilogramos (kg)</label>
+        <div class="relative">
+          <input id="frank-input-weight" type="number" min="30" max="250" value="70" class="w-full bg-slate-900 border border-slate-700 rounded-2xl px-4 py-3 text-white font-extrabold text-lg focus:border-sky-400 focus:outline-none">
+          <span class="absolute right-4 top-1/2 -translate-y-1/2 font-bold text-slate-400 text-sm">kg</span>
+        </div>
+      </div>
+
+      <!-- Resultado en tiempo real -->
+      <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 text-center flex flex-col items-center">
+        <span class="text-[10px] uppercase font-bold tracking-wider text-slate-400">Tu Meta Personalizada</span>
+        <span id="frank-calc-glasses" class="text-2xl font-black text-sky-400 mt-1">10 vasos</span>
+        <span id="frank-calc-ml" class="text-sm font-bold text-white mt-0.5">2.500 ml diarios</span>
+        <span id="frank-calc-formula-text" class="text-[11px] text-slate-500 mt-1">70 kg ÷ 7 = 10 vasos de 250 ml</span>
+      </div>
+
+      <!-- Botón de Fijar Meta -->
+      <button id="btn-apply-frank-goal" type="button" class="w-full py-3 rounded-2xl bg-sky-500 hover:bg-sky-400 text-white font-extrabold text-xs shadow-lg shadow-sky-500/30 active:scale-95 transition-all">
+        Fijar como mi meta recomendada por Frank
+      </button>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL: VASO PERSONALIZADO (+) -->
+  <!-- ======================================================== -->
+  <div id="custom-water-modal" class="app-modal hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md items-center justify-center p-4">
+    <div class="glass-card max-w-sm w-full p-5 rounded-3xl border border-sky-400/30 flex flex-col gap-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">💧</span>
+          <h3 class="text-sm font-extrabold text-white">Cantidad Personalizada</h3>
+        </div>
+        <button type="button" class="btn-close-modal text-slate-400 hover:text-white p-1 text-sm">✕</button>
+      </div>
+
+      <div>
+        <label class="text-xs font-semibold text-slate-400 block mb-1.5">Ingresá los mililitros exactos</label>
+        <div class="relative">
+          <input id="input-custom-ml" type="number" min="50" max="2500" step="25" placeholder="Ej: 350" class="w-full bg-slate-900 border border-slate-700 rounded-2xl px-4 py-3 text-white font-extrabold text-lg focus:border-sky-400 focus:outline-none">
+          <span class="absolute right-4 top-1/2 -translate-y-1/2 font-bold text-slate-400 text-sm">ml</span>
+        </div>
+      </div>
+
+      <!-- Botones de Presets Rápidos -->
+      <div class="grid grid-cols-4 gap-2">
+        <button type="button" onclick="document.getElementById('input-custom-ml').value = '150'" class="p-2 rounded-xl bg-slate-800 text-xs font-bold text-slate-300 hover:bg-slate-700">150 ml</button>
+        <button type="button" onclick="document.getElementById('input-custom-ml').value = '300'" class="p-2 rounded-xl bg-slate-800 text-xs font-bold text-slate-300 hover:bg-slate-700">300 ml</button>
+        <button type="button" onclick="document.getElementById('input-custom-ml').value = '400'" class="p-2 rounded-xl bg-slate-800 text-xs font-bold text-slate-300 hover:bg-slate-700">400 ml</button>
+        <button type="button" onclick="document.getElementById('input-custom-ml').value = '1000'" class="p-2 rounded-xl bg-slate-800 text-xs font-bold text-slate-300 hover:bg-slate-700">1.000 ml</button>
+      </div>
+
+      <button id="btn-apply-custom-water" type="button" class="w-full py-3 rounded-2xl bg-sky-500 hover:bg-sky-400 text-white font-extrabold text-xs shadow-lg shadow-sky-500/30 active:scale-95 transition-all">
+        Sumar al Registro de Hoy
+      </button>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL: DETALLE CONSEJO FRANK SUÁREZ -->
+  <!-- ======================================================== -->
+  <div id="tip-detail-modal" class="app-modal hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md items-center justify-center p-4">
+    <div class="glass-card max-w-sm w-full p-5 rounded-3xl border border-sky-400/30 flex flex-col gap-3.5 max-h-[85vh] overflow-y-auto">
+      <div class="flex items-center justify-between">
+        <span id="modal-tip-badge" class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-400/30">Ciencia Celular</span>
+        <button type="button" class="btn-close-modal text-slate-400 hover:text-white p-1 text-sm">✕</button>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <span id="modal-tip-icon" class="text-3xl p-2 rounded-2xl bg-slate-800 border border-slate-700">⚡</span>
+        <h3 id="modal-tip-title" class="text-sm font-extrabold text-white leading-snug">Consejo de Frank Suárez</h3>
+      </div>
+
+      <div id="modal-tip-content" class="text-xs text-slate-300 leading-relaxed p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800"></div>
+
+      <button type="button" class="btn-close-modal w-full py-2.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs active:scale-95 transition-all">
+        Entendido
+      </button>
+    </div>
+  </div>
+
+  <!-- SCRIPTS MODULARES CON VERSIONADO QUERY PARAMS (?v=1.0) -->
+  <script src="./js/storage.js?v=1.0"></script>
+  <script src="./js/audio.js?v=1.0"></script>
+  <script src="./js/reminders.js?v=1.0"></script>
+  <script src="./js/habits.js?v=1.0"></script>
+  <script src="./js/app.js?v=1.0"></script>
+  <script src="./js/pwa.js?v=1.0"></script>
+</body>
+</html>
