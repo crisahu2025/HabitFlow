@@ -104,6 +104,18 @@ class StorageManager {
     localStorage.setItem(STORAGE_KEYS.PROFILE, JSON.stringify(profile));
   }
 
+  setDailyGoal(goalMl) {
+    const ml = Number(goalMl) || 2000;
+    const profile = this.getProfile();
+    profile.dailyGoal = ml;
+    this.saveProfile(profile);
+
+    const today = this.getTodayData();
+    today.goalMl = ml;
+    this.saveTodayData(today);
+    return profile;
+  }
+
   /**
    * Cálculo de la meta recomendada por Frank Suárez:
    * Vasos de 250 ml = Peso en kg / 7

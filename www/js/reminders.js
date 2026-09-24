@@ -12,6 +12,10 @@ class ReminderManager {
 
   init() {
     this.startLiveTimer();
+    // Programar alarmas nativas de Android en segundo plano al iniciar
+    setTimeout(() => {
+      this.scheduleAllNativeAndroid();
+    }, 1500);
   }
 
   /**
@@ -283,8 +287,20 @@ class ReminderManager {
    * Pide permisos y muestra notificación nativa en celular / PC
    */
   async requestNotificationPermission() {
+    // 1. Si estamos en Capacitor nativo Android
+    if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.LocalNotifications) {
+      try {
+        const { LocalNotifications } = window.Capacitor.Plugins;
+        const perm = await LocalNotifications.requestPermissions();
+        return perm.display === 'granted';
+      } catch (e) {
+        console.warn('Error solicitando permisos en Capacitor:', e);
+        return false;
+      }
+    }
+
+    // 2. Si estamos en navegador Web
     if (!('Notification' in window)) {
-      alert('Tu navegador no soporta notificaciones de sistema.');
       return false;
     }
 
@@ -350,6 +366,42 @@ class ReminderManager {
       window.soundEngine.vibrate([150, 100, 200]);
     }
 
+    // 1. Si estamos en Capacitor nativo Android (APK)
+    if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.LocalNotifications) {
+      try {
+        const { LocalNotifications } = window.Capacitor.Plugins;
+        await LocalNotifications.requestPermissions();
+        
+        await LocalNotifications.createChannel({
+          id: 'habitflow_reminders_channel',
+          name: 'Recordatorios de Hidratación HabitFlow',
+          description: 'Alarmas periódicas para tomar agua y activar el metabolismo',
+          importance: 5,
+          visibility: 1,
+          sound: 'beep.wav',
+          vibration: true
+        });
+
+        await LocalNotifications.schedule({
+          notifications: [{
+            id: 9999,
+            title: '💧 Prueba de HabitFlow Exitosa',
+            body: '¡Genial! Las notificaciones nativas de Android y el sonido están 100% activos y funcionando en tu celular.',
+            schedule: { at: new Date(Date.now() + 1000) },
+            channelId: 'habitflow_reminders_channel',
+            smallIcon: 'ic_stat_icon_config_sample',
+            iconColor: '#0284c7'
+          }]
+        });
+
+        this.showToast('🔔 ¡Alerta nativa enviada al celular!');
+        return;
+      } catch (e) {
+        console.warn('Error en notificación de prueba Capacitor:', e);
+      }
+    }
+
+    // 2. Fallback Web
     const permitted = await this.requestNotificationPermission();
     if (permitted) {
       this.triggerAlert(
