@@ -5,12 +5,44 @@
 
 const FRANK_TIPS = [
   {
+    id: 'ep-734',
+    title: 'Episodio #734: El Misterio de la Fórmula de Frank',
+    tag: 'MetabolismoTV #734',
+    icon: '⚖️',
+    summary: 'La demostración científica: Peso (kg) / 7 = Vasos de 250 ml diarios.',
+    content: 'En el episodio #734 de MetabolismoTV, Frank Suárez revela el fundamento científico de su famosa fórmula: cada célula de tu cuerpo posee mitocondrias que producen ATP mediante combustión con oxígeno. Como el agua es H2O (88% de oxígeno en peso molecular), dividir tu peso corporal en kilogramos entre 7 te da la cantidad matemática exacta de vasos de 250 ml requeridos para que tu metabolismo funcione a máxima velocidad sin sobrecargar los riñones.'
+  },
+  {
+    id: 'ep-535',
+    title: 'Episodio #535: Tomar Agua... ¡No de Noche!',
+    tag: 'MetabolismoTV #535',
+    icon: '🌙',
+    summary: 'El último vaso grande debe ser 1 o 2 horas antes de dormir.',
+    content: 'En el episodio #535, Frank advierte sobre el error de tomar un vaso grande de agua justo al acostarse. La vejiga te despertará a las 3:00 o 4:00 AM, interrumpiendo el sueño profundo (fase REM y Delta). Romper el sueño eleva la hormona cortisol (estrés), lo que frena en seco el metabolismo y te hace acumular grasa abdominal. Cortá los líquidos 1 a 2 horas antes de ir a dormir.'
+  },
+  {
+    id: 'ep-848',
+    title: 'Episodio #848: ¿Agua Fría o al Tiempo?',
+    tag: 'MetabolismoTV #848',
+    icon: '🌡️',
+    summary: 'El agua a temperatura ambiente es la mejor para tu digestión y metabolismo.',
+    content: 'En el episodio #848, Frank desmiente el mito de que "el agua helada quema grasa". El agua con hielo congela las grasas de los alimentos en el estómago y obliga a tu cuerpo a gastar valiosa energía térmica para calentarla a 37°C antes de poder absorberla. El agua a temperatura ambiente o tibia entra suave, no genera shock térmico y activa de inmediato el flujo digestivo.'
+  },
+  {
+    id: 'ep-639',
+    title: 'Súper Ayuda #639: Cómo Acostumbrarme a Tomar Agua',
+    tag: 'MetabolismoTV #639',
+    icon: '🧗‍♂️',
+    summary: 'Si tu cuerpo rechaza el agua, aumentá de a 1 vaso por día gradualmente.',
+    content: 'En el episodio de Súper Ayuda #639, Frank explica que cuando una persona lleva años deshidratada, su estómago pierde la capacidad de producir ácido clorhídrico y por eso el agua le puede dar náuseas o sensación de pesadez. Frank aconseja: "No intentes tomarte los 8 o 10 vasos de golpe el primer día". Empezá con 2 o 3 vasos al día, y sumá un vaso más cada 2 días. En 2 semanas tu cuerpo recuperará la sed natural y el metabolismo despertará.'
+  },
+  {
     id: 'atp-energy',
     title: 'El Agua Multiplica tu Energía (ATP x 10)',
     tag: 'Ciencia Celular',
     icon: '⚡',
     summary: 'Cada célula genera ATP. Con agua, la energía pasa de 60 a 600 julios.',
-    content: 'En sus libros "El Poder del Metabolismo" y "Metabolismo Ultra Poderoso", Frank Suárez explicaba que el ATP es la moneda energética del cuerpo. Cuando el ATP se combina con una molécula de agua (hidrólisis), la energía liberada se multiplica por diez. Si te sentís fatigado, muchas veces tu cuerpo simplemente no tiene agua suficiente para generar esa explosión de energía.'
+    content: 'En sus libros "El Poder del Metabolismo" y "Metabolismo Ultra Poderoso", Frank Suárez explicaba que el ATP es la moneda energética del cuerpo. Cuando el ATP se combina con una molécula de agua (hidrólisis), la energía liberada se multiplica por diez (de 60 a 600 julios). Si te sentís fatigado o con niebla mental, muchas veces tu cuerpo simplemente no tiene agua suficiente para generar esa explosión de energía.'
   },
   {
     id: 'meals-rule',
@@ -34,7 +66,7 @@ const FRANK_TIPS = [
     tag: 'Electrolitos',
     icon: '🍋',
     summary: 'Una pizca de sal marina / rosada y limón reactivan la bomba celular.',
-    content: 'Para que el agua entre dentro de la célula y no pase de largo hacia la orina, las células necesitan electrolitos (sodio, magnesio y potasio). Agregar una pequeña pizca de sal marina o del Himalaya junto con unas gotas de limón a un vaso de agua en ayunas transforma el agua en un suero electrolítico natural que hidrata profundamente.'
+    content: 'Para que el agua entre dentro de la célula y no pase de largo hacia la orina, las células necesitan electrolitos (sodio, magnesio y potasio). Agregar una pequeña pizca de sal marina o del Himalaya junto con unas gotas de limón a un vaso de agua en ayunas transforma el agua en un suero electrolítico natural que hidrata profundamente las células.'
   }
 ];
 
