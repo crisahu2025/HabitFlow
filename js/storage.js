@@ -8,7 +8,8 @@ const STORAGE_KEYS = {
   TODAY: 'habitflow_today_v1',
   HISTORY: 'habitflow_history_v1',
   SCHEDULE: 'habitflow_schedule_v1',
-  HABITS: 'habitflow_habits_v1'
+  HABITS: 'habitflow_habits_v1',
+  THEME: 'habitflow_theme_mode'
 };
 
 const DEFAULT_PROFILE = {
@@ -114,6 +115,23 @@ class StorageManager {
     today.goalMl = ml;
     this.saveTodayData(today);
     return profile;
+  }
+
+  getTheme() {
+    return localStorage.getItem(STORAGE_KEYS.THEME) || 'dark';
+  }
+
+  setTheme(theme) {
+    const mode = theme === 'light' ? 'light' : 'dark';
+    localStorage.setItem(STORAGE_KEYS.THEME, mode);
+    if (mode === 'light') {
+      document.documentElement.classList.add('light-theme');
+      document.documentElement.classList.remove('dark');
+    } else {
+      document.documentElement.classList.remove('light-theme');
+      document.documentElement.classList.add('dark');
+    }
+    return mode;
   }
 
   /**

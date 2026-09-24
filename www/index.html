@@ -48,7 +48,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- Custom Stylesheets con Versionado -->
-  <link rel="stylesheet" href="./css/styles.css?v=1.1">
+  <link rel="stylesheet" href="./css/styles.css?v=1.2">
   <style>
     body {
       font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -481,6 +481,128 @@
     </section>
 
     <!-- ======================================================== -->
+    <!-- TAB 5: AJUSTES Y CONFIGURACIÓN (CODE AHUMADA) -->
+    <!-- ======================================================== -->
+    <section id="tab-settings" class="tab-content flex flex-col gap-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-base font-extrabold text-white">Configuración</h2>
+          <p class="text-xs text-slate-400">Perfil, apariencia, tus métricas y versión</p>
+        </div>
+      </div>
+
+      <!-- 1. TARJETA MI CUENTA & PERFIL -->
+      <div class="glass-card p-4 rounded-2xl border border-slate-800 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Mi Cuenta</span>
+          <button id="btn-settings-edit-profile" type="button" class="text-[11px] font-bold px-3 py-1 rounded-xl bg-sky-500/20 text-sky-300 border border-sky-400/30 hover:bg-sky-500/30 active:scale-95 transition-all">
+            ✏️ Editar Perfil
+          </button>
+        </div>
+        <div class="flex items-center gap-3.5 pt-1">
+          <div id="settings-avatar-letter" class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-sky-600 to-cyan-400 text-white flex items-center justify-center text-xl font-black shadow-md shadow-sky-500/20">
+            C
+          </div>
+          <div class="min-w-0 flex-1">
+            <h3 id="settings-display-name" class="text-sm font-extrabold text-white truncate">Cristian</h3>
+            <p id="settings-display-user" class="text-xs text-slate-400 truncate">@cristian</p>
+            <p id="settings-display-email" class="text-[10px] text-slate-500 truncate">Cuenta activa</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-800/80">
+          <div class="p-2 rounded-xl bg-slate-900/60">
+            <span class="text-[10px] text-slate-400 uppercase font-semibold">Peso Registrado</span>
+            <p id="settings-display-weight" class="text-xs font-bold text-white mt-0.5">70 kg</p>
+          </div>
+          <div class="p-2 rounded-xl bg-slate-900/60">
+            <span class="text-[10px] text-slate-400 uppercase font-semibold">Meta Diaria</span>
+            <p id="settings-display-goal" class="text-xs font-bold text-sky-400 mt-0.5">2.000 ml</p>
+          </div>
+        </div>
+        <button id="btn-settings-logout" type="button" class="w-full mt-1 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-300 font-bold text-xs active:scale-95 transition-all">
+          Cerrar Sesión / Cambiar Usuario
+        </button>
+      </div>
+
+      <!-- 2. APARIENCIA: MODO NOCTURNO / MODO SOLEADO -->
+      <div class="glass-card p-4 rounded-2xl border border-slate-800 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div id="theme-icon-container" class="w-10 h-10 rounded-xl bg-slate-800 text-amber-300 flex items-center justify-center text-lg">
+            🌙
+          </div>
+          <div>
+            <p id="theme-title-text" class="text-xs font-bold text-white">Modo Nocturno</p>
+            <p id="theme-subtitle-text" class="text-[10px] text-slate-400">Tocá para cambiar a Modo Soleado ☀️</p>
+          </div>
+        </div>
+        <button id="switch-theme-mode" type="button" class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out bg-sky-500" title="Alternar Modo Nocturno / Soleado">
+          <span id="switch-theme-circle" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out translate-x-5"></span>
+        </button>
+      </div>
+
+      <!-- 3. TUS COSAS (RESUMEN HISTÓRICO PERSONAL) -->
+      <div class="glass-card p-4 rounded-2xl border border-slate-800 flex flex-col gap-2.5">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Tus Cosas (Historial Acumulado)</h3>
+        <div class="grid grid-cols-2 gap-2">
+          <div class="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800/80">
+            <span class="text-[10px] text-slate-400 font-medium">💧 Total Ingerido</span>
+            <p id="my-things-total-liters" class="text-sm font-extrabold text-sky-300 mt-0.5">0.0 Litros</p>
+          </div>
+          <div class="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800/80">
+            <span class="text-[10px] text-slate-400 font-medium">🔥 Mejor Racha</span>
+            <p id="my-things-best-streak" class="text-sm font-extrabold text-amber-400 mt-0.5">0 días</p>
+          </div>
+          <div class="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800/80">
+            <span class="text-[10px] text-slate-400 font-medium">🥤 Vasos Bebidos</span>
+            <p id="my-things-total-glasses" class="text-sm font-extrabold text-cyan-300 mt-0.5">0 vasos</p>
+          </div>
+          <div class="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800/80">
+            <span class="text-[10px] text-slate-400 font-medium">⚡ Energía ATP</span>
+            <p id="my-things-total-atp" class="text-sm font-extrabold text-emerald-400 mt-0.5">~0 Julios</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. ACTUALIZACIONES DE APK -->
+      <div class="glass-card p-4 rounded-2xl border border-slate-800 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Actualizaciones de APK</span>
+          <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">v1.0.6</span>
+        </div>
+        <div class="flex items-center justify-between text-xs text-slate-300">
+          <span>Versión Instalada:</span>
+          <span class="font-extrabold text-white">v1.0.6 (Android APK Nativo)</span>
+        </div>
+        <div class="flex items-center justify-between text-xs text-slate-300">
+          <span>Repositorio de Distribución:</span>
+          <span class="font-medium text-sky-400">GitHub Privado</span>
+        </div>
+        <a href="https://github.com/crisahu2025/HabitFlow/releases/latest" target="_blank" class="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-400 hover:to-cyan-400 text-white font-extrabold text-xs shadow-md shadow-sky-500/25 flex items-center justify-center gap-2 active:scale-95 transition-all">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+          <span>Descargar Última Versión APK</span>
+        </a>
+      </div>
+
+      <!-- 5. ACERCA DE LA APLICACIÓN -->
+      <div class="glass-card p-4 rounded-2xl border border-slate-800 flex flex-col gap-3">
+        <div class="flex items-center gap-3">
+          <img src="./icons/icon-192.png" alt="HabitFlow" class="w-11 h-11 rounded-2xl shadow-md shadow-sky-500/20 object-cover border border-sky-400/30">
+          <div>
+            <h4 class="text-sm font-extrabold text-white">HabitFlow Mobile</h4>
+            <p class="text-[11px] text-sky-400 font-semibold">Code Ahumada • Director Cristian</p>
+          </div>
+        </div>
+        <p class="text-xs text-slate-300 leading-relaxed">
+          Aplicación móvil de salud celular y hábitos saludables. Integra la fórmula matemática de hidratación (<strong class="text-white">Peso en kg ÷ 7</strong>) y principios metabólicos de los libros y episodios de <strong class="text-white">Frank Suárez</strong> (Metabolismo TV).
+        </p>
+        <div class="text-[10px] text-slate-500 pt-1 border-t border-slate-800 flex items-center justify-between">
+          <span>© 2026 Code Ahumada</span>
+          <span>Versión 1.0.6</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
     <!-- BARRA DE NAVEGACIÓN INFERIOR FIJA (Estilo App Nativa) -->
     <!-- ======================================================== -->
     <nav class="bottom-nav flex items-center justify-around py-2.5">
@@ -514,6 +636,15 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
         </svg>
         <span class="text-[10px] font-bold">Hábitos</span>
+      </button>
+
+      <!-- Tab 5: Ajustes -->
+      <button type="button" data-tab="settings" class="nav-tab-btn flex-1 flex flex-col items-center gap-1">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+        <span class="text-[10px] font-bold">Ajustes</span>
       </button>
     </nav>
 
@@ -795,13 +926,52 @@
     </div>
   </div>
 
-  <!-- SCRIPTS MODULARES CON VERSIONADO QUERY PARAMS (?v=1.1) -->
-  <script src="./js/storage.js?v=1.1"></script>
-  <script src="./js/auth.js?v=1.1"></script>
-  <script src="./js/audio.js?v=1.1"></script>
-  <script src="./js/reminders.js?v=1.1"></script>
-  <script src="./js/habits.js?v=1.1"></script>
-  <script src="./js/app.js?v=1.1"></script>
-  <script src="./js/pwa.js?v=1.1"></script>
+  <!-- ======================================================== -->
+  <!-- MODAL: EDITAR PERFIL DE USUARIO -->
+  <!-- ======================================================== -->
+  <div id="edit-profile-modal" class="app-modal hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md items-center justify-center p-4">
+    <div class="glass-card max-w-sm w-full p-5 rounded-3xl border border-sky-400/30 flex flex-col gap-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between">
+        <h3 class="text-sm font-extrabold text-white flex items-center gap-2">
+          <span>✏️</span> Editar Mi Perfil
+        </h3>
+        <button type="button" class="btn-close-modal text-slate-400 hover:text-white p-1 text-sm">✕</button>
+      </div>
+
+      <form id="form-edit-profile" class="flex flex-col gap-3">
+        <div>
+          <label class="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1">Nombre Completo</label>
+          <input id="edit-profile-name" type="text" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs focus:outline-none focus:border-sky-500">
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1">Tu Peso Corporal (kg)</label>
+          <div class="relative">
+            <input id="edit-profile-weight" type="number" required min="30" max="250" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs focus:outline-none focus:border-sky-500">
+            <span class="absolute right-3.5 top-2.5 text-xs text-slate-400 font-bold">kg</span>
+          </div>
+          <p id="edit-profile-frank-calc-preview" class="text-[10px] text-sky-400 mt-1">Recomendación Frank: Peso ÷ 7</p>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1">Meta Diaria Asignada (ml)</label>
+          <input id="edit-profile-goal" type="number" required min="500" max="10000" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs focus:outline-none focus:border-sky-500">
+        </div>
+
+        <button type="submit" class="w-full mt-2 py-3 rounded-2xl bg-gradient-to-r from-sky-500 to-cyan-500 text-white font-extrabold text-xs shadow-lg shadow-sky-500/25 active:scale-95 transition-all">
+          Guardar Cambios
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- SCRIPTS MODULARES CON VERSIONADO QUERY PARAMS (?v=1.2) -->
+  <script src="./js/storage.js?v=1.2"></script>
+  <script src="./js/auth.js?v=1.2"></script>
+  <script src="./js/audio.js?v=1.2"></script>
+  <script src="./js/reminders.js?v=1.2"></script>
+  <script src="./js/habits.js?v=1.2"></script>
+  <script src="./js/app.js?v=1.2"></script>
+  <script src="./js/pwa.js?v=1.2"></script>
 </body>
 </html>

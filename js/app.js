@@ -10,8 +10,10 @@ class HabitFlowApp {
   }
 
   init() {
+    this.applyInitialTheme();
     this.setupTabNavigation();
     this.setupEventListeners();
+    this.setupSettingsListeners();
     this.renderWaterSection();
     this.renderScheduleSection();
     this.renderProgressSection();
@@ -66,6 +68,8 @@ class HabitFlowApp {
       this.renderHabitsSection();
     } else if (tabId === 'water') {
       this.renderWaterSection();
+    } else if (tabId === 'settings') {
+      this.renderSettingsSection();
     }
   }
 
@@ -77,7 +81,7 @@ class HabitFlowApp {
     const quickAmount = params.get('quick');
     const targetTab = params.get('tab');
 
-    if (targetTab && ['water', 'schedule', 'progress', 'habits'].includes(targetTab)) {
+    if (targetTab && ['water', 'schedule', 'progress', 'habits', 'settings'].includes(targetTab)) {
       this.switchTab(targetTab);
     }
 
@@ -899,6 +903,274 @@ class HabitFlowApp {
     const glasses = Math.round(goal / 250);
     if (elGoal) elGoal.textContent = `${goal.toLocaleString('es-AR')} ml`;
     if (elGlasses) elGlasses.textContent = `${glasses} vasos de 250 ml`;
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+
+  // ==========================================
+  // SECCIÓN 6: CONFIGURACIÓN Y AJUSTES
+  // ==========================================
+  applyInitialTheme() {
+    const savedTheme = window.storageManager.getTheme();
+    window.storageManager.setTheme(savedTheme);
+    this.updateThemeUI(savedTheme);
+  }
+
+  updateThemeUI(theme) {
+    const isLight = theme === 'light';
+    const switchBtn = document.getElementById('switch-theme-mode');
+    const circle = document.getElementById('switch-theme-circle');
+    const iconContainer = document.getElementById('theme-icon-container');
+    const titleText = document.getElementById('theme-title-text');
+    const subtitleText = document.getElementById('theme-subtitle-text');
+
+    if (switchBtn && circle) {
+      if (isLight) {
+        switchBtn.className = 'relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out bg-amber-400';
+        circle.className = 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out translate-x-5';
+      } else {
+        switchBtn.className = 'relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out bg-slate-700';
+        circle.className = 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-slate-300 shadow-lg ring-0 transition duration-200 ease-in-out translate-x-0';
+      }
+    }
+
+    if (iconContainer) {
+      iconContainer.textContent = isLight ? '☀️' : '🌙';
+      iconContainer.className = isLight 
+        ? 'w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-lg'
+        : 'w-10 h-10 rounded-xl bg-slate-800 text-amber-300 flex items-center justify-center text-lg';
+    }
+
+    if (titleText) {
+      titleText.textContent = isLight ? 'Modo Soleado (Claro)' : 'Modo Nocturno (Oscuro)';
+    }
+
+    if (subtitleText) {
+      subtitleText.textContent = isLight 
+        ? 'Tocá para cambiar a Modo Nocturno 🌙'
+        : 'Tocá para cambiar a Modo Soleado ☀️';
+    }
+  }
+
+  toggleTheme() {
+    const current = window.storageManager.getTheme();
+    const next = current === 'light' ? 'dark' : 'light';
+    window.storageManager.setTheme(next);
+    this.updateThemeUI(next);
+    if (window.soundEngine) window.soundEngine.playTap();
+    if (window.reminderManager) {
+      window.reminderManager.showToast(next === 'light' ? 'Modo Soleado activado ☀️' : 'Modo Nocturno activado 🌙');
+    }
+  }
+
+  renderSettingsSection() {
+    // 1. Perfil de Usuario
+    const elAvatar = document.getElementById('settings-avatar-letter');
+    const elName = document.getElementById('settings-display-name');
+    const elUser = document.getElementById('settings-display-user');
+    const elEmail = document.getElementById('settings-display-email');
+    const elWeight = document.getElementById('settings-display-weight');
+    const elGoal = document.getElementById('settings-display-goal');
+    const btnLogout = document.getElementById('btn-settings-logout');
+
+    const isLoggedIn = window.authManager && window.authManager.isLoggedIn();
+    if (isLoggedIn) {
+      const u = window.authManager.currentUser;
+      if (elAvatar) elAvatar.textContent = (u.name || u.username)[0].toUpperCase();
+      if (elName) elName.textContent = u.name || u.username;
+      if (elUser) elUser.textContent = `@${u.username}`;
+      if (elEmail) elEmail.textContent = u.email || 'Cuenta activa';
+      if (elWeight) elWeight.textContent = `${u.weightKg || 70} kg`;
+      const goal = u.recommendedWaterMl || 2000;
+      if (elGoal) elGoal.textContent = `${goal.toLocaleString('es-AR')} ml`;
+      if (btnLogout) {
+        btnLogout.textContent = 'Cerrar Sesión';
+        btnLogout.className = 'w-full mt-1 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-300 font-bold text-xs active:scale-95 transition-all';
+      }
+    } else {
+      const profile = window.storageManager.getProfile();
+      if (elAvatar) elAvatar.textContent = '👤';
+      if (elName) elName.textContent = 'Usuario Local';
+      if (elUser) elUser.textContent = '@invitado';
+      if (elEmail) elEmail.textContent = 'Tocá para registrarte o iniciar sesión';
+      if (elWeight) elWeight.textContent = `${profile.weightKg || 70} kg`;
+      if (elGoal) elGoal.textContent = `${(profile.dailyGoal || 2000).toLocaleString('es-AR')} ml`;
+      if (btnLogout) {
+        btnLogout.textContent = 'Iniciar Sesión / Registrarse';
+        btnLogout.className = 'w-full mt-1 py-2 rounded-xl bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/30 text-sky-300 font-bold text-xs active:scale-95 transition-all';
+      }
+    }
+
+    // 2. Apariencia
+    this.updateThemeUI(window.storageManager.getTheme());
+
+    // 3. Tus Cosas (Estadísticas acumuladas históricas)
+    const history = window.storageManager.getHistory() || [];
+    const today = window.storageManager.getTodayData() || { totalMl: 0, entries: [] };
+    const streakInfo = window.storageManager.getStreakStats() || { currentStreak: 0, bestStreak: 0 };
+
+    const historyTotalMl = history.reduce((acc, h) => acc + (Number(h.totalMl) || 0), 0);
+    const totalMlLifetime = historyTotalMl + (Number(today.totalMl) || 0);
+
+    const elTotalLiters = document.getElementById('my-things-total-liters');
+    const elBestStreak = document.getElementById('my-things-best-streak');
+    const elTotalGlasses = document.getElementById('my-things-total-glasses');
+    const elTotalAtp = document.getElementById('my-things-total-atp');
+
+    if (elTotalLiters) {
+      elTotalLiters.textContent = `${(totalMlLifetime / 1000).toFixed(1)} L`;
+    }
+
+    if (elBestStreak) {
+      const best = Math.max(streakInfo.bestStreak || 0, streakInfo.currentStreak || 0);
+      elBestStreak.textContent = `${best} ${best === 1 ? 'día' : 'días'}`;
+    }
+
+    if (elTotalGlasses) {
+      const glasses = Math.round(totalMlLifetime / 250);
+      elTotalGlasses.textContent = `${glasses} ${glasses === 1 ? 'vaso' : 'vasos'}`;
+    }
+
+    if (elTotalAtp) {
+      const atpJoules = Math.round(totalMlLifetime * 3.5);
+      elTotalAtp.textContent = `~${atpJoules.toLocaleString('es-AR')} J`;
+    }
+  }
+
+  setupSettingsListeners() {
+    // Switch de Tema Claro / Oscuro
+    const switchTheme = document.getElementById('switch-theme-mode');
+    if (switchTheme) {
+      switchTheme.addEventListener('click', () => {
+        this.toggleTheme();
+      });
+    }
+
+    // Botón de Editar Perfil
+    const btnOpenEdit = document.getElementById('btn-open-edit-profile');
+    if (btnOpenEdit) {
+      btnOpenEdit.addEventListener('click', () => {
+        this.openEditProfileModal();
+      });
+    }
+
+    // Botón de Cerrar Sesión en Ajustes
+    const btnSettingsLogout = document.getElementById('btn-settings-logout');
+    if (btnSettingsLogout) {
+      btnSettingsLogout.addEventListener('click', () => {
+        if (window.authManager && window.authManager.isLoggedIn()) {
+          if (confirm('¿Deseás cerrar tu sesión en HabitFlow?')) {
+            window.authManager.logout();
+          }
+        } else {
+          this.openAuthModal();
+        }
+      });
+    }
+
+    // Input reactivo de peso en el Modal de Edición de Perfil
+    const inputWeight = document.getElementById('edit-profile-weight');
+    const previewCalc = document.getElementById('edit-profile-frank-calc-preview');
+    const inputGoal = document.getElementById('edit-profile-goal');
+
+    if (inputWeight) {
+      inputWeight.addEventListener('input', (e) => {
+        const w = Number(e.target.value) || 0;
+        if (w > 0) {
+          const glasses = Math.round(w / 7);
+          const ml = glasses * 250;
+          if (previewCalc) {
+            previewCalc.textContent = `Recomendación Frank Suárez: ${glasses} vasos (${ml.toLocaleString('es-AR')} ml)`;
+          }
+          if (inputGoal && !inputGoal.dataset.manuallyEdited) {
+            inputGoal.value = ml;
+          }
+        }
+      });
+    }
+
+    if (inputGoal) {
+      inputGoal.addEventListener('input', () => {
+        inputGoal.dataset.manuallyEdited = 'true';
+      });
+    }
+
+    // Guardar formulario de edición de perfil
+    const formEditProfile = document.getElementById('form-edit-profile');
+    if (formEditProfile) {
+      formEditProfile.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const nameVal = document.getElementById('edit-profile-name').value.trim();
+        const weightVal = Number(document.getElementById('edit-profile-weight').value) || 70;
+        const goalVal = Number(document.getElementById('edit-profile-goal').value) || 2000;
+
+        if (window.authManager && window.authManager.isLoggedIn()) {
+          try {
+            await window.authManager.updateProfile({
+              name: nameVal,
+              weightKg: weightVal,
+              dailyGoalMl: goalVal
+            });
+          } catch (err) {
+            console.error('Error al actualizar perfil de usuario:', err);
+          }
+        } else {
+          const p = window.storageManager.getProfile();
+          p.weightKg = weightVal;
+          p.dailyGoal = goalVal;
+          window.storageManager.saveProfile(p);
+          window.storageManager.setDailyGoal(goalVal);
+        }
+
+        this.closeModals();
+        this.renderSettingsSection();
+        this.renderWaterSection();
+        this.updateUserHeaderUI();
+
+        if (window.soundEngine) window.soundEngine.playSuccess();
+        if (window.reminderManager) {
+          window.reminderManager.showToast('✅ ¡Perfil y meta actualizados con éxito!');
+        }
+      });
+    }
+  }
+
+  openEditProfileModal() {
+    const modal = document.getElementById('edit-profile-modal');
+    if (!modal) return;
+
+    const inputName = document.getElementById('edit-profile-name');
+    const inputWeight = document.getElementById('edit-profile-weight');
+    const inputGoal = document.getElementById('edit-profile-goal');
+    const previewCalc = document.getElementById('edit-profile-frank-calc-preview');
+
+    if (window.authManager && window.authManager.isLoggedIn()) {
+      const u = window.authManager.currentUser;
+      if (inputName) inputName.value = u.name || u.username;
+      if (inputWeight) inputWeight.value = u.weightKg || 70;
+      const goal = u.recommendedWaterMl || 2000;
+      if (inputGoal) {
+        inputGoal.value = goal;
+        delete inputGoal.dataset.manuallyEdited;
+      }
+      const glasses = Math.round((u.weightKg || 70) / 7);
+      if (previewCalc) {
+        previewCalc.textContent = `Recomendación Frank Suárez: ${glasses} vasos (${goal.toLocaleString('es-AR')} ml)`;
+      }
+    } else {
+      const p = window.storageManager.getProfile();
+      if (inputName) inputName.value = 'Usuario Local';
+      if (inputWeight) inputWeight.value = p.weightKg || 70;
+      if (inputGoal) {
+        inputGoal.value = p.dailyGoal || 2000;
+        delete inputGoal.dataset.manuallyEdited;
+      }
+      const glasses = Math.round((p.weightKg || 70) / 7);
+      if (previewCalc) {
+        previewCalc.textContent = `Recomendación Frank Suárez: ${glasses} vasos (${p.dailyGoal.toLocaleString('es-AR')} ml)`;
+      }
+    }
 
     modal.classList.remove('hidden');
     modal.classList.add('flex');
