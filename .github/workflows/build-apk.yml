@@ -67,10 +67,10 @@ jobs:
           name: HabitFlow v1.0.${{ github.run_number }} (APK Instalable)
           body: |
             ### 📱 HabitFlow v1.0.${{ github.run_number }} para Android
-            - 🪟 **Aislamiento Nativo de Pantallas:** Cada pestaña (Agua, Horarios, Progreso, Hábitos y Ajustes) ahora funciona como una pantalla independiente con vista exclusiva, eliminando por completo la tira larga.
-            - ⚡ **Transición y Fluidez:** Animaciones de entrada suaves al cambiar de pantalla.
-            - 🔑 **Firma Criptográfica Permanente:** Se instala de forma directa encima de la versión v1.0.6.
-            - ⚙️ **Configuración y Perfil:** Edición de peso, fórmula de Frank Suárez, Modo Soleado/Nocturno y Tus Cosas.
+            - ☀️ **Modo Soleado Ultra-Pulido:** Corrección visual exhaustiva de contrastes, tarjetas limpias, tipografía nítida y textos de hidratación 100% legibles.
+            - 📲 **Auto-Actualizador Nativo en 1 Toque:** La app ahora descarga e instala actualizaciones automáticamente sin tener que ir a páginas web.
+            - 🪟 **Aislamiento Nativo de Pantallas:** Cada pestaña (Agua, Horarios, Progreso, Hábitos y Ajustes) es una ventana 100% independiente.
+            - 🔑 **Firma Criptográfica Permanente:** Se actualiza directamente encima sin errores de conflicto.
             
             **Descargá e instalá el archivo HabitFlow.apk:**
           files: HabitFlow.apk

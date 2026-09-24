@@ -48,7 +48,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- Custom Stylesheets con Versionado -->
-  <link rel="stylesheet" href="./css/styles.css?v=1.3">
+  <link rel="stylesheet" href="./css/styles.css?v=1.4">
   <style>
     body {
       font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -68,7 +68,7 @@
       <div class="flex items-center gap-2.5">
         <img src="./icons/icon-192.png" alt="HabitFlow Logo" class="w-10 h-10 rounded-2xl shadow-lg shadow-sky-500/20 object-cover border border-sky-400/30">
         <div>
-          <h1 class="text-base font-extrabold tracking-tight bg-gradient-to-r from-white via-sky-100 to-sky-400 bg-clip-text text-transparent">HabitFlow</h1>
+          <h1 class="brand-title text-base font-extrabold tracking-tight bg-gradient-to-r from-white via-sky-100 to-sky-400 bg-clip-text text-transparent">HabitFlow</h1>
           <p class="text-[10px] text-slate-400 font-medium">Code Ahumada</p>
         </div>
       </div>
@@ -563,24 +563,36 @@
         </div>
       </div>
 
-      <!-- 4. ACTUALIZACIONES DE APK -->
+      <!-- 4. ACTUALIZACIONES DE APK (AUTO-ACTUALIZADOR NATIVO) -->
       <div class="glass-card p-4 rounded-2xl border border-slate-800 flex flex-col gap-3">
         <div class="flex items-center justify-between">
           <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Actualizaciones de APK</span>
-          <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">v1.0.7</span>
+          <span id="apk-installed-version-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">v1.0.8</span>
         </div>
         <div class="flex items-center justify-between text-xs text-slate-300">
           <span>Versión Instalada:</span>
-          <span class="font-extrabold text-white">v1.0.7 (Android APK Nativo)</span>
+          <span class="font-extrabold text-white">v1.0.8 (Android APK Nativo)</span>
         </div>
         <div class="flex items-center justify-between text-xs text-slate-300">
-          <span>Repositorio de Distribución:</span>
-          <span class="font-medium text-sky-400">GitHub Privado</span>
+          <span>Estado del Sistema:</span>
+          <span id="update-status-label" class="font-medium text-emerald-400">Listo para verificar</span>
         </div>
-        <a href="https://github.com/crisahu2025/HabitFlow/releases/latest" target="_blank" class="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-400 hover:to-cyan-400 text-white font-extrabold text-xs shadow-md shadow-sky-500/25 flex items-center justify-center gap-2 active:scale-95 transition-all">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-          <span>Descargar Última Versión APK</span>
-        </a>
+
+        <!-- Barra de Progreso de Descarga en Vivo -->
+        <div id="apk-download-progress-container" class="hidden flex flex-col gap-1.5 pt-1">
+          <div class="flex items-center justify-between text-[11px]">
+            <span id="apk-download-status-text" class="font-bold text-sky-400">Descargando...</span>
+            <span id="apk-download-percent-text" class="font-extrabold text-white">0%</span>
+          </div>
+          <div class="w-full h-2.5 rounded-full bg-slate-900 overflow-hidden p-0.5 border border-slate-800">
+            <div id="apk-download-bar" class="h-full rounded-full bg-gradient-to-r from-sky-500 to-cyan-400 transition-all duration-150" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <button id="btn-check-and-update-apk" type="button" class="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-400 hover:to-cyan-400 text-white font-extrabold text-xs shadow-md shadow-sky-500/25 flex items-center justify-center gap-2 active:scale-95 transition-all">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          <span id="btn-update-text">Comprobar Actualización Automática</span>
+        </button>
       </div>
 
       <!-- 5. ACERCA DE LA APLICACIÓN -->
@@ -903,26 +915,37 @@
         <button type="button" class="btn-close-modal text-slate-400 hover:text-white p-1 text-sm">✕</button>
       </div>
 
-      <h3 class="text-sm font-extrabold text-white">Actualizaciones de HabitFlow (APK)</h3>
-      <p class="text-xs text-slate-300 leading-relaxed">
-        El repositorio privado de GitHub compila automáticamente el archivo <strong class="text-white">HabitFlow.apk</strong> en cada actualización.
+      <h3 id="modal-update-title" class="text-sm font-extrabold text-white">¡Nueva Versión Disponible!</h3>
+      <p id="modal-update-notes" class="text-xs text-slate-300 leading-relaxed max-h-32 overflow-y-auto">
+        Se detectó una actualización en el servidor. Presioná el botón abajo para descargarla e instalarla automáticamente sin salir de la app.
       </p>
 
       <div class="p-3 rounded-2xl bg-slate-900 border border-slate-800 text-xs flex flex-col gap-1.5">
         <div class="flex items-center justify-between text-slate-400">
           <span>Versión instalada:</span>
-          <span class="font-bold text-white">v1.0 Nativo</span>
+          <span class="font-bold text-slate-300">v1.0.8</span>
         </div>
         <div class="flex items-center justify-between text-slate-400">
-          <span>Canal de compilación:</span>
-          <span class="font-bold text-sky-400">GitHub Actions CI/CD</span>
+          <span>Nueva versión:</span>
+          <span id="modal-update-version-label" class="font-extrabold text-emerald-400">v1.0.8</span>
         </div>
       </div>
 
-      <a id="btn-download-latest-apk" href="https://github.com/crisahu2025/HabitFlow/releases" target="_blank" class="w-full py-3 rounded-2xl bg-gradient-to-r from-sky-500 to-cyan-500 text-white font-extrabold text-xs shadow-lg shadow-sky-500/30 text-center flex items-center justify-center gap-2 active:scale-95 transition-all">
+      <!-- Barra de progreso dentro del Modal -->
+      <div id="modal-download-progress-container" class="hidden flex flex-col gap-1.5 pt-1">
+        <div class="flex items-center justify-between text-[11px]">
+          <span id="modal-download-status-text" class="font-bold text-sky-400">Descargando...</span>
+          <span id="modal-download-percent-text" class="font-extrabold text-white">0%</span>
+        </div>
+        <div class="w-full h-2.5 rounded-full bg-slate-900 overflow-hidden p-0.5 border border-slate-800">
+          <div id="modal-download-bar" class="h-full rounded-full bg-gradient-to-r from-sky-500 to-cyan-400 transition-all duration-150" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <button id="btn-modal-install-update" type="button" class="w-full py-3 rounded-2xl bg-gradient-to-r from-sky-500 to-cyan-500 text-white font-extrabold text-xs shadow-lg shadow-sky-500/30 text-center flex items-center justify-center gap-2 active:scale-95 transition-all">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-        <span>Descargar Última Versión APK</span>
-      </a>
+        <span>Descargar e Instalar en 1 Toque</span>
+      </button>
     </div>
   </div>
 
@@ -965,13 +988,14 @@
     </div>
   </div>
 
-  <!-- SCRIPTS MODULARES CON VERSIONADO QUERY PARAMS (?v=1.3) -->
-  <script src="./js/storage.js?v=1.3"></script>
-  <script src="./js/auth.js?v=1.3"></script>
-  <script src="./js/audio.js?v=1.3"></script>
-  <script src="./js/reminders.js?v=1.3"></script>
-  <script src="./js/habits.js?v=1.3"></script>
-  <script src="./js/app.js?v=1.3"></script>
-  <script src="./js/pwa.js?v=1.3"></script>
+  <!-- SCRIPTS MODULARES CON VERSIONADO QUERY PARAMS (?v=1.4) -->
+  <script src="./js/storage.js?v=1.4"></script>
+  <script src="./js/auth.js?v=1.4"></script>
+  <script src="./js/audio.js?v=1.4"></script>
+  <script src="./js/reminders.js?v=1.4"></script>
+  <script src="./js/habits.js?v=1.4"></script>
+  <script src="./js/updater.js?v=1.4"></script>
+  <script src="./js/app.js?v=1.4"></script>
+  <script src="./js/pwa.js?v=1.4"></script>
 </body>
 </html>

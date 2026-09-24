@@ -243,11 +243,11 @@ html, body {
 }
 
 /* ======================================================== */
-/* MODO SOLEADO (LIGHT THEME) — CODE AHUMADA */
+/* MODO SOLEADO (LIGHT THEME) — ULTRA-PULIDO CODE AHUMADA   */
 /* ======================================================== */
 html.light-theme,
 html.light-theme body {
-  background-color: #f1f5f9 !important;
+  background-color: #f8fafc !important;
   color: #0f172a !important;
 }
 
@@ -255,10 +255,45 @@ html.light-theme .md\:bg-\[\#091124\] {
   background-color: #ffffff !important;
 }
 
+/* Header en Modo Soleado */
+html.light-theme header h1,
+html.light-theme .brand-title {
+  background: linear-gradient(135deg, #0369a1 0%, #0284c7 60%, #0891b2 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+}
+
+html.light-theme header p {
+  color: #64748b !important;
+  font-weight: 600 !important;
+}
+
+html.light-theme #btn-open-user-profile {
+  background-color: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+html.light-theme #btn-open-user-profile span {
+  color: #0f172a !important;
+}
+
+html.light-theme #streak-count-badge {
+  color: #b45309 !important;
+}
+
+html.light-theme #btn-open-frank-calc {
+  background-color: #e0f2fe !important;
+  border-color: #bae6fd !important;
+  color: #0284c7 !important;
+}
+
+/* Tarjetas y Vidrio Satinado en Modo Soleado */
 html.light-theme .glass-card {
-  background: rgba(255, 255, 255, 0.95) !important;
-  border-color: rgba(203, 213, 225, 0.8) !important;
-  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06) !important;
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 4px 18px -2px rgba(15, 23, 42, 0.06) !important;
 }
 
 html.light-theme .text-white {
@@ -281,30 +316,122 @@ html.light-theme .text-slate-400 {
   color: #64748b !important;
 }
 
+/* Cajas y fondos oscuros convertidos a blanco/gris suave */
 html.light-theme .bg-slate-900,
 html.light-theme .bg-slate-950,
-html.light-theme .bg-slate-800 {
+html.light-theme .bg-slate-800,
+html.light-theme [class*="bg-slate-900"],
+html.light-theme [class*="bg-slate-800"],
+html.light-theme [class*="bg-slate-950"] {
   background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+html.light-theme [class*="border-slate-800"],
+html.light-theme [class*="border-slate-700"] {
+  border-color: #e2e8f0 !important;
+}
+
+/* Botones Rápidos de Agua en Modo Soleado */
+html.light-theme .btn-quick-water {
+  background: #ffffff !important;
+  border: 1.5px solid #e2e8f0 !important;
+  box-shadow: 0 3px 12px rgba(15, 23, 42, 0.05) !important;
+}
+
+html.light-theme .btn-quick-water:active {
+  background: #f0f9ff !important;
+  border-color: #38bdf8 !important;
+}
+
+html.light-theme .btn-quick-water span.font-extrabold {
+  color: #0284c7 !important;
+}
+
+html.light-theme .btn-quick-water span.text-slate-400 {
+  color: #475569 !important;
+}
+
+/* Contenedor Circular de Hidratación en Modo Soleado */
+html.light-theme .water-circle-container {
+  background: radial-gradient(circle at 50% 120%, rgba(2, 132, 199, 0.12) 0%, #ffffff 80%) !important;
+  box-shadow: 
+    0 0 0 5px rgba(56, 189, 248, 0.25),
+    0 12px 36px rgba(2, 132, 199, 0.14),
+    inset 0 0 25px rgba(2, 132, 199, 0.1) !important;
+}
+
+html.light-theme #water-percentage-label {
+  color: #0f172a !important;
+}
+
+html.light-theme #water-amount-label {
+  color: #0284c7 !important;
+  font-weight: 800 !important;
+}
+
+html.light-theme #water-goal-label {
+  color: #0369a1 !important;
+  font-weight: 700 !important;
+}
+
+html.light-theme #water-glasses-count {
+  background-color: rgba(12, 74, 110, 0.9) !important;
+  color: #ffffff !important;
+}
+
+/* Ajustes: Perfil y Tus Cosas */
+html.light-theme #settings-display-weight {
+  color: #0f172a !important;
+  font-weight: 800 !important;
+}
+
+html.light-theme #settings-display-goal {
+  color: #0284c7 !important;
+  font-weight: 800 !important;
+}
+
+html.light-theme #my-things-total-liters {
+  color: #0284c7 !important;
+  font-weight: 800 !important;
+}
+
+html.light-theme #my-things-best-streak {
+  color: #d97706 !important;
+  font-weight: 800 !important;
+}
+
+html.light-theme #my-things-total-glasses {
+  color: #0891b2 !important;
+  font-weight: 800 !important;
+}
+
+html.light-theme #my-things-total-atp {
+  color: #059669 !important;
+  font-weight: 800 !important;
+}
+
+/* Horarios: Pastillas y Modo */
+html.light-theme #schedule-times-grid > div,
+html.light-theme .time-pill {
+  background-color: #f1f5f9 !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #334155 !important;
+}
+
+html.light-theme select,
+html.light-theme input {
+  background-color: #ffffff !important;
   border-color: #cbd5e1 !important;
   color: #0f172a !important;
 }
 
-html.light-theme .border-slate-800,
-html.light-theme .border-slate-700 {
-  border-color: #cbd5e1 !important;
-}
-
-html.light-theme .water-circle-container {
-  background: radial-gradient(circle at 50% 120%, rgba(2, 132, 199, 0.15) 0%, rgba(241, 245, 249, 0.95) 75%) !important;
-  box-shadow: 
-    0 0 0 4px rgba(56, 189, 248, 0.25),
-    0 8px 30px rgba(2, 132, 199, 0.2),
-    inset 0 0 20px rgba(2, 132, 199, 0.15) !important;
-}
-
+/* Barra de Navegación Inferior en Modo Soleado */
 html.light-theme .bottom-nav {
   background: rgba(255, 255, 255, 0.96) !important;
   border-top: 1px solid rgba(203, 213, 225, 0.8) !important;
+  box-shadow: 0 -4px 20px rgba(15, 23, 42, 0.05) !important;
 }
 
 html.light-theme .nav-tab-btn {
@@ -313,5 +440,17 @@ html.light-theme .nav-tab-btn {
 
 html.light-theme .nav-tab-btn.active {
   color: #0284c7 !important;
+}
+
+html.light-theme .nav-tab-btn.active svg {
+  stroke: #0284c7 !important;
+  filter: drop-shadow(0 0 6px rgba(2, 132, 199, 0.4)) !important;
+}
+
+/* Modales en Modo Soleado */
+html.light-theme .app-modal .glass-card {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 10px 40px rgba(15, 23, 42, 0.15) !important;
 }
 
