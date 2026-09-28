@@ -1,6 +1,10 @@
 /**
  * HabitFlow - Gestor de Horarios, Recordatorios y Notificaciones
  * Code Ahumada
+ * 
+ * v1.0.9 — Notificaciones con Acciones Rápidas:
+ *   💧 "Tomé el Agua" → registra +250ml sin abrir la app
+ *   ⏰ "Posponer 10 Min" → reprograma la notificación para dentro de 10 minutos
  */
 
 class ReminderManager {
@@ -11,11 +15,139 @@ class ReminderManager {
   }
 
   init() {
+    // 1. Registrar los tipos de acción para botones en notificaciones
+    this.registerNotificationActionTypes();
+    // 2. Escuchar respuestas del usuario en las notificaciones
+    this.setupNotificationActionListeners();
+    // 3. Iniciar el temporizador visual en vivo
     this.startLiveTimer();
-    // Programar alarmas nativas de Android en segundo plano al iniciar
+    // 4. Programar alarmas nativas de Android en segundo plano al iniciar
     setTimeout(() => {
       this.scheduleAllNativeAndroid();
     }, 1500);
+  }
+
+  /**
+   * Registra los botones de acción que aparecerán en las notificaciones de Android.
+   * Capacitor requiere que se registren ANTES de programar notificaciones con esos actionTypeId.
+   */
+  async registerNotificationActionTypes() {
+    if (!window.Capacitor || !window.Capacitor.Plugins || !window.Capacitor.Plugins.LocalNotifications) {
+      return;
+    }
+
+    try {
+      const { LocalNotifications } = window.Capacitor.Plugins;
+
+      await LocalNotifications.registerActionTypes({
+        types: [
+          {
+            id: 'WATER_REMINDER_ACTIONS',
+            actions: [
+              {
+                id: 'drank_water',
+                title: '💧 Tomé el Agua'
+              },
+              {
+                id: 'snooze_10',
+                title: '⏰ Posponer 10 Min'
+              }
+            ]
+          }
+        ]
+      });
+
+      console.log('✓ Action types de notificaciones registrados (Tomé el Agua / Posponer 10 Min)');
+    } catch (e) {
+      console.warn('Error al registrar actionTypes de notificaciones:', e);
+    }
+  }
+
+  /**
+   * Escucha las respuestas del usuario cuando toca un botón de acción en la notificación.
+   * - "drank_water" → registra +250ml automáticamente
+   * - "snooze_10" → reprograma la notificación para 10 minutos después
+   * - Tap genérico (sin botón) → abre la app normalmente
+   */
+  setupNotificationActionListeners() {
+    if (!window.Capacitor || !window.Capacitor.Plugins || !window.Capacitor.Plugins.LocalNotifications) {
+      return;
+    }
+
+    const { LocalNotifications } = window.Capacitor.Plugins;
+
+    // Listener principal: el usuario tocó un botón de acción o la notificación misma
+    LocalNotifications.addListener('localNotificationActionPerformed', (action) => {
+      const actionId = action.actionId || '';
+      const extra = (action.notification && action.notification.extra) || {};
+
+      console.log(`🔔 Acción de notificación recibida: "${actionId}"`, extra);
+
+      if (actionId === 'drank_water') {
+        // Registrar 250ml de agua directamente sin abrir la app
+        if (window.storageManager) {
+          window.storageManager.addWaterEntry(250, 'Vaso de agua (Notificación)');
+          // Si la app está visible, refrescar la UI
+          if (window.app && typeof window.app.renderWaterSection === 'function') {
+            window.app.renderWaterSection();
+          }
+        }
+        this.showToast('💧 ¡+250ml registrados desde la notificación!');
+        return;
+      }
+
+      if (actionId === 'snooze_10') {
+        // Reprogramar para 10 minutos después
+        this.scheduleSnoozeNotification(extra);
+        this.showToast('⏰ Recordatorio pospuesto 10 minutos');
+        return;
+      }
+
+      // Tap genérico en la notificación (sin botón específico): simplemente abrir la app
+      // Capacitor maneja el foco de la ventana automáticamente
+    });
+
+    console.log('✓ Listeners de acciones de notificación configurados');
+  }
+
+  /**
+   * Programa una notificación de snooze (pospuesta) para dentro de 10 minutos exactos.
+   */
+  async scheduleSnoozeNotification(extra = {}) {
+    if (!window.Capacitor || !window.Capacitor.Plugins || !window.Capacitor.Plugins.LocalNotifications) {
+      return;
+    }
+
+    try {
+      const { LocalNotifications } = window.Capacitor.Plugins;
+      const snoozeDate = new Date(Date.now() + (10 * 60 * 1000)); // 10 minutos desde ahora
+      const userName = (window.authManager && window.authManager.currentUser)
+        ? window.authManager.currentUser.name
+        : '';
+
+      const snoozeId = 50000 + (Date.now() % 10000);
+
+      await LocalNotifications.schedule({
+        notifications: [{
+          id: snoozeId,
+          title: '💧 ¡Recordatorio pospuesto' + (userName ? ', ' + userName : '') + '!',
+          body: '¡Ya pasaron 10 minutos! Tomá tu vaso de agua ahora para mantener activas tus mitocondrias.',
+          schedule: {
+            at: snoozeDate,
+            allowWhileIdle: true
+          },
+          channelId: 'habitflow_reminders_channel',
+          smallIcon: 'ic_notification_water',
+          iconColor: '#0284c7',
+          actionTypeId: 'WATER_REMINDER_ACTIONS',
+          extra: { ...extra, snoozed: true, snoozeTime: snoozeDate.toISOString() }
+        }]
+      });
+
+      console.log(`✓ Notificación de snooze programada para ${snoozeDate.toLocaleTimeString()}`);
+    } catch (e) {
+      console.warn('Error al programar notificación de snooze:', e);
+    }
   }
 
   /**
@@ -165,6 +297,7 @@ class ReminderManager {
   /**
    * Programa todas las alarmas en el sistema operativo Android mediante Capacitor
    * para que suenen incluso con la app cerrada y la pantalla bloqueada.
+   * Ahora con botones de acción: "Tomé el Agua" / "Posponer 10 Min"
    */
   async scheduleAllNativeAndroid() {
     if (!window.Capacitor || !window.Capacitor.Plugins || !window.Capacitor.Plugins.LocalNotifications) {
@@ -226,15 +359,16 @@ class ReminderManager {
             allowWhileIdle: true // Permite sonar en Doze mode / pantalla apagada
           },
           channelId: 'habitflow_reminders_channel',
-          smallIcon: 'ic_stat_icon_config_sample',
+          smallIcon: 'ic_notification_water',
           iconColor: '#0284c7',
+          actionTypeId: 'WATER_REMINDER_ACTIONS', // Botones: Tomé el Agua / Posponer 10 Min
           extra: { time: timeStr, amount: 250 }
         });
       });
 
       if (notificationsToSchedule.length > 0) {
         await LocalNotifications.schedule({ notifications: notificationsToSchedule });
-        console.log(`✓ ${notificationsToSchedule.length} recordatorios nativos programados en Android!`);
+        console.log(`✓ ${notificationsToSchedule.length} recordatorios nativos programados en Android con acciones rápidas!`);
       }
     } catch (e) {
       console.warn('Error al programar alarmas nativas en Capacitor:', e);
@@ -243,6 +377,7 @@ class ReminderManager {
 
   /**
    * Dispara sonido, vibración y notificación push/nativa
+   * Ahora incluye botones de acción en la notificación
    */
   async triggerAlert(title = '¡Momento de tomar agua!', body = 'Tu cuerpo y tu metabolismo necesitan un vaso de agua fresca.') {
     const config = window.storageManager.getSchedule();
@@ -271,7 +406,11 @@ class ReminderManager {
               title: title,
               body: body,
               channelId: 'habitflow_reminders_channel',
-              schedule: { at: new Date(Date.now() + 500) }
+              smallIcon: 'ic_notification_water',
+              iconColor: '#0284c7',
+              schedule: { at: new Date(Date.now() + 500) },
+              actionTypeId: 'WATER_REMINDER_ACTIONS', // Botones de acción
+              extra: { amount: 250, triggeredAt: new Date().toISOString() }
             }]
           });
         } catch (e) {
@@ -341,7 +480,8 @@ class ReminderManager {
             tag: 'habitflow-reminder',
             renotify: true,
             actions: [
-              { action: 'drink_250', title: '💧 Tomé un vaso (+250ml)' }
+              { action: 'drank_water', title: '💧 Tomé el Agua' },
+              { action: 'snooze_10', title: '⏰ Posponer 10 Min' }
             ]
           });
         });
@@ -386,15 +526,17 @@ class ReminderManager {
           notifications: [{
             id: 9999,
             title: '💧 Prueba de HabitFlow Exitosa',
-            body: '¡Genial! Las notificaciones nativas de Android y el sonido están 100% activos y funcionando en tu celular.',
+            body: '¡Genial! Tocá "Tomé el Agua" o "Posponer 10 Min" para probar los botones.',
             schedule: { at: new Date(Date.now() + 1000) },
             channelId: 'habitflow_reminders_channel',
-            smallIcon: 'ic_stat_icon_config_sample',
-            iconColor: '#0284c7'
+            smallIcon: 'ic_notification_water',
+            iconColor: '#0284c7',
+            actionTypeId: 'WATER_REMINDER_ACTIONS',
+            extra: { test: true, amount: 250 }
           }]
         });
 
-        this.showToast('🔔 ¡Alerta nativa enviada al celular!');
+        this.showToast('🔔 ¡Alerta nativa enviada con botones de acción!');
         return;
       } catch (e) {
         console.warn('Error en notificación de prueba Capacitor:', e);

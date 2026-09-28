@@ -67,10 +67,12 @@ jobs:
           name: HabitFlow v1.0.${{ github.run_number }} (APK Instalable)
           body: |
             ### 📱 HabitFlow v1.0.${{ github.run_number }} para Android
-            - ☀️ **Modo Soleado Ultra-Pulido:** Corrección visual exhaustiva de contrastes, tarjetas limpias, tipografía nítida y textos de hidratación 100% legibles.
-            - 📲 **Auto-Actualizador Nativo en 1 Toque:** La app ahora descarga e instala actualizaciones automáticamente sin tener que ir a páginas web.
-            - 🪟 **Aislamiento Nativo de Pantallas:** Cada pestaña (Agua, Horarios, Progreso, Hábitos y Ajustes) es una ventana 100% independiente.
-            - 🔑 **Firma Criptográfica Permanente:** Se actualiza directamente encima sin errores de conflicto.
+            - 🔔 **Notificaciones con Acciones Rápidas:** Tocá "Tomé el Agua" para registrar +250ml sin abrir la app, o "Posponer 10 Min" para que te recuerde después.
+            - 💧 **Ícono de Gota de Agua Personalizado:** Ícono de notificación exclusivo de HabitFlow (ya no aparece el genérico de Android).
+            - ☀️ Modo Soleado Ultra-Pulido
+            - 📲 Auto-Actualizador Nativo en 1 Toque
+            - 🪟 Aislamiento Nativo de Pantallas
+            - 🔑 Firma Criptográfica Permanente
             
             **Descargá e instalá el archivo HabitFlow.apk:**
           files: HabitFlow.apk

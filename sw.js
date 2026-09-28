@@ -1,7 +1,7 @@
 // HabitFlow Service Worker - Code Ahumada
-// Versión: habitflow-v1.4
+// Versión: habitflow-v1.5
 
-const CACHE_NAME = 'habitflow-v1.4';
+const CACHE_NAME = 'habitflow-v1.5';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -95,7 +95,7 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-// Interacción con notificaciones en segundo plano
+// Interacción con notificaciones en segundo plano (modo Web / PWA)
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
   const action = event.action;
@@ -104,13 +104,23 @@ self.addEventListener('notificationclick', (event) => {
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
       for (const client of clientList) {
         if (client.url && 'focus' in client) {
-          if (action === 'drink_250') {
+          // Acción: "Tomé el Agua" → registrar +250ml via postMessage
+          if (action === 'drank_water' || action === 'drink_250') {
             client.postMessage({ type: 'QUICK_ADD_WATER', amount: 250 });
+          }
+          // Acción: "Posponer 10 Min" → enviar mensaje para reprogramar
+          if (action === 'snooze_10') {
+            client.postMessage({ type: 'SNOOZE_REMINDER', minutes: 10 });
           }
           return client.focus();
         }
       }
+      // Si no hay ventana abierta, abrir una nueva
       if (clients.openWindow) {
+        // Si el usuario tocó "Tomé el Agua", abrir con parámetro para registrar rápido
+        if (action === 'drank_water' || action === 'drink_250') {
+          return clients.openWindow('./index.html?quick=250');
+        }
         return clients.openWindow('./index.html');
       }
     })
