@@ -7,8 +7,11 @@
     "androidScheme": "https"
   },
   "plugins": {
+    "CapacitorUpdater": {
+      "autoUpdate": false
+    },
     "LocalNotifications": {
-      "smallIcon": "ic_stat_icon_config_sample",
+      "smallIcon": "ic_notification_water",
       "iconColor": "#0284c7"
     }
   }

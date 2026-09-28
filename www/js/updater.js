@@ -1,10 +1,13 @@
 /**
- * HabitFlow - Motor de Actualización Automática Nativa en 1 Toque
+ * HabitFlow - Motor de Actualización Automática Híbrido:
+ *   1. Parches en Caliente OTA (Capgo / ZIP): 1 Clic, sin APK, sin Play Protect, reinicio instantáneo
+ *   2. Actualizador Nativo APK: Fallback para cambios de sistema operativo
+ * 
  * Code Ahumada • Director Cristian
  */
 
-const CURRENT_VERSION = 'v1.0.11';
-const CURRENT_VERSION_CODE = 11;
+const CURRENT_VERSION = 'v1.0.12';
+const CURRENT_VERSION_CODE = 12;
 const GITHUB_REPO_API = 'https://api.github.com/repos/crisahu2025/HabitFlow/releases/latest';
 
 class UpdateManager {
@@ -15,10 +18,27 @@ class UpdateManager {
 
   init() {
     this.setupListeners();
-    // Verificación en segundo plano al iniciar la app tras 2.5s
+    // 1. Notificar al motor de parches que el bundle actual cargó exitosamente
+    this.notifyAppReady();
+
+    // 2. Verificación en segundo plano al iniciar la app tras 2.5s
     setTimeout(() => {
       this.checkUpdate({ silent: true });
     }, 2500);
+  }
+
+  /**
+   * Confirma al plugin Capgo que la app abrió bien para evitar rollbacks
+   */
+  async notifyAppReady() {
+    if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.CapacitorUpdater) {
+      try {
+        await window.Capacitor.Plugins.CapacitorUpdater.notifyAppReady();
+        console.log('✓ HabitFlow OTA: Bundle web confirmado con notifyAppReady()');
+      } catch (e) {
+        console.warn('Capgo notifyAppReady:', e);
+      }
+    }
   }
 
   /**
@@ -43,7 +63,7 @@ class UpdateManager {
     const btnUpdateText = document.getElementById('btn-update-text');
 
     if (!silent && statusLabel) {
-      statusLabel.textContent = 'Buscando actualización...';
+      statusLabel.textContent = 'Buscando parche o actualización...';
       statusLabel.className = 'font-medium text-sky-400 animate-pulse';
     }
 
@@ -54,14 +74,25 @@ class UpdateManager {
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const data = await response.json();
 
+      // Buscar si hay paquete de parche OTA (dist.zip)
+      const zipAsset = data.assets && data.assets.find(a => a.name.endsWith('.zip'));
+      const otaUrl = zipAsset 
+        ? zipAsset.browser_download_url 
+        : `https://github.com/crisahu2025/HabitFlow/releases/download/${data.tag_name}/dist.zip`;
+
+      // Buscar instalador APK como fallback
       const apkAsset = data.assets && data.assets.find(a => a.name.endsWith('.apk'));
-      const apkUrl = apkAsset ? apkAsset.browser_download_url : `https://github.com/crisahu2025/HabitFlow/releases/download/${data.tag_name}/HabitFlow.apk`;
+      const apkUrl = apkAsset 
+        ? apkAsset.browser_download_url 
+        : `https://github.com/crisahu2025/HabitFlow/releases/download/${data.tag_name}/HabitFlow.apk`;
 
       this.latestRelease = {
         tag: data.tag_name,
         name: data.name || data.tag_name,
         body: data.body || 'Mejoras continuas de rendimiento y diseño.',
-        apkUrl: apkUrl
+        apkUrl: apkUrl,
+        otaUrl: otaUrl,
+        hasOta: !!zipAsset || true
       };
 
       const currentVer = await this.getEffectiveVersion();
@@ -73,10 +104,10 @@ class UpdateManager {
           statusLabel.className = 'font-bold text-amber-400 animate-pulse';
         }
         if (btnUpdateText) {
-          btnUpdateText.textContent = `Actualizar a ${this.latestRelease.tag} en 1 Toque`;
+          btnUpdateText.textContent = `⚡ Aplicar Parche ${this.latestRelease.tag}`;
         }
 
-        // CONTROL ANTI-BUCLE: No molestar en cada apertura si el usuario ya descartó o instaló este tag
+        // CONTROL ANTI-BUCLE: No molestar en cada apertura si el usuario ya descartó este aviso
         const dismissedTag = localStorage.getItem('habitflow_dismissed_update');
         const downloadedTag = localStorage.getItem('habitflow_downloaded_version');
 
@@ -135,10 +166,18 @@ class UpdateManager {
     const elTitle = document.getElementById('modal-update-title');
     const elNotes = document.getElementById('modal-update-notes');
     const elNewVersion = document.getElementById('modal-update-version-label');
+    const btnAction = document.getElementById('btn-modal-install-update');
 
-    if (elTitle) elTitle.textContent = `¡Nueva Versión ${release.tag} Disponible!`;
+    if (elTitle) elTitle.textContent = `¡Nuevo Parche ${release.tag} Disponible!`;
     if (elNewVersion) elNewVersion.textContent = release.tag;
     if (elNotes) elNotes.textContent = release.body;
+
+    if (btnAction) {
+      const span = btnAction.querySelector('span');
+      if (span) {
+        span.textContent = '⚡ Aplicar Parche en 1 Clic (Sin Reinstalar)';
+      }
+    }
 
     modal.classList.remove('hidden');
     modal.classList.add('flex');
@@ -148,7 +187,6 @@ class UpdateManager {
     if (this.isDownloading) return;
     this.isDownloading = true;
 
-    // Guardar que el usuario ya inició la descarga para no atormentarlo con popups
     localStorage.setItem('habitflow_downloaded_version', release.tag);
 
     const progressContainers = [
@@ -169,7 +207,7 @@ class UpdateManager {
     ];
 
     progressContainers.forEach(c => c && c.classList.remove('hidden'));
-    statusTexts.forEach(s => s && (s.textContent = 'Descargando actualización...'));
+    statusTexts.forEach(s => s && (s.textContent = 'Descargando parche en 1 clic...'));
 
     const updateProgress = (pct) => {
       progressBars.forEach(b => b && (b.style.width = `${pct}%`));
@@ -178,7 +216,51 @@ class UpdateManager {
 
     updateProgress(0);
 
-    // Detección de Capacitor Android Nativo
+    // ========================================================
+    // MÉTODO 1: PARCHE EN CALIENTE OTA (Capgo - CERO Play Protect)
+    // ========================================================
+    const hasCapgo = window.Capacitor && 
+      window.Capacitor.isPluginAvailable && 
+      window.Capacitor.isPluginAvailable('CapacitorUpdater');
+
+    if (hasCapgo && release.otaUrl) {
+      try {
+        const { CapacitorUpdater } = window.Capacitor.Plugins;
+
+        CapacitorUpdater.addListener('download', (info) => {
+          const pct = Math.min(100, Math.max(0, Math.round(info.percent || 0)));
+          updateProgress(pct);
+          if (pct >= 100) {
+            statusTexts.forEach(s => s && (s.textContent = '¡Parche listo! Reiniciando app...'));
+          }
+        });
+
+        if (window.reminderManager) {
+          window.reminderManager.showToast('⚡ Descargando parche liviano...');
+        }
+
+        const bundle = await CapacitorUpdater.download({
+          url: release.otaUrl,
+          version: release.tag
+        });
+
+        updateProgress(100);
+        statusTexts.forEach(s => s && (s.textContent = '¡Parche aplicado! Reiniciando...'));
+
+        // Aplicar bundle y reiniciar la app automáticamente
+        setTimeout(async () => {
+          await CapacitorUpdater.set(bundle);
+        }, 600);
+
+        return;
+      } catch (errOta) {
+        console.warn('Fallo en parche OTA, intentando fallback nativo APK:', errOta);
+      }
+    }
+
+    // ========================================================
+    // MÉTODO 2: FALLBACK INSTALADOR NATIVO APK
+    // ========================================================
     const hasCapacitorAppUpdate = window.Capacitor && 
       window.Capacitor.isPluginAvailable && 
       window.Capacitor.isPluginAvailable('AppUpdate');
@@ -205,7 +287,6 @@ class UpdateManager {
         if (window.reminderManager) {
           window.reminderManager.showToast('Error al descargar: ' + err.message);
         }
-        // Fallback directo a descarga de navegador
         window.open(release.apkUrl, '_blank');
       } finally {
         this.isDownloading = false;

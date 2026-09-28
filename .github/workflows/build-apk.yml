@@ -59,22 +59,31 @@ jobs:
           path: HabitFlow.apk
           retention-days: 30
 
-      - name: Crear Release con el APK
+      - name: Empaquetar Parche OTA (dist.zip)
+        run: |
+          cd www
+          zip -r ../dist.zip .
+          cd ..
+
+      - name: Crear Release con el APK y Parche OTA
         uses: softprops/action-gh-release@v2
         if: github.ref == 'refs/heads/main'
         with:
           tag_name: v1.0.${{ github.run_number }}
-          name: HabitFlow v1.0.${{ github.run_number }} (APK Instalable)
+          name: HabitFlow v1.0.${{ github.run_number }} (APK + Parche OTA)
           body: |
-            ### 📱 HabitFlow v1.0.${{ github.run_number }} para Android
-            - 🔔 **Notificaciones con Acciones Rápidas:** Tocá "Tomé el Agua" para registrar +250ml sin abrir la app, o "Posponer 10 Min" para que te recuerde después.
-            - 💧 **Ícono de Gota de Agua Personalizado:** Ícono de notificación exclusivo de HabitFlow (ya no aparece el genérico de Android).
-            - ☀️ Modo Soleado Ultra-Pulido
-            - 📲 Auto-Actualizador Nativo en 1 Toque
-            - 🪟 Aislamiento Nativo de Pantallas
-            - 🔑 Firma Criptográfica Permanente
+            ### 📱 HabitFlow v1.0.${{ github.run_number }}
+            - ⚡ **Motor de Parches en Vivo OTA (Capgo):** Descargas en 1 segundo y reinicio instantáneo sin pasar por instalador de Android ni Play Protect.
+            - 💧 **Auto-Distribución de los 14 Vasos (Frank Suárez):** Reparto automático de tus 14 tomas a lo largo del día.
+            - 🔔 **Notificaciones con Acciones Rápidas:** Botones "Tomé el Agua" (+250ml) y "Posponer 10 Min".
+            - 💧 **Ícono de Gota de Agua Personalizado:** Identidad visual única de HabitFlow.
+            - 🔑 **Firma Criptográfica Permanente**.
             
-            **Descargá e instalá el archivo HabitFlow.apk:**
-          files: HabitFlow.apk
+            **Archivos de entrega:**
+            - `HabitFlow.apk`: Instalador APK base para Android
+            - `dist.zip`: Parche OTA liviano en caliente
+          files: |
+            HabitFlow.apk
+            dist.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
