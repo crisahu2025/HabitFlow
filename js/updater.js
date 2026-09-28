@@ -1,10 +1,10 @@
 /**
  * HabitFlow - Motor de Actualización Automática Nativa en 1 Toque
- * Code Ahumada
+ * Code Ahumada • Director Cristian
  */
 
-const CURRENT_VERSION = 'v1.0.9';
-const CURRENT_VERSION_CODE = 9;
+const CURRENT_VERSION = 'v1.0.11';
+const CURRENT_VERSION_CODE = 11;
 const GITHUB_REPO_API = 'https://api.github.com/repos/crisahu2025/HabitFlow/releases/latest';
 
 class UpdateManager {
@@ -15,10 +15,27 @@ class UpdateManager {
 
   init() {
     this.setupListeners();
-    // Verificación silenciosa en segundo plano al iniciar la app tras 2.5s
+    // Verificación en segundo plano al iniciar la app tras 2.5s
     setTimeout(() => {
       this.checkUpdate({ silent: true });
     }, 2500);
+  }
+
+  /**
+   * Obtiene la versión real del paquete nativo instalado en el dispositivo si está en Capacitor
+   */
+  async getEffectiveVersion() {
+    if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App) {
+      try {
+        const info = await window.Capacitor.Plugins.App.getInfo();
+        if (info && info.version) {
+          return info.version.startsWith('v') ? info.version : `v${info.version}`;
+        }
+      } catch (e) {
+        console.warn('No se pudo consultar App.getInfo() nativo:', e);
+      }
+    }
+    return CURRENT_VERSION;
   }
 
   async checkUpdate({ silent = false } = {}) {
@@ -47,7 +64,8 @@ class UpdateManager {
         apkUrl: apkUrl
       };
 
-      const hasNewVersion = this.compareVersions(this.latestRelease.tag, CURRENT_VERSION);
+      const currentVer = await this.getEffectiveVersion();
+      const hasNewVersion = this.compareVersions(this.latestRelease.tag, currentVer);
 
       if (hasNewVersion) {
         if (statusLabel) {
@@ -57,7 +75,14 @@ class UpdateManager {
         if (btnUpdateText) {
           btnUpdateText.textContent = `Actualizar a ${this.latestRelease.tag} en 1 Toque`;
         }
-        this.showUpdateModal(this.latestRelease);
+
+        // CONTROL ANTI-BUCLE: No molestar en cada apertura si el usuario ya descartó o instaló este tag
+        const dismissedTag = localStorage.getItem('habitflow_dismissed_update');
+        const downloadedTag = localStorage.getItem('habitflow_downloaded_version');
+
+        if (!silent || (dismissedTag !== this.latestRelease.tag && downloadedTag !== this.latestRelease.tag)) {
+          this.showUpdateModal(this.latestRelease);
+        }
       } else {
         if (statusLabel) {
           statusLabel.textContent = 'App al día (Última versión)';
@@ -66,6 +91,10 @@ class UpdateManager {
         if (btnUpdateText) {
           btnUpdateText.textContent = 'Comprobar Actualización';
         }
+        // Limpiar descartados si ya está en la última versión
+        localStorage.removeItem('habitflow_dismissed_update');
+        localStorage.removeItem('habitflow_downloaded_version');
+
         if (!silent && window.reminderManager) {
           window.reminderManager.showToast('✅ ¡Ya tenés instalada la última versión de HabitFlow!');
         }
@@ -87,8 +116,8 @@ class UpdateManager {
   compareVersions(latest, current) {
     try {
       const parse = (v) => v.replace(/^v/, '').split('.').map(Number);
-      const [lMajor, lMinor, lPatch] = parse(latest);
-      const [cMajor, cMinor, cPatch] = parse(current);
+      const [lMajor = 0, lMinor = 0, lPatch = 0] = parse(latest);
+      const [cMajor = 0, cMinor = 0, cPatch = 0] = parse(current);
 
       if (lMajor > cMajor) return true;
       if (lMajor === cMajor && lMinor > cMinor) return true;
@@ -118,6 +147,9 @@ class UpdateManager {
   async startDownloadAndInstall(release) {
     if (this.isDownloading) return;
     this.isDownloading = true;
+
+    // Guardar que el usuario ya inició la descarga para no atormentarlo con popups
+    localStorage.setItem('habitflow_downloaded_version', release.tag);
 
     const progressContainers = [
       document.getElementById('apk-download-progress-container'),
@@ -191,8 +223,9 @@ class UpdateManager {
     // Botón en Ajustes
     const btnCheckAndUpdate = document.getElementById('btn-check-and-update-apk');
     if (btnCheckAndUpdate) {
-      btnCheckAndUpdate.addEventListener('click', () => {
-        if (this.latestRelease && this.compareVersions(this.latestRelease.tag, CURRENT_VERSION)) {
+      btnCheckAndUpdate.addEventListener('click', async () => {
+        const currentVer = await this.getEffectiveVersion();
+        if (this.latestRelease && this.compareVersions(this.latestRelease.tag, currentVer)) {
           this.startDownloadAndInstall(this.latestRelease);
         } else {
           this.checkUpdate({ silent: false });
@@ -206,6 +239,16 @@ class UpdateManager {
       btnModalInstall.addEventListener('click', () => {
         if (this.latestRelease) {
           this.startDownloadAndInstall(this.latestRelease);
+        }
+      });
+    }
+
+    // Cerrar modal y recordar descarte para no acosar al usuario
+    const modalCloseBtn = document.querySelector('#apk-update-modal .btn-close-modal');
+    if (modalCloseBtn) {
+      modalCloseBtn.addEventListener('click', () => {
+        if (this.latestRelease) {
+          localStorage.setItem('habitflow_dismissed_update', this.latestRelease.tag);
         }
       });
     }
