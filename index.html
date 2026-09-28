@@ -48,7 +48,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- Custom Stylesheets con Versionado -->
-  <link rel="stylesheet" href="./css/styles.css?v=1.6">
+  <link rel="stylesheet" href="./css/styles.css?v=1.7">
   <style>
     body {
       font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -340,63 +340,6 @@
         <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Horarios Activos para Hoy</h3>
         <div id="schedule-times-grid" class="grid grid-cols-3 gap-2"></div>
       </div>
-
-      <!-- CANALES DE ALERTA Y CONFIGURACIÓN -->
-      <div class="glass-card p-4 rounded-2xl border border-slate-800 flex flex-col gap-3.5">
-        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Canales de Alerta</h3>
-
-        <!-- Switch Notificaciones Nativas -->
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-xs font-bold text-white">Notificaciones de Celular</p>
-            <p class="text-[10px] text-slate-400">Avisos nativos del sistema aunque la pantalla esté bloqueada</p>
-          </div>
-          <button id="switch-notifications" type="button" class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out bg-sky-500">
-            <span class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out translate-x-5"></span>
-          </button>
-        </div>
-
-        <!-- Switch Sonido de Gota (Web Audio API) -->
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-xs font-bold text-white">Sonido de Gota Natural</p>
-            <p class="text-[10px] text-slate-400">Síntesis de audio 100% offline y relajante</p>
-          </div>
-          <button id="switch-sound" type="button" class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out bg-sky-500">
-            <span class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out translate-x-5"></span>
-          </button>
-        </div>
-
-        <!-- Switch Vibración Háptica -->
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-xs font-bold text-white">Vibración Háptica Móvil</p>
-            <p class="text-[10px] text-slate-400">Pulso vibratorio en el bolsillo al momento de tomar agua</p>
-          </div>
-          <button id="switch-haptic" type="button" class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out bg-sky-500">
-            <span class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out translate-x-5"></span>
-          </button>
-        </div>
-
-        <!-- Switch Pausa Almuerzo (Consejo Frank) -->
-        <div class="flex items-center justify-between border-t border-slate-800/80 pt-3">
-          <div>
-            <p class="text-xs font-bold text-white">Pausa Digestiva (Frank Suárez)</p>
-            <p class="text-[10px] text-slate-400">No avisar entre 13:00 y 14:00 para proteger el ácido gástrico</p>
-          </div>
-          <button id="switch-meal-pause" type="button" class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out bg-sky-500">
-            <span class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out translate-x-5"></span>
-          </button>
-        </div>
-      </div>
-
-      <!-- BOTÓN DESTACADO: PROBAR NOTIFICACIÓN Y SONIDO AHORA -->
-      <button id="btn-test-alert" type="button" class="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-400 hover:to-cyan-400 text-white font-bold text-sm shadow-lg shadow-sky-500/25 flex items-center justify-center gap-2 active:scale-95 transition-all">
-        <svg class="w-5 h-5 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-        </svg>
-        <span>Probar Notificación y Sonido Ahora</span>
-      </button>
     </section>
 
     <!-- ======================================================== -->
@@ -563,7 +506,67 @@
         </button>
       </div>
 
-      <!-- 3. TUS COSAS (RESUMEN HISTÓRICO PERSONAL) -->
+      <!-- 3. CANALES DE ALERTA Y NOTIFICACIONES -->
+      <div class="glass-card p-4 rounded-2xl border border-slate-800 flex flex-col gap-3.5">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Canales de Alerta</span>
+          <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-400/30">Sonido & Haptic</span>
+        </div>
+
+        <!-- Switch Notificaciones Nativas -->
+        <div class="flex items-center justify-between pt-1">
+          <div>
+            <p class="text-xs font-bold text-white">Notificaciones de Celular</p>
+            <p class="text-[10px] text-slate-400">Avisos nativos del sistema aunque la pantalla esté bloqueada</p>
+          </div>
+          <button id="switch-notifications" type="button" class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out bg-sky-500">
+            <span class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out translate-x-5"></span>
+          </button>
+        </div>
+
+        <!-- Switch Sonido de Gota (Web Audio API) -->
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-xs font-bold text-white">Sonido de Gota Natural</p>
+            <p class="text-[10px] text-slate-400">Síntesis de audio 100% offline y relajante</p>
+          </div>
+          <button id="switch-sound" type="button" class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out bg-sky-500">
+            <span class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out translate-x-5"></span>
+          </button>
+        </div>
+
+        <!-- Switch Vibración Háptica -->
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-xs font-bold text-white">Vibración Háptica Móvil</p>
+            <p class="text-[10px] text-slate-400">Pulso vibratorio en el bolsillo al momento de tomar agua</p>
+          </div>
+          <button id="switch-haptic" type="button" class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out bg-sky-500">
+            <span class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out translate-x-5"></span>
+          </button>
+        </div>
+
+        <!-- Switch Pausa Almuerzo (Consejo Frank) -->
+        <div class="flex items-center justify-between border-t border-slate-800/80 pt-3">
+          <div>
+            <p class="text-xs font-bold text-white">Pausa Digestiva (Frank Suárez)</p>
+            <p class="text-[10px] text-slate-400">No avisar entre 13:00 y 14:00 para proteger el ácido gástrico</p>
+          </div>
+          <button id="switch-meal-pause" type="button" class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out bg-sky-500">
+            <span class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out translate-x-5"></span>
+          </button>
+        </div>
+
+        <!-- BOTÓN DE PRUEBA INTEGRADO -->
+        <button id="btn-test-alert" type="button" class="w-full mt-1 py-2.5 px-4 rounded-xl bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-400 hover:to-cyan-400 text-white font-bold text-xs shadow-md shadow-sky-500/20 flex items-center justify-center gap-2 active:scale-95 transition-all">
+          <svg class="w-4 h-4 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+          </svg>
+          <span>Probar Notificación y Sonido Ahora</span>
+        </button>
+      </div>
+
+      <!-- 4. TUS COSAS (RESUMEN HISTÓRICO PERSONAL) -->
       <div class="glass-card p-4 rounded-2xl border border-slate-800 flex flex-col gap-2.5">
         <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Tus Cosas (Historial Acumulado)</h3>
         <div class="grid grid-cols-2 gap-2">
@@ -590,11 +593,11 @@
       <div class="glass-card p-4 rounded-2xl border border-slate-800 flex flex-col gap-3">
         <div class="flex items-center justify-between">
           <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Actualizaciones de APK</span>
-          <span id="apk-installed-version-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">v1.0.12</span>
+          <span id="apk-installed-version-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">v1.0.14</span>
         </div>
         <div class="flex items-center justify-between text-xs text-slate-300">
           <span>Versión Instalada:</span>
-          <span class="font-extrabold text-white">v1.0.12 (Android APK Nativo)</span>
+          <span class="font-extrabold text-white">v1.0.14 (Android APK Nativo)</span>
         </div>
         <div class="flex items-center justify-between text-xs text-slate-300">
           <span>Estado del Sistema:</span>
@@ -946,11 +949,11 @@
       <div class="p-3 rounded-2xl bg-slate-900 border border-slate-800 text-xs flex flex-col gap-1.5">
         <div class="flex items-center justify-between text-slate-400">
           <span>Versión instalada:</span>
-          <span class="font-bold text-slate-300">v1.0.12</span>
+          <span class="font-bold text-slate-300">v1.0.14</span>
         </div>
         <div class="flex items-center justify-between text-slate-400">
           <span>Nueva versión:</span>
-          <span id="modal-update-version-label" class="font-extrabold text-emerald-400">v1.0.12</span>
+          <span id="modal-update-version-label" class="font-extrabold text-emerald-400">v1.0.14</span>
         </div>
       </div>
 
@@ -1011,15 +1014,15 @@
     </div>
   </div>
 
-  <!-- SCRIPTS MODULARES CON VERSIONADO QUERY PARAMS (?v=1.6) -->
-  <script src="./js/storage.js?v=1.6"></script>
-  <script src="./js/auth.js?v=1.6"></script>
-  <script src="./js/audio.js?v=1.6"></script>
-  <script src="./js/reminders.js?v=1.6"></script>
-  <script src="./js/habits.js?v=1.6"></script>
-  <script src="./js/updater.js?v=1.6"></script>
-  <script src="./js/ads.js?v=1.6"></script>
-  <script src="./js/app.js?v=1.6"></script>
-  <script src="./js/pwa.js?v=1.6"></script>
+  <!-- SCRIPTS MODULARES CON VERSIONADO QUERY PARAMS (?v=1.7) -->
+  <script src="./js/storage.js?v=1.7"></script>
+  <script src="./js/auth.js?v=1.7"></script>
+  <script src="./js/audio.js?v=1.7"></script>
+  <script src="./js/reminders.js?v=1.7"></script>
+  <script src="./js/habits.js?v=1.7"></script>
+  <script src="./js/updater.js?v=1.7"></script>
+  <script src="./js/ads.js?v=1.7"></script>
+  <script src="./js/app.js?v=1.7"></script>
+  <script src="./js/pwa.js?v=1.7"></script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 // HabitFlow Service Worker - Code Ahumada
-// Versión: habitflow-v1.6
+// Versión: habitflow-v1.7
 
-const CACHE_NAME = 'habitflow-v1.6';
+const CACHE_NAME = 'habitflow-v1.7';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

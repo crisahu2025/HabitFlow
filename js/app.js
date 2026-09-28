@@ -1065,7 +1065,14 @@ class HabitFlowApp {
     // 2. Apariencia
     this.updateThemeUI(window.storageManager.getTheme());
 
-    // 3. Tus Cosas (Estadísticas acumuladas históricas)
+    // 3. Canales de Alerta y Recordatorios
+    const config = window.storageManager.getSchedule();
+    this.setToggleState('switch-notifications', config.notificationsEnabled);
+    this.setToggleState('switch-sound', config.soundEnabled);
+    this.setToggleState('switch-haptic', config.hapticEnabled);
+    this.setToggleState('switch-meal-pause', config.pauseDuringMeals);
+
+    // 4. Tus Cosas (Estadísticas acumuladas históricas)
     const history = window.storageManager.getHistory() || [];
     const today = window.storageManager.getTodayData() || { totalMl: 0, entries: [] };
     const streakInfo = window.storageManager.getStreakStats() || { currentStreak: 0, bestStreak: 0 };

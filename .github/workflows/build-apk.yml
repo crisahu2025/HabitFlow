@@ -73,6 +73,7 @@ jobs:
           name: HabitFlow v1.0.${{ github.run_number }} (APK + Parche OTA)
           body: |
             ### 📱 HabitFlow v1.0.${{ github.run_number }}
+            - ⚙️ **Canales de Alerta en Configuración:** Canales de alerta, switches de sonido/haptic y botón de prueba movidos a Ajustes para una interfaz más limpia.
             - ⚡ **Motor de Parches en Vivo OTA (Capgo):** Descargas en 1 segundo y reinicio instantáneo sin pasar por instalador de Android ni Play Protect.
             - 💧 **Auto-Distribución de los 14 Vasos (Frank Suárez):** Reparto automático de tus 14 tomas a lo largo del día.
             - 🔔 **Notificaciones con Acciones Rápidas:** Botones "Tomé el Agua" (+250ml) y "Posponer 10 Min".
