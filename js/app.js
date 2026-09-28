@@ -14,6 +14,7 @@ class HabitFlowApp {
     this.setupTabNavigation();
     this.setupEventListeners();
     this.setupSettingsListeners();
+    this.ensureScheduleMatchesGoal();
     this.renderWaterSection();
     this.renderScheduleSection();
     this.renderProgressSection();
@@ -21,6 +22,24 @@ class HabitFlowApp {
     this.handleUrlParams();
     if (window.adsManager && typeof window.adsManager.init === 'function') {
       window.adsManager.init();
+    }
+  }
+
+  /**
+   * Sincroniza la cantidad de horarios programados con la meta de vasos del usuario.
+   * Si el usuario necesita tomar 14 vasos y solo tiene 7 u 8 guardados, auto-distribuye los 14 vasos.
+   */
+  ensureScheduleMatchesGoal() {
+    const profile = window.storageManager.getProfile();
+    const targetGlasses = Math.max(1, Math.round((profile.dailyGoal || 2000) / (profile.glassSize || 250)));
+    const sched = window.storageManager.getSchedule();
+
+    const hasFewFixed = !sched.fixedTimes || sched.fixedTimes.length <= 8;
+    const neverAutoDistributed = !localStorage.getItem('habitflow_autodistributed_v1');
+
+    if (targetGlasses > 8 && (hasFewFixed || neverAutoDistributed)) {
+      window.storageManager.autoDistributeSchedule(targetGlasses);
+      localStorage.setItem('habitflow_autodistributed_v1', 'true');
     }
   }
 
@@ -265,6 +284,19 @@ class HabitFlowApp {
   // ==========================================
   renderScheduleSection() {
     const config = window.storageManager.getSchedule();
+    const profile = window.storageManager.getProfile();
+    const targetGlasses = Math.max(1, Math.round((profile.dailyGoal || 2000) / (profile.glassSize || 250)));
+
+    // Actualizar datos de la tarjeta de auto-distribución
+    const elAutoTitle = document.getElementById('schedule-auto-distribute-title');
+    const elAutoSub = document.getElementById('schedule-auto-distribute-sub');
+    const elBadgeGlasses = document.getElementById('badge-target-glasses');
+    const elBtnAutoText = document.getElementById('btn-auto-distribute-text');
+
+    if (elAutoTitle) elAutoTitle.textContent = `Auto-Distribuir mis ${targetGlasses} Vasos`;
+    if (elAutoSub) elAutoSub.textContent = `Meta: ${(profile.dailyGoal || 2000).toLocaleString('es-AR')} ml calculados para tu metabolismo`;
+    if (elBadgeGlasses) elBadgeGlasses.textContent = `${targetGlasses} Vasos`;
+    if (elBtnAutoText) elBtnAutoText.textContent = `Repartir mis ${targetGlasses} Vasos en el Día`;
 
     // Modo Intervalo vs Fijos
     const btnModeInterval = document.getElementById('btn-mode-interval');
@@ -532,6 +564,23 @@ class HabitFlowApp {
       });
     }
 
+    // 4.5. Botón Auto-Distribuir Horarios según la meta de Frank Suárez (ej: 14 vasos)
+    const btnAutoDistribute = document.getElementById('btn-auto-distribute-schedule');
+    if (btnAutoDistribute) {
+      btnAutoDistribute.addEventListener('click', () => {
+        const profile = window.storageManager.getProfile();
+        const glasses = Math.max(1, Math.round((profile.dailyGoal || 2000) / (profile.glassSize || 250)));
+        const times = window.storageManager.autoDistributeSchedule(glasses);
+
+        if (window.soundEngine) window.soundEngine.playDrinkWater();
+        this.renderScheduleSection();
+
+        if (window.reminderManager) {
+          window.reminderManager.showToast(`🎉 ¡${times.length} horarios distribuidos para tus ${(profile.dailyGoal || 2000).toLocaleString('es-AR')} ml!`);
+        }
+      });
+    }
+
     // 5. Botones de Modo Horarios (Intervalo vs Fijos)
     const btnModeInterval = document.getElementById('btn-mode-interval');
     const btnModeFixed = document.getElementById('btn-mode-fixed');
@@ -713,6 +762,9 @@ class HabitFlowApp {
     const today = window.storageManager.getTodayData();
     today.goalMl = calc.ml;
     window.storageManager.saveTodayData(today);
+
+    // Auto-distribuir la cantidad exacta de vasos en los horarios
+    window.storageManager.autoDistributeSchedule(calc.glasses);
 
     // Cerrar modal
     const modal = document.getElementById('frank-calc-modal');

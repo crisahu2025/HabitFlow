@@ -397,6 +397,58 @@ class StorageManager {
     }
   }
 
+  /**
+   * Distribuye equitativamente todos los vasos de la meta del usuario (ej: 14 vasos de 250ml)
+   * a lo largo de su día activo (08:00 a 22:00), respetando la pausa de comida de Frank Suárez.
+   */
+  autoDistributeSchedule(targetGlassesCount = null) {
+    const profile = this.getProfile();
+    const glasses = targetGlassesCount || Math.max(4, Math.round((profile.dailyGoal || 2000) / (profile.glassSize || 250)));
+    const sched = this.getSchedule();
+
+    const [startH, startM] = (sched.startTime || '08:00').split(':').map(Number);
+    const [endH, endM] = (sched.endTime || '22:00').split(':').map(Number);
+
+    const startMins = (startH * 60) + startM;
+    const endMins = (endH * 60) + endM;
+
+    // Pausa de digestión recomendada por Frank Suárez (13:00 a 14:00)
+    const pauseStart = 13 * 60; // 13:00
+    const pauseEnd = 14 * 60;   // 14:00
+
+    const validMinutes = [];
+    for (let m = startMins; m <= endMins; m += 5) {
+      if (sched.pauseDuringMeals && m >= pauseStart && m < pauseEnd) {
+        continue;
+      }
+      validMinutes.push(m);
+    }
+
+    if (validMinutes.length === 0) return [];
+
+    const distributedTimes = [];
+    if (glasses <= 1) {
+      distributedTimes.push(sched.startTime);
+    } else {
+      const step = (validMinutes.length - 1) / (glasses - 1);
+      for (let i = 0; i < glasses; i++) {
+        const idx = Math.min(validMinutes.length - 1, Math.round(i * step));
+        const rawMins = validMinutes[idx];
+        const h = Math.floor(rawMins / 60);
+        const m = rawMins % 60;
+        const formatted = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+        if (!distributedTimes.includes(formatted)) {
+          distributedTimes.push(formatted);
+        }
+      }
+    }
+
+    sched.fixedTimes = distributedTimes.sort();
+    sched.mode = 'fixed';
+    this.saveSchedule(sched);
+    return sched.fixedTimes;
+  }
+
   // --- Hábitos Extra ---
   getExtraHabits() {
     try {

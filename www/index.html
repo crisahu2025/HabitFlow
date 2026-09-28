@@ -48,7 +48,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- Custom Stylesheets con Versionado -->
-  <link rel="stylesheet" href="./css/styles.css?v=1.5">
+  <link rel="stylesheet" href="./css/styles.css?v=1.6">
   <style>
     body {
       font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -262,6 +262,29 @@
           <h2 class="text-base font-extrabold text-white">Horarios y Alarmas</h2>
           <p class="text-xs text-slate-400">Adaptá tus recordatorios a tu rutina diaria</p>
         </div>
+      </div>
+
+      <!-- TARJETA: AUTO-DISTRIBUCIÓN INTELIGENTE DE VASOS SEGÚN META (FRANK SUÁREZ) -->
+      <div class="glass-card p-4 rounded-2xl border border-sky-500/30 bg-gradient-to-br from-sky-950/40 via-slate-900 to-slate-900/90 flex flex-col gap-3 shadow-lg">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl bg-sky-500/20 border border-sky-400/30 flex items-center justify-center text-sky-400 text-lg font-bold">
+              ⚡
+            </div>
+            <div>
+              <h3 id="schedule-auto-distribute-title" class="text-xs font-bold text-white">Auto-Distribuir mis 14 Vasos</h3>
+              <p id="schedule-auto-distribute-sub" class="text-[10px] text-sky-300">Meta Frank: 3.500 ml calculados para tu metabolismo</p>
+            </div>
+          </div>
+          <span id="badge-target-glasses" class="text-[10px] font-extrabold px-2.5 py-1 rounded-full bg-sky-500/20 text-sky-300 border border-sky-400/30">14 Vasos</span>
+        </div>
+        <p class="text-[11px] text-slate-300 leading-relaxed">
+          Reparte automáticamente todos los vasos del día entre las 08:00 y las 22:00 hs con el espacio ideal para no olvidar ninguna toma.
+        </p>
+        <button id="btn-auto-distribute-schedule" type="button" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-400 hover:to-cyan-400 text-white font-extrabold text-xs shadow-md shadow-sky-500/20 flex items-center justify-center gap-2 active:scale-95 transition-all">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+          <span id="btn-auto-distribute-text">Repartir mis 14 Vasos en el Día</span>
+        </button>
       </div>
 
       <!-- Selector de Modo de Horario (Intervalo vs Fijos) -->
@@ -988,15 +1011,15 @@
     </div>
   </div>
 
-  <!-- SCRIPTS MODULARES CON VERSIONADO QUERY PARAMS (?v=1.5) -->
-  <script src="./js/storage.js?v=1.5"></script>
-  <script src="./js/auth.js?v=1.5"></script>
-  <script src="./js/audio.js?v=1.5"></script>
-  <script src="./js/reminders.js?v=1.5"></script>
-  <script src="./js/habits.js?v=1.5"></script>
-  <script src="./js/updater.js?v=1.5"></script>
-  <script src="./js/ads.js?v=1.5"></script>
-  <script src="./js/app.js?v=1.5"></script>
-  <script src="./js/pwa.js?v=1.5"></script>
+  <!-- SCRIPTS MODULARES CON VERSIONADO QUERY PARAMS (?v=1.6) -->
+  <script src="./js/storage.js?v=1.6"></script>
+  <script src="./js/auth.js?v=1.6"></script>
+  <script src="./js/audio.js?v=1.6"></script>
+  <script src="./js/reminders.js?v=1.6"></script>
+  <script src="./js/habits.js?v=1.6"></script>
+  <script src="./js/updater.js?v=1.6"></script>
+  <script src="./js/ads.js?v=1.6"></script>
+  <script src="./js/app.js?v=1.6"></script>
+  <script src="./js/pwa.js?v=1.6"></script>
 </body>
 </html>
