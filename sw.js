@@ -13,6 +13,7 @@ const ASSETS_TO_CACHE = [
   './js/reminders.js',
   './js/habits.js',
   './js/updater.js',
+  './js/ads.js',
   './js/app.js',
   './js/pwa.js',
   './icons/icon.svg',

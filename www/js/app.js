@@ -19,6 +19,9 @@ class HabitFlowApp {
     this.renderProgressSection();
     this.renderHabitsSection();
     this.handleUrlParams();
+    if (window.adsManager && typeof window.adsManager.init === 'function') {
+      window.adsManager.init();
+    }
   }
 
   /**
@@ -70,6 +73,11 @@ class HabitFlowApp {
       this.renderWaterSection();
     } else if (tabId === 'settings') {
       this.renderSettingsSection();
+    }
+
+    // Actualizar visibilidad de anuncios según la pestaña (excluye Agua y Ajustes)
+    if (window.adsManager && typeof window.adsManager.onTabChange === 'function') {
+      window.adsManager.onTabChange(tabId);
     }
   }
 
@@ -1189,5 +1197,33 @@ document.addEventListener('DOMContentLoaded', () => {
   window.app = new HabitFlowApp();
   if (window.app.setupAuthListeners) {
     window.app.setupAuthListeners();
+  }
+
+  // Escuchar mensajes del Service Worker (acciones de notificación en modo Web/PWA)
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.addEventListener('message', (event) => {
+      const data = event.data;
+      if (!data || !data.type) return;
+
+      if (data.type === 'QUICK_ADD_WATER') {
+        const amount = data.amount || 250;
+        if (window.storageManager) {
+          window.storageManager.addWaterEntry(amount, 'Vaso de agua (Notificación)');
+        }
+        if (window.app) {
+          window.app.renderWaterSection();
+        }
+        if (window.reminderManager) {
+          window.reminderManager.showToast(`💧 ¡+${amount}ml registrados desde la notificación!`);
+        }
+      }
+
+      if (data.type === 'SNOOZE_REMINDER') {
+        if (window.reminderManager && typeof window.reminderManager.scheduleSnoozeNotification === 'function') {
+          window.reminderManager.scheduleSnoozeNotification({});
+          window.reminderManager.showToast('⏰ Recordatorio pospuesto 10 minutos');
+        }
+      }
+    });
   }
 });

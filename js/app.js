@@ -19,6 +19,9 @@ class HabitFlowApp {
     this.renderProgressSection();
     this.renderHabitsSection();
     this.handleUrlParams();
+    if (window.adsManager && typeof window.adsManager.init === 'function') {
+      window.adsManager.init();
+    }
   }
 
   /**
@@ -70,6 +73,11 @@ class HabitFlowApp {
       this.renderWaterSection();
     } else if (tabId === 'settings') {
       this.renderSettingsSection();
+    }
+
+    // Actualizar visibilidad de anuncios según la pestaña (excluye Agua y Ajustes)
+    if (window.adsManager && typeof window.adsManager.onTabChange === 'function') {
+      window.adsManager.onTabChange(tabId);
     }
   }
 
