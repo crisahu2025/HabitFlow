@@ -695,6 +695,20 @@ class HabitFlowApp {
         }
       });
     }
+
+    // 12. Modal de Bienvenida: Botón Comenzar
+    const btnWelcomeStart = document.getElementById('btn-welcome-start');
+    if (btnWelcomeStart) {
+      btnWelcomeStart.addEventListener('click', () => {
+        if (window.soundEngine) window.soundEngine.playTap();
+        this.closeModals();
+        if (this.currentTab !== 'water') {
+          this.switchTab('water');
+        } else {
+          this.renderWaterSection();
+        }
+      });
+    }
   }
 
   bindToggle(elementId, configKey, callback) {
@@ -899,9 +913,7 @@ class HabitFlowApp {
           this.updateUserHeaderUI();
           this.renderWaterSection();
           this.renderSettingsSection();
-          if (window.reminderManager) {
-            window.reminderManager.showToast(`¡Cuenta creada con éxito! Meta: ${user.recommendedWaterMl.toLocaleString('es-AR')} ml.`);
-          }
+          this.openWelcomeModal(user);
         } catch (err) {
           if (authError) {
             authError.textContent = err.message || 'Error al registrar usuario';
@@ -1105,6 +1117,41 @@ class HabitFlowApp {
       modal.classList.remove('hidden');
       modal.classList.add('flex');
     }
+  }
+
+  openWelcomeModal(user) {
+    if (!user) return;
+    const modal = document.getElementById('welcome-modal');
+    if (!modal) return;
+
+    const titleEl = document.getElementById('welcome-title');
+    const glassesEl = document.getElementById('welcome-goal-glasses');
+    const mlEl = document.getElementById('welcome-goal-ml');
+
+    const firstName = (user.name || user.username || '').trim().split(' ')[0];
+    if (titleEl) {
+      titleEl.textContent = firstName 
+        ? `¡Te damos la bienvenida, ${firstName}!` 
+        : '¡Te damos la bienvenida a HabitFlow!';
+    }
+
+    const goalMl = user.recommendedWaterMl || user.dailyGoal || 2000;
+    const glasses = Math.round(goalMl / 250);
+
+    if (glassesEl) {
+      glassesEl.textContent = `${glasses} vasos al día`;
+    }
+
+    if (mlEl) {
+      mlEl.textContent = `${goalMl.toLocaleString('es-AR')} ml`;
+    }
+
+    if (window.soundEngine) {
+      window.soundEngine.playGoalCelebration();
+    }
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
   }
 
   openProfileModal() {

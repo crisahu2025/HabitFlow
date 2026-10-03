@@ -109,7 +109,45 @@ class AuthManager {
     // Disparar guardado en Google Password Manager si está disponible
     this.storeGoogleCredentials(cleanEmail || cleanUsername, password, newUser.name);
 
+    // Disparar gancho modular de bienvenida por correo en segundo plano
+    this.sendWelcomeEmail(newUser).catch(err => console.warn('[HabitFlow Welcome Email]', err));
+
     return newUser;
+  }
+
+  /**
+   * Gancho modular para envío de correo de bienvenida.
+   * Diseñado para integrarse transparentemente con un endpoint de Google Apps Script cuando Cristian lo ordene.
+   * No bloquea el flujo ni interrumpe la experiencia si la app está offline.
+   */
+  async sendWelcomeEmail(user) {
+    if (!user || !user.email) return;
+
+    try {
+      const ENDPOINT = window.HABITFLOW_EMAIL_ENDPOINT || null;
+      if (!ENDPOINT) {
+        console.log(`[HabitFlow Email] Gancho de bienvenida preparado para: ${user.email} (pendiente endpoint Apps Script)`);
+        return;
+      }
+
+      const payload = {
+        action: 'send_welcome_email',
+        email: user.email,
+        name: user.name || user.username,
+        dailyGoalMl: user.recommendedWaterMl || 2000,
+        weightKg: user.weightKg || 70,
+        timestamp: new Date().toISOString()
+      };
+
+      await fetch(ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      });
+      console.log(`✓ Notificación de bienvenida despachada a ${user.email}`);
+    } catch (e) {
+      console.warn('[HabitFlow Email] Advertencia en envío diferido:', e);
+    }
   }
 
   async login(identifier, password) {
