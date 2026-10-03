@@ -7,8 +7,8 @@ android {
         applicationId "com.codeahumada.habitflow"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 14
-        versionName "1.0.14"
+        versionCode 16
+        versionName "1.0.16"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -18,16 +18,22 @@ android {
     }
     signingConfigs {
         debug {
-            storeFile file('habitflow.keystore')
+            storeFile file('habitflow-release.keystore')
             storePassword 'codeahumada2026'
-            keyAlias 'habitflow'
+            keyAlias 'habitflow-release'
             keyPassword 'codeahumada2026'
+            v1SigningEnabled true
+            v2SigningEnabled true
+            v3SigningEnabled true
         }
         release {
-            storeFile file('habitflow.keystore')
+            storeFile file('habitflow-release.keystore')
             storePassword 'codeahumada2026'
-            keyAlias 'habitflow'
+            keyAlias 'habitflow-release'
             keyPassword 'codeahumada2026'
+            v1SigningEnabled true
+            v2SigningEnabled true
+            v3SigningEnabled true
         }
     }
     buildTypes {
