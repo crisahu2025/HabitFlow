@@ -6,8 +6,8 @@
  * Code Ahumada • Director Cristian
  */
 
-const CURRENT_VERSION = 'v1.0.14';
-const CURRENT_VERSION_CODE = 14;
+const CURRENT_VERSION = 'v1.0.18';
+const CURRENT_VERSION_CODE = 18;
 const GITHUB_REPO_API = 'https://api.github.com/repos/crisahu2025/HabitFlow/releases/latest';
 
 class UpdateManager {
@@ -18,6 +18,9 @@ class UpdateManager {
 
   init() {
     this.setupListeners();
+    // 0. Sincronizar dinámicamente los badges de versión en la interfaz
+    this.getEffectiveVersion();
+
     // 1. Notificar al motor de parches que el bundle actual cargó exitosamente
     this.notifyAppReady();
 
@@ -42,20 +45,36 @@ class UpdateManager {
   }
 
   /**
+   * Sincroniza dinámicamente el texto de la versión en todos los elementos de la interfaz
+   */
+  updateUIVersionLabels(ver) {
+    const badge = document.getElementById('apk-installed-version-badge');
+    if (badge) badge.textContent = ver;
+
+    const installedText = document.getElementById('apk-installed-version-text');
+    if (installedText) installedText.textContent = `${ver} (Android APK Nativo)`;
+
+    const modalInstalled = document.getElementById('modal-update-installed-version');
+    if (modalInstalled) modalInstalled.textContent = ver;
+  }
+
+  /**
    * Obtiene la versión real del paquete nativo instalado en el dispositivo si está en Capacitor
    */
   async getEffectiveVersion() {
+    let ver = CURRENT_VERSION;
     if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App) {
       try {
         const info = await window.Capacitor.Plugins.App.getInfo();
         if (info && info.version) {
-          return info.version.startsWith('v') ? info.version : `v${info.version}`;
+          ver = info.version.startsWith('v') ? info.version : `v${info.version}`;
         }
       } catch (e) {
         console.warn('No se pudo consultar App.getInfo() nativo:', e);
       }
     }
-    return CURRENT_VERSION;
+    this.updateUIVersionLabels(ver);
+    return ver;
   }
 
   async checkUpdate({ silent = false } = {}) {
