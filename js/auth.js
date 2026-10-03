@@ -92,6 +92,7 @@ class AuthManager {
       passwordHash: passwordHash,
       weightKg: weight,
       recommendedWaterMl: recommendedWaterMl,
+      avatar: null,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
@@ -100,10 +101,13 @@ class AuthManager {
     this.saveUsers(users);
     this.saveSession(newUser);
 
-    // Actualizar meta diaria inicial con la fórmula de Frank
+    // Actualizar meta diaria inicial con la fórmula de hidratación
     if (window.storageManager) {
       window.storageManager.setDailyGoal(recommendedWaterMl);
     }
+
+    // Disparar guardado en Google Password Manager si está disponible
+    this.storeGoogleCredentials(cleanEmail || cleanUsername, password, newUser.name);
 
     return newUser;
   }
@@ -128,10 +132,28 @@ class AuthManager {
       window.storageManager.setDailyGoal(user.recommendedWaterMl);
     }
 
+    // Disparar guardado en Google Password Manager si está disponible
+    this.storeGoogleCredentials(user.email || user.username, password, user.name);
+
     return user;
   }
 
-  async updateProfile({ name, weightKg, dailyGoalMl }) {
+  async storeGoogleCredentials(id, password, name) {
+    if (window.PasswordCredential && navigator.credentials && navigator.credentials.store) {
+      try {
+        const cred = new PasswordCredential({
+          id: id,
+          password: password,
+          name: name || id
+        });
+        await navigator.credentials.store(cred);
+      } catch (e) {
+        console.log('Credential store:', e);
+      }
+    }
+  }
+
+  async updateProfile({ name, weightKg, dailyGoalMl, avatar }) {
     if (!this.currentUser) throw new Error('No hay sesión activa.');
 
     const users = this.getUsers();
@@ -147,6 +169,9 @@ class AuthManager {
     if (dailyGoalMl) {
       this.currentUser.recommendedWaterMl = Number(dailyGoalMl);
     }
+    if (avatar !== undefined) {
+      this.currentUser.avatar = avatar;
+    }
     this.currentUser.updatedAt = new Date().toISOString();
 
     users[index] = this.currentUser;
@@ -158,6 +183,10 @@ class AuthManager {
     }
 
     return this.currentUser;
+  }
+
+  async updateAvatar(avatarDataUrl) {
+    return this.updateProfile({ avatar: avatarDataUrl });
   }
 
   logout() {

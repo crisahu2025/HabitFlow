@@ -7,7 +7,7 @@
 
 ## 🌟 Descripción General
 
-**HabitFlow** es una aplicación móvil (PWA / APK) de hidratación inteligente, recordatorios adaptables y hábitos saludables basada en los principios científicos de los libros de **Frank Suárez** (*El Poder del Metabolismo* y *Metabolismo TV*).
+**HabitFlow** es una aplicación móvil (PWA / APK) de hidratación inteligente, recordatorios adaptables y hábitos saludables de bienestar.
 
 La aplicación cuenta con una interfaz móvil ultra-rápida, estética oscura con acentos cian/aqua, gráficos interactivos con oleaje animado, síntesis de sonido de gota de agua mediante **Web Audio API** (100% offline), vibración háptica para celulares y compatibilidad total con **PWABuilder** para exportar archivos `.apk` de Android en 2 clics.
 
@@ -16,13 +16,13 @@ La aplicación cuenta con una interfaz móvil ultra-rápida, estética oscura co
 ## 🚀 Funcionalidades Principales
 
 ### 1. 💧 Módulo Central de Hidratación
-- **Esfera con Oleaje Animado**: Gráfico circular con olas senoidales fluidas y nivel de agua que sube dinámicamente según el porcentaje alcanzado.
-- **Calculadora Frank Suárez**: Permite ingresar tu peso en kg y aplica la fórmula oficial:
+- **Esfera con Oleaje Animado**: Gráfico circular con olas fluidas y nivel de agua que sube dinámicamente según el porcentaje alcanzado.
+- **Calculadora de Hidratación**: Permite ingresar tu peso en kg y aplica el cálculo recomendado:
   $$\text{Vasos de 250 ml} = \frac{\text{Peso en kg}}{7}$$
   $$\text{Mililitros recomendados} = \left(\frac{\text{Peso en kg}}{7}\right) \times 250$$
 - **Botones Rápidos de Ingesta**:
   - `+200 ml` (Vaso chico)
-  - `+250 ml` (Vaso estándar de Frank)
+  - `+250 ml` (Vaso estándar)
   - `+500 ml` (Botella)
   - `+750 ml` (Termo / Botellón)
   - `☕ Compensación Café/Mate` (+250 ml extra por el efecto diurético)
@@ -35,7 +35,7 @@ La aplicación cuenta con una interfaz móvil ultra-rápida, estética oscura co
   - **Modo Intervalo Dinámico**: Permite definir hora de inicio (ej: `08:00`), hora de fin (ej: `22:00`) y frecuencia de recordatorio (cada 30 min, 45 min, 1h, 1.5h, 2h, 3h).
   - **Modo Horarios Fijos**: Permite añadir, editar y eliminar alarmas exactas personalizadas (ej: `08:30`, `10:30`, `12:30`, etc.).
 - **Temporizador en Vivo**: Contador regresivo en tiempo real que indica: *"Próximo vaso a las XX:XX hs (en XXm XXs)"*.
-- **Pausa Digestiva de Frank Suárez**: Opción para silenciar recordatorios durante la digestión del almuerzo (13:00 a 14:00) para no diluir el ácido gástrico.
+- **Pausa Digestiva**: Opción para silenciar recordatorios durante la digestión del almuerzo (13:00 a 14:00) para no sobrecargar el estómago.
 - **Botón "Probar Notificación y Sonido Ahora"**: Dispara de inmediato la alerta nativa, la vibración y el sintetizador de gota para verificar el correcto funcionamiento.
 
 ### 3. 🔊 Motor de Audio y Háptica 100% Offline
@@ -48,14 +48,10 @@ La aplicación cuenta con una interfaz móvil ultra-rápida, estética oscura co
 ### 4. 📊 Estadísticas y Progreso Semanal
 - **Gráfico de Barras Interactivo**: Visualización de los últimos 7 días con barras que cambian a verde esmeralda al alcanzar el 100% de la meta.
 - **Métricas Clave**: Total litros consumidos, promedio diario en ml, racha actual y días con meta cumplida.
-- **Energía Celular Producida (ATP)**: Estimación didáctica de la hidrólisis de ATP generada por el agua consumida según Frank Suárez.
+- **Energía y Vitalidad Estimada**: Estimación de vitalidad celular optimizada por el consumo de agua.
 
-### 5. ⚡ Hábitos y Consejos de Frank Suárez
-- **4 Grandes Consejos de Metabolismo**:
-  1. *El agua multiplica tu energía (ATP x 10)*
-  2. *La regla de oro con las comidas (no diluir el ácido clorhídrico)*
-  3. *La trampa del café y el mate (compensación diurética)*
-  4. *Agua de manantial celular (sal marina/rosada y limón para reactivar la bomba celular)*
+### 5. ⚡ Hábitos y Consejos de Bienestar
+- **Consejos de Bienestar**: Pautas prácticas para optimizar la asimilación del agua, el descanso nocturno y la energía corporal.
 - **Hábitos Complementarios Code Ahumada**: Pausas activas, magnesio y potasio, caminata de 8.000 pasos y desconexión nocturna.
 
 ### 6. 📱 PWA y Preparación para APK
@@ -76,10 +72,10 @@ HabitFlow/
 ├── js/
 │   ├── app.js              # Controlador principal y gestión de interfaz
 │   ├── audio.js            # Sintetizador Web Audio API y respuesta háptica
-│   ├── habits.js           # Consejos de Frank Suárez y hábitos saludables
+│   ├── habits.js           # Consejos de bienestar y hábitos saludables
 │   ├── pwa.js              # Registro de Service Worker e instalador
 │   ├── reminders.js        # Horarios dinámicos, reloj regresivo y notificaciones
-│   └── storage.js          # Persistencia en localStorage y fórmula de Frank
+│   └── storage.js          # Persistencia en localStorage y cálculo de hidratación
 ├── icons/
 │   ├── icon.svg            # Icono vectorial escalable
 │   ├── icon-192.png        # Icono PNG 192x192

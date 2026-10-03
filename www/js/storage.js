@@ -28,7 +28,7 @@ const DEFAULT_SCHEDULE = {
   soundEnabled: true,
   hapticEnabled: true,
   notificationsEnabled: true,
-  pauseDuringMeals: true // Consejo Frank: proteger ácido gástrico
+  pauseDuringMeals: true // Proteger la digestión en almuerzo
 };
 
 const DEFAULT_EXTRA_HABITS = [
@@ -45,8 +45,8 @@ const DEFAULT_EXTRA_HABITS = [
   },
   {
     id: 'electrolytes',
-    title: 'Magnesio y Potasio (Frank Suárez)',
-    subtitle: 'Minerales esenciales para activar el metabolismo celular',
+    title: 'Magnesio y Potasio',
+    subtitle: 'Minerales esenciales para la recuperación muscular y celular',
     icon: 'minerals',
     active: true,
     progressToday: 1,
@@ -57,7 +57,7 @@ const DEFAULT_EXTRA_HABITS = [
   {
     id: 'steps',
     title: 'Caminata Diaria Oxigenante',
-    subtitle: 'Meta de 8.000 pasos para reactivar el ATP muscular',
+    subtitle: 'Meta de 8.000 pasos para reactivar el tono muscular',
     icon: 'walk',
     active: true,
     progressToday: 5400,
@@ -135,11 +135,11 @@ class StorageManager {
   }
 
   /**
-   * Cálculo de la meta recomendada por Frank Suárez:
+   * Cálculo de la meta óptima de hidratación diaria según peso corporal:
    * Vasos de 250 ml = Peso en kg / 7
    * Mililitros = (Peso / 7) * 250
    */
-  calculateFrankGoal(weightKg) {
+  calculateHydrationGoal(weightKg) {
     const weight = Math.max(30, Math.min(250, Number(weightKg) || 70));
     const rawGlasses = weight / 7;
     const glasses = Math.round(rawGlasses * 10) / 10;
@@ -149,6 +149,10 @@ class StorageManager {
       glasses,
       ml
     };
+  }
+
+  calculateFrankGoal(weightKg) {
+    return this.calculateHydrationGoal(weightKg);
   }
 
   // --- Datos de Hoy ---
@@ -399,7 +403,7 @@ class StorageManager {
 
   /**
    * Distribuye equitativamente todos los vasos de la meta del usuario (ej: 14 vasos de 250ml)
-   * a lo largo de su día activo (08:00 a 22:00), respetando la pausa de comida de Frank Suárez.
+   * a lo largo de su día activo (08:00 a 22:00), respetando la pausa de comida.
    */
   autoDistributeSchedule(targetGlassesCount = null) {
     const profile = this.getProfile();
@@ -412,7 +416,7 @@ class StorageManager {
     const startMins = (startH * 60) + startM;
     const endMins = (endH * 60) + endM;
 
-    // Pausa de digestión recomendada por Frank Suárez (13:00 a 14:00)
+    // Pausa de digestión recomendada durante el almuerzo (13:00 a 14:00)
     const pauseStart = 13 * 60; // 13:00
     const pauseEnd = 14 * 60;   // 14:00
 

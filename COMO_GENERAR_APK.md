@@ -1,7 +1,7 @@
 # 📱 Cómo Generar el Archivo APK de HabitFlow y Usarla en Celular
 
 > **Guía Oficial para el Director Cristian y el equipo de Code Ahumada**  
-> *HabitFlow: Aplicación de Hidratación Inteligente, Recordatorios y Sabiduría de Frank Suárez.*
+> *HabitFlow: Aplicación de Hidratación Inteligente, Recordatorios y Bienestar Celular.*
 
 ---
 
@@ -55,9 +55,9 @@ Las PWA modernas funcionan exactamente igual que una app nativa de Android o iOS
 
 ## ⚙️ Características Técnicas Incluidas en HabitFlow
 
-- **Fórmula Oficial de Frank Suárez**: Cálculo exacto `Peso (kg) / 7 = Vasos de 250 ml`.
+- **Calculadora de Hidratación Óptima**: Cálculo exacto según contextura corporal `Peso (kg) / 7 = Vasos de 250 ml`.
 - **Síntesis Web Audio 100% Offline**: Sonido de gota de agua sintetizado por osciladores matemáticos nativos (cero archivos de audio externos que puedan fallar).
 - **Vibración Háptica**: Pulsos táctiles con `navigator.vibrate()` para confirmaciones de tomas y alarmas.
 - **Web Notifications API**: Alertas nativas de recordatorio en segundo plano.
-- **Pausa Digestiva**: Función de Frank Suárez para pausar avisos entre 13:00 y 14:00 hs para no diluir el ácido estomacal.
-- **Control de Caché y Service Worker**: Versionado `habitflow-v1.0` con auto-purga y auto-recarga ante actualizaciones (`skipWaiting` + `controllerchange`).
+- **Pausa Digestiva**: Función para pausar avisos entre 13:00 y 14:00 hs para favorecer la digestión del almuerzo.
+- **Control de Caché y Service Worker**: Versionado `habitflow-v1.0.19` con auto-purga y auto-recarga ante actualizaciones (`skipWaiting` + `controllerchange`).

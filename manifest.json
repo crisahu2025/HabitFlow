@@ -1,7 +1,7 @@
 {
   "name": "HabitFlow - Hidratación y Hábitos Saludables",
   "short_name": "HabitFlow",
-  "description": "Tu asistente diario de hidratación, recordatorios inteligentes y hábitos del metabolismo.",
+  "description": "Tu asistente diario de hidratación, recordatorios inteligentes y hábitos saludables.",
   "start_url": "./index.html",
   "scope": "./",
   "id": "habitflow-codeahumada",
@@ -44,7 +44,7 @@
   ],
   "shortcuts": [
     {
-      "name": "+250 ml (Vaso Frank)",
+      "name": "+250 ml (Vaso Estándar)",
       "short_name": "+250ml",
       "description": "Registrar vaso de agua estándar al instante",
       "url": "./index.html?quick=250",

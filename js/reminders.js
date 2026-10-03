@@ -174,7 +174,7 @@ class ReminderManager {
       const m = currentMins % 60;
       const formatted = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
 
-      // Si tiene activada la pausa de digestión de Frank Suárez (13:00 - 14:00 o 21:00 - 21:45)
+      // Si tiene activada la pausa de digestión (13:00 - 14:00)
       const isMealTime = config.pauseDuringMeals && (
         (currentMins >= 780 && currentMins < 840) // 13:00 a 14:00
       );
@@ -290,7 +290,7 @@ class ReminderManager {
     const times = this.getActiveTimes();
     if (times.includes(curTime)) {
       this.lastTriggeredTime = curTime;
-      this.triggerAlert('¡Momento de hidratarte!', 'Tomá un vaso de agua fresca para encender tu metabolismo celular.');
+      this.triggerAlert('¡Momento de hidratarte!', 'Tomá un vaso de agua fresca para mantener tu energía y bienestar.');
     }
   }
 
@@ -318,7 +318,7 @@ class ReminderManager {
       await LocalNotifications.createChannel({
         id: 'habitflow_reminders_channel',
         name: 'Recordatorios de Hidratación HabitFlow',
-        description: 'Alarmas periódicas para tomar agua y activar el metabolismo',
+        description: 'Alarmas periódicas para tomar agua y mantener tu bienestar',
         importance: 5, // High importance
         visibility: 1,
         sound: 'beep.wav',
@@ -355,7 +355,7 @@ class ReminderManager {
             notificationsToSchedule.push({
               id: (dayOffset * 100) + idx + 1000,
               title: '💧 ¡Momento de hidratarte' + (userName ? ', ' + userName : '') + '!',
-              body: 'Tomá un vaso de agua fresca (250 ml) para activar tu metabolismo celular (Frank Suárez).',
+              body: 'Tomá un vaso de agua fresca (250 ml) para mantener tu hidratación y energía.',
               schedule: {
                 at: scheduledDate,
                 allowWhileIdle: true // Permite sonar en Doze mode / pantalla apagada
@@ -383,7 +383,7 @@ class ReminderManager {
    * Dispara sonido, vibración y notificación push/nativa
    * Ahora incluye botones de acción en la notificación
    */
-  async triggerAlert(title = '¡Momento de tomar agua!', body = 'Tu cuerpo y tu metabolismo necesitan un vaso de agua fresca.') {
+  async triggerAlert(title = '¡Momento de tomar agua!', body = 'Tu cuerpo necesita un vaso de agua fresca para mantenerte activo.') {
     const config = window.storageManager.getSchedule();
 
     // 1. Sonido Web Audio API
@@ -519,7 +519,7 @@ class ReminderManager {
         await LocalNotifications.createChannel({
           id: 'habitflow_reminders_channel',
           name: 'Recordatorios de Hidratación HabitFlow',
-          description: 'Alarmas periódicas para tomar agua y activar el metabolismo',
+          description: 'Alarmas periódicas para tomar agua y mantener tu bienestar',
           importance: 5,
           visibility: 1,
           sound: 'beep.wav',

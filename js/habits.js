@@ -1,78 +1,80 @@
 /**
- * HabitFlow - Módulos de Hábitos y Sabiduría de Metabolismo (Frank Suárez)
+ * HabitFlow - Módulos de Hábitos y Consejos de Bienestar
  * Code Ahumada
  */
 
-const FRANK_TIPS = [
+const WELLNESS_TIPS = [
   {
     id: 'ep-734',
-    title: 'Episodio #734: El Misterio de la Fórmula de Frank',
-    tag: 'MetabolismoTV #734',
-    icon: '⚖️',
-    summary: 'La demostración científica: Peso (kg) / 7 = Vasos de 250 ml diarios.',
-    content: 'En el episodio #734 de MetabolismoTV, Frank Suárez revela el fundamento científico de su famosa fórmula: cada célula de tu cuerpo posee mitocondrias que producen ATP mediante combustión con oxígeno. Como el agua es H2O (88% de oxígeno en peso molecular), dividir tu peso corporal en kilogramos entre 7 te da la cantidad matemática exacta de vasos de 250 ml requeridos para que tu metabolismo funcione a máxima velocidad sin sobrecargar los riñones.'
+    title: 'La Clave de una Buena Hidratación',
+    tag: 'Hidratación',
+    icon: '💧',
+    summary: 'Consumir la cantidad adecuada de agua según tu peso corporal mantiene tu cuerpo en equilibrio.',
+    content: 'Cada célula del cuerpo necesita agua para sus funciones vitales y el transporte de nutrientes. Mantener un consumo adecuado a tu contextura física previene la fatiga, mejora la concentración mental y optimiza el funcionamiento general de tu organismo.'
   },
   {
     id: 'ep-535',
-    title: 'Episodio #535: Tomar Agua... ¡No de Noche!',
-    tag: 'MetabolismoTV #535',
+    title: 'Hidratación y Descanso Nocturno',
+    tag: 'Descanso',
     icon: '🌙',
-    summary: 'El último vaso grande debe ser 1 o 2 horas antes de dormir.',
-    content: 'En el episodio #535, Frank advierte sobre el error de tomar un vaso grande de agua justo al acostarse. La vejiga te despertará a las 3:00 o 4:00 AM, interrumpiendo el sueño profundo (fase REM y Delta). Romper el sueño eleva la hormona cortisol (estrés), lo que frena en seco el metabolismo y te hace acumular grasa abdominal. Cortá los líquidos 1 a 2 horas antes de ir a dormir.'
+    summary: 'El último vaso abundante de agua es ideal tomarlo 1 o 2 horas antes de dormir.',
+    content: 'Ingerir grandes volúmenes de líquido justo antes de acostarse puede fragmentar el sueño profundo por la necesidad de orinar. Un descanso continuo favorece la recuperación celular y el equilibrio hormonal. Por ello se aconseja moderar los líquidos en las dos horas previas al sueño.'
   },
   {
     id: 'ep-848',
-    title: 'Episodio #848: ¿Agua Fría o al Tiempo?',
-    tag: 'MetabolismoTV #848',
+    title: 'Temperatura del Agua y Digestión',
+    tag: 'Digestión',
     icon: '🌡️',
-    summary: 'El agua a temperatura ambiente es la mejor para tu digestión y metabolismo.',
-    content: 'En el episodio #848, Frank desmiente el mito de que "el agua helada quema grasa". El agua con hielo congela las grasas de los alimentos en el estómago y obliga a tu cuerpo a gastar valiosa energía térmica para calentarla a 37°C antes de poder absorberla. El agua a temperatura ambiente o tibia entra suave, no genera shock térmico y activa de inmediato el flujo digestivo.'
+    summary: 'El agua a temperatura ambiente o fresca es la más amigable para tu sistema digestivo.',
+    content: 'El agua a temperatura ambiente es asimilada con gran facilidad por el cuerpo sin causar contrastes térmicos bruscos. Facilita la absorción intestinal y acompaña la rutina diaria con total naturalidad.'
   },
   {
     id: 'ep-639',
-    title: 'Súper Ayuda #639: Cómo Acostumbrarme a Tomar Agua',
-    tag: 'MetabolismoTV #639',
+    title: 'Construir el Hábito Progresivamente',
+    tag: 'Hábitos',
     icon: '🧗‍♂️',
-    summary: 'Si tu cuerpo rechaza el agua, aumentá de a 1 vaso por día gradualmente.',
-    content: 'En el episodio de Súper Ayuda #639, Frank explica que cuando una persona lleva años deshidratada, su estómago pierde la capacidad de producir ácido clorhídrico y por eso el agua le puede dar náuseas o sensación de pesadez. Frank aconseja: "No intentes tomarte los 8 o 10 vasos de golpe el primer día". Empezá con 2 o 3 vasos al día, y sumá un vaso más cada 2 días. En 2 semanas tu cuerpo recuperará la sed natural y el metabolismo despertará.'
+    summary: 'Si no solés tomar suficiente agua, aumentá la cantidad de a poco cada día.',
+    content: 'Crear un nuevo hábito es un proceso gradual. Si no acostumbras beber suficiente agua diariamente, sumá un vaso adicional cada dos o tres días. En poco tiempo tu cuerpo se habituará a la hidratación natural sin sensación de pesadez.'
   },
   {
     id: 'atp-energy',
-    title: 'El Agua Multiplica tu Energía (ATP x 10)',
-    tag: 'Ciencia Celular',
+    title: 'El Agua y tus Niveles de Energía',
+    tag: 'Energía',
     icon: '⚡',
-    summary: 'Cada célula genera ATP. Con agua, la energía pasa de 60 a 600 julios.',
-    content: 'En sus libros "El Poder del Metabolismo" y "Metabolismo Ultra Poderoso", Frank Suárez explicaba que el ATP es la moneda energética del cuerpo. Cuando el ATP se combina con una molécula de agua (hidrólisis), la energía liberada se multiplica por diez (de 60 a 600 julios). Si te sentís fatigado o con niebla mental, muchas veces tu cuerpo simplemente no tiene agua suficiente para generar esa explosión de energía.'
+    summary: 'Una hidratación adecuada reduce la fatiga y optimiza la vitalidad diaria.',
+    content: 'El agua es el medio biológico en el que se generan los procesos de energía celular. Cuando el cuerpo está bien hidratado, el rendimiento físico y mental se sostiene alto a lo largo de toda la jornada.'
   },
   {
     id: 'meals-rule',
-    title: 'La Regla de Oro con las Comidas',
-    tag: 'Digestión Segura',
+    title: 'Pausas Durante las Comidas',
+    tag: 'Digestión',
     icon: '🍽️',
-    summary: 'No tomes litros de agua mientras comés: diluye el ácido clorhídrico.',
-    content: 'El estómago necesita una concentración ácida potente (ácido clorhídrico) para desintegrar carnes y proteínas. Si tomás vasos grandes de agua durante el almuerzo o cena, disolvés ese ácido, volviendo la digestión pesada y fermentando la comida. Lo ideal es tomar agua hasta 30 minutos antes de comer o esperar 1 hora después.'
+    summary: 'Moderar el líquido durante los platos principales facilita la digestión.',
+    content: 'Durante el almuerzo o la cena es preferible no beber cantidades excesivas de agua, de modo que los jugos gástricos actúen de manera óptima sobre los alimentos. Lo más recomendable es beber agua hasta 30 minutos antes de comer o esperar 1 hora después.'
   },
   {
     id: 'diuretic-trap',
-    title: 'La Trampa del Café y el Mate',
+    title: 'Café, Mate e Infusiones',
     tag: 'Compensación',
     icon: '☕',
-    summary: 'El café y el mate son diuréticos: agregá 1 vaso extra por cada infusión.',
-    content: 'Aunque el café y el mate se preparan con agua caliente, las xantinas y la cafeína obligan a los riñones a excretar líquidos. Por eso, no cuentan como hidratación neta. Frank Suárez recomendaba que por cada taza de café o mate que tomes, sumes 1 vaso adicional de agua fresca de 250 ml a tu cuenta del día.'
+    summary: 'Las infusiones diuréticas requieren un vaso de agua extra para mantener el balance.',
+    content: 'Bebidas como el café o el mate poseen propiedades diuréticas naturales. Para asegurar una hidratación corporal neta y positiva, recordá acompañar cada taza de infusión con un vaso de agua fresca.'
   },
   {
     id: 'electrolytes-cell',
-    title: 'Agua de Manantial Celular (Sal y Limón)',
+    title: 'Minerales y Balance Electrolítico',
     tag: 'Electrolitos',
     icon: '🍋',
-    summary: 'Una pizca de sal marina / rosada y limón reactivan la bomba celular.',
-    content: 'Para que el agua entre dentro de la célula y no pase de largo hacia la orina, las células necesitan electrolitos (sodio, magnesio y potasio). Agregar una pequeña pizca de sal marina o del Himalaya junto con unas gotas de limón a un vaso de agua en ayunas transforma el agua en un suero electrolítico natural que hidrata profundamente las células.'
+    summary: 'El equilibrio de minerales como sodio, potasio y magnesio favorece la hidratación celular.',
+    content: 'Para que el agua se distribuya y aproveche eficazmente en los tejidos, el cuerpo necesita electrolitos esenciales. Una alimentación balanceada con frutas, vegetales y sales minerales naturales asegura una absorción celular óptima.'
   }
 ];
 
+const FRANK_TIPS = WELLNESS_TIPS; // Alias de compatibilidad
+
 class HabitsManager {
   constructor() {
-    this.tips = FRANK_TIPS;
+    this.tips = WELLNESS_TIPS;
   }
 
   renderTipsList(containerId) {
@@ -109,7 +111,7 @@ class HabitsManager {
 
       const readMore = document.createElement('div');
       readMore.className = 'text-[11px] font-medium text-sky-400 flex items-center gap-1 mt-1 group-hover:translate-x-1 transition-transform';
-      readMore.innerHTML = `<span>Leer consejo completo de Frank</span> <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>`;
+      readMore.innerHTML = `<span>Leer consejo completo</span> <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>`;
 
       card.appendChild(badge);
       card.appendChild(header);

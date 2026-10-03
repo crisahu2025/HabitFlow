@@ -161,7 +161,7 @@ class HabitFlowApp {
       goalEl.textContent = `Meta: ${goalMl.toLocaleString('es-AR')} ml`;
     }
 
-    // Vasos tomados según Frank Suárez (vaso estándar = 250 ml)
+    // Conteo de vasos (vaso estándar = 250 ml)
     if (glassesEl) {
       const glassesTaken = (totalMl / 250).toFixed(1).replace('.0', '');
       const totalGlassesTarget = Math.round(goalMl / 250);
@@ -489,15 +489,15 @@ class HabitFlowApp {
     if (elDaysMet) elDaysMet.textContent = `${daysMetCount} de 7 días`;
     if (elStreakProgress) elStreakProgress.textContent = `${streak.currentStreak} días seguidos 🔥`;
 
-    // ATP Estimado (Frank Suárez: 1 vaso de agua = energía celular activa)
+    // Energía Vital Estimada (1 vaso de agua = oxigenación celular activa)
     if (elFrankAtp) {
       const estimatedAtpUnits = Math.round(totalWeeklyMl / 250 * 10);
-      elFrankAtp.textContent = `~${estimatedAtpUnits} x 10 Julios ATP`;
+      elFrankAtp.textContent = `~${estimatedAtpUnits} x 10 Julios`;
     }
   }
 
   // ==========================================
-  // SECCIÓN 4: MÁS HÁBITOS Y FRANK SUÁREZ
+  // SECCIÓN 4: MÁS HÁBITOS Y CONSEJOS DE BIENESTAR
   // ==========================================
   renderHabitsSection() {
     if (window.habitsManager) {
@@ -540,7 +540,7 @@ class HabitFlowApp {
       });
     }
 
-    // 4. Modal Calculadora Frank Suárez
+    // 4. Modal Calculadora de Hidratación
     const btnOpenFrankCalc = document.getElementById('btn-open-frank-calc');
     const modalFrank = document.getElementById('frank-calc-modal');
     if (btnOpenFrankCalc && modalFrank) {
@@ -564,7 +564,7 @@ class HabitFlowApp {
       });
     }
 
-    // 4.5. Botón Auto-Distribuir Horarios según la meta de Frank Suárez (ej: 14 vasos)
+    // 4.5. Botón Auto-Distribuir Horarios según la meta (ej: 14 vasos)
     const btnAutoDistribute = document.getElementById('btn-auto-distribute-schedule');
     if (btnAutoDistribute) {
       btnAutoDistribute.addEventListener('click', () => {
@@ -712,9 +712,13 @@ class HabitFlowApp {
   }
 
   // ==========================================
-  // CALCULADORA FRANK SUÁREZ
+  // CALCULADORA DE HIDRATACIÓN
   // ==========================================
   openFrankCalculatorModal() {
+    this.openHydrationCalculatorModal();
+  }
+
+  openHydrationCalculatorModal() {
     const modal = document.getElementById('frank-calc-modal');
     const profile = window.storageManager.getProfile();
     const inputWeight = document.getElementById('frank-input-weight');
@@ -734,7 +738,7 @@ class HabitFlowApp {
   recalcFrankFormula() {
     const inputWeight = document.getElementById('frank-input-weight');
     const weight = Number(inputWeight ? inputWeight.value : 70) || 70;
-    const calc = window.storageManager.calculateFrankGoal(weight);
+    const calc = window.storageManager.calculateHydrationGoal(weight);
 
     const elGlasses = document.getElementById('frank-calc-glasses');
     const elMl = document.getElementById('frank-calc-ml');
@@ -743,14 +747,14 @@ class HabitFlowApp {
     if (elGlasses) elGlasses.textContent = `${calc.glasses} vasos`;
     if (elMl) elMl.textContent = `${calc.ml.toLocaleString('es-AR')} ml diarios`;
     if (elSummary) {
-      elSummary.textContent = `${weight} kg ÷ 7 = ${calc.glasses} vasos de 250 ml`;
+      elSummary.textContent = `${calc.glasses} vasos estándar de 250 ml (${calc.ml.toLocaleString('es-AR')} ml)`;
     }
   }
 
   applyFrankGoal() {
     const inputWeight = document.getElementById('frank-input-weight');
     const weight = Number(inputWeight ? inputWeight.value : 70) || 70;
-    const calc = window.storageManager.calculateFrankGoal(weight);
+    const calc = window.storageManager.calculateHydrationGoal(weight);
 
     const profile = window.storageManager.getProfile();
     profile.weightKg = weight;
@@ -775,7 +779,7 @@ class HabitFlowApp {
 
     if (window.soundEngine) window.soundEngine.playDrinkWater();
     if (window.reminderManager) {
-      window.reminderManager.showToast(`¡Meta de Frank fijada: ${calc.ml} ml (${calc.glasses} vasos)!`);
+      window.reminderManager.showToast(`¡Meta fijada: ${calc.ml.toLocaleString('es-AR')} ml (${calc.glasses} vasos)!`);
     }
 
     this.renderWaterSection();
@@ -825,17 +829,33 @@ class HabitFlowApp {
       });
     }
 
-    // Submit Login
+    // Submit Login con soporte Google Password Manager
     if (formLogin) {
       formLogin.addEventListener('submit', async (e) => {
         e.preventDefault();
         const username = document.getElementById('login-username').value;
         const password = document.getElementById('login-password').value;
         try {
-          await window.authManager.login(username, password);
+          const user = await window.authManager.login(username, password);
+          
+          // Google Password Manager / Smart Lock nativo
+          if (window.PasswordCredential && navigator.credentials && navigator.credentials.store) {
+            try {
+              const cred = new PasswordCredential({
+                id: username,
+                password: password,
+                name: (user && user.name) || username
+              });
+              await navigator.credentials.store(cred);
+            } catch (e) {
+              console.log('Credential store:', e);
+            }
+          }
+
           this.closeModals();
           this.updateUserHeaderUI();
           this.renderWaterSection();
+          this.renderSettingsSection();
           if (window.reminderManager) {
             window.reminderManager.showToast(`¡Bienvenido de vuelta, ${window.authManager.currentUser.name}!`);
           }
@@ -848,7 +868,7 @@ class HabitFlowApp {
       });
     }
 
-    // Submit Registro
+    // Submit Registro con soporte Google Password Manager
     if (formRegister) {
       formRegister.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -860,11 +880,27 @@ class HabitFlowApp {
 
         try {
           const user = await window.authManager.register({ name, username, email, password, weightKg });
+
+          // Google Password Manager / Smart Lock nativo
+          if (window.PasswordCredential && navigator.credentials && navigator.credentials.store) {
+            try {
+              const cred = new PasswordCredential({
+                id: email || username,
+                password: password,
+                name: name || username
+              });
+              await navigator.credentials.store(cred);
+            } catch (e) {
+              console.log('Credential store:', e);
+            }
+          }
+
           this.closeModals();
           this.updateUserHeaderUI();
           this.renderWaterSection();
+          this.renderSettingsSection();
           if (window.reminderManager) {
-            window.reminderManager.showToast(`¡Cuenta creada con éxito! Meta: ${user.recommendedWaterMl} ml.`);
+            window.reminderManager.showToast(`¡Cuenta creada con éxito! Meta: ${user.recommendedWaterMl.toLocaleString('es-AR')} ml.`);
           }
         } catch (err) {
           if (authError) {
@@ -881,14 +917,20 @@ class HabitFlowApp {
       btnProfileRecalc.addEventListener('click', async () => {
         const inputWeight = document.getElementById('profile-input-weight');
         const weight = Number(inputWeight ? inputWeight.value : 70) || 70;
-        const calc = window.storageManager.calculateFrankGoal(weight);
-        if (window.authManager) {
+        const calc = window.storageManager.calculateHydrationGoal(weight);
+        if (window.authManager && window.authManager.isLoggedIn()) {
           await window.authManager.updateProfile({ weightKg: weight, dailyGoalMl: calc.ml });
+        } else {
+          const p = window.storageManager.getProfile();
+          p.weightKg = weight;
+          p.dailyGoal = calc.ml;
+          window.storageManager.saveProfile(p);
+          window.storageManager.setDailyGoal(calc.ml);
         }
         this.openProfileModal(); // refrescar datos mostrados
         this.renderWaterSection();
         if (window.reminderManager) {
-          window.reminderManager.showToast(`Meta actualizada a ${calc.ml} ml (${calc.glasses} vasos)`);
+          window.reminderManager.showToast(`Meta actualizada a ${calc.ml.toLocaleString('es-AR')} ml (${calc.glasses} vasos)`);
         }
       });
     }
@@ -915,10 +957,132 @@ class HabitFlowApp {
         }
       });
     }
+
+    // Inicializar eventos de subida de foto de perfil
+    this.initAvatarUploadEvents();
+  }
+
+  // Helper para renderizar Avatar con foto o inicial elegante
+  renderAvatarElement(containerEl, user, defaultChar = '👤') {
+    if (!containerEl) return;
+    const avatar = user && user.avatar ? user.avatar : null;
+    const name = user && (user.name || user.username) ? (user.name || user.username) : '';
+    const initial = name ? name[0].toUpperCase() : defaultChar;
+
+    if (avatar) {
+      containerEl.innerHTML = '';
+      const img = document.createElement('img');
+      img.src = avatar;
+      img.alt = 'Foto de Perfil';
+      img.className = 'w-full h-full object-cover rounded-full';
+      containerEl.appendChild(img);
+    } else {
+      containerEl.innerHTML = '';
+      const span = document.createElement('span');
+      span.textContent = initial;
+      span.className = 'font-black';
+      containerEl.appendChild(span);
+    }
+  }
+
+  initAvatarUploadEvents() {
+    const fileInput = document.getElementById('input-avatar-photo');
+    if (!fileInput) return;
+
+    const triggers = [
+      document.getElementById('btn-change-avatar-settings'),
+      document.getElementById('btn-change-avatar-profile'),
+      document.getElementById('btn-trigger-upload-photo'),
+      document.getElementById('settings-avatar-container'),
+      document.getElementById('profile-avatar-container')
+    ];
+
+    triggers.forEach((trigger) => {
+      if (trigger) {
+        trigger.addEventListener('click', (e) => {
+          e.stopPropagation();
+          fileInput.click();
+        });
+      }
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      this.processAndSaveAvatar(file);
+      fileInput.value = ''; // permitir volver a seleccionar la misma foto si se desea
+    });
+  }
+
+  processAndSaveAvatar(file) {
+    if (!file.type || !file.type.startsWith('image/')) {
+      if (window.reminderManager) {
+        window.reminderManager.showToast('⚠️ Por favor seleccioná un archivo de imagen válido.');
+      }
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = async () => {
+        // Redimensionar con canvas a 256x256 max para ultraliviano base64
+        const maxDimension = 256;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > maxDimension) {
+            height = Math.round((height * maxDimension) / width);
+            width = maxDimension;
+          }
+        } else {
+          if (height > maxDimension) {
+            width = Math.round((width * maxDimension) / height);
+            height = maxDimension;
+          }
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const base64DataUrl = canvas.toDataURL('image/jpeg', 0.85);
+
+        // Guardar en Auth si está logueado
+        if (window.authManager && window.authManager.isLoggedIn()) {
+          try {
+            await window.authManager.updateAvatar(base64DataUrl);
+          } catch (err) {
+            console.error('Error al guardar avatar en auth:', err);
+          }
+        }
+
+        // Guardar también en profile local
+        const profile = window.storageManager.getProfile();
+        profile.avatar = base64DataUrl;
+        window.storageManager.saveProfile(profile);
+
+        // Actualizar UI inmediatamente
+        this.updateUserHeaderUI();
+        this.renderSettingsSection();
+        this.openProfileModal();
+
+        if (window.soundEngine) window.soundEngine.playSuccess();
+        if (window.reminderManager) {
+          window.reminderManager.showToast('✅ ¡Foto de perfil actualizada con éxito! 📷');
+        }
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
   }
 
   updateUserHeaderUI() {
     const elName = document.getElementById('header-user-name');
+    const elAvatarBox = document.getElementById('header-user-avatar');
     if (!elName) return;
 
     if (window.authManager && window.authManager.isLoggedIn()) {
@@ -926,9 +1090,12 @@ class HabitFlowApp {
       const firstName = (u.name || u.username).split(' ')[0];
       elName.textContent = firstName;
       elName.parentElement.classList.add('border-sky-500/40', 'bg-sky-500/10', 'text-sky-300');
+      this.renderAvatarElement(elAvatarBox, u, '👤');
     } else {
+      const profile = window.storageManager.getProfile();
       elName.textContent = 'Ingresar';
       elName.parentElement.classList.remove('border-sky-500/40', 'bg-sky-500/10', 'text-sky-300');
+      this.renderAvatarElement(elAvatarBox, profile, '👤');
     }
   }
 
@@ -944,22 +1111,23 @@ class HabitFlowApp {
     const modal = document.getElementById('user-profile-modal');
     if (!modal) return;
 
-    const u = window.authManager.currentUser;
-    if (!u) return;
+    const u = (window.authManager && window.authManager.isLoggedIn()) 
+      ? window.authManager.currentUser 
+      : window.storageManager.getProfile();
 
-    const elAvatar = document.getElementById('profile-avatar-letter');
+    const elAvatarBox = document.getElementById('profile-avatar-container');
     const elName = document.getElementById('profile-display-name');
     const elUser = document.getElementById('profile-display-username');
     const inputWeight = document.getElementById('profile-input-weight');
     const elGoal = document.getElementById('profile-display-goal');
     const elGlasses = document.getElementById('profile-display-glasses');
 
-    if (elAvatar) elAvatar.textContent = (u.name || u.username)[0].toUpperCase();
-    if (elName) elName.textContent = u.name || u.username;
-    if (elUser) elUser.textContent = `@${u.username}`;
+    this.renderAvatarElement(elAvatarBox, u, '👤');
+    if (elName) elName.textContent = u.name || u.username || 'Usuario Local';
+    if (elUser) elUser.textContent = u.username ? `@${u.username}` : '@invitado';
     if (inputWeight) inputWeight.value = u.weightKg || 70;
 
-    const goal = u.recommendedWaterMl || 2000;
+    const goal = u.recommendedWaterMl || u.dailyGoal || 2000;
     const glasses = Math.round(goal / 250);
     if (elGoal) elGoal.textContent = `${goal.toLocaleString('es-AR')} ml`;
     if (elGlasses) elGlasses.textContent = `${glasses} vasos de 250 ml`;
@@ -1025,8 +1193,8 @@ class HabitFlowApp {
   }
 
   renderSettingsSection() {
-    // 1. Perfil de Usuario
-    const elAvatar = document.getElementById('settings-avatar-letter');
+    // 1. Perfil de Usuario con Avatar
+    const elAvatarBox = document.getElementById('settings-avatar-container');
     const elName = document.getElementById('settings-display-name');
     const elUser = document.getElementById('settings-display-user');
     const elEmail = document.getElementById('settings-display-email');
@@ -1037,7 +1205,7 @@ class HabitFlowApp {
     const isLoggedIn = window.authManager && window.authManager.isLoggedIn();
     if (isLoggedIn) {
       const u = window.authManager.currentUser;
-      if (elAvatar) elAvatar.textContent = (u.name || u.username)[0].toUpperCase();
+      this.renderAvatarElement(elAvatarBox, u, '👤');
       if (elName) elName.textContent = u.name || u.username;
       if (elUser) elUser.textContent = `@${u.username}`;
       if (elEmail) elEmail.textContent = u.email || 'Cuenta activa';
@@ -1050,7 +1218,7 @@ class HabitFlowApp {
       }
     } else {
       const profile = window.storageManager.getProfile();
-      if (elAvatar) elAvatar.textContent = '👤';
+      this.renderAvatarElement(elAvatarBox, profile, '👤');
       if (elName) elName.textContent = 'Usuario Local';
       if (elUser) elUser.textContent = '@invitado';
       if (elEmail) elEmail.textContent = 'Tocá para registrarte o iniciar sesión';
@@ -1148,7 +1316,7 @@ class HabitFlowApp {
           const glasses = Math.round(w / 7);
           const ml = glasses * 250;
           if (previewCalc) {
-            previewCalc.textContent = `Recomendación Frank Suárez: ${glasses} vasos (${ml.toLocaleString('es-AR')} ml)`;
+            previewCalc.textContent = `Meta sugerida: ${glasses} vasos (${ml.toLocaleString('es-AR')} ml)`;
           }
           if (inputGoal && !inputGoal.dataset.manuallyEdited) {
             inputGoal.value = ml;
@@ -1223,7 +1391,7 @@ class HabitFlowApp {
       }
       const glasses = Math.round((u.weightKg || 70) / 7);
       if (previewCalc) {
-        previewCalc.textContent = `Recomendación Frank Suárez: ${glasses} vasos (${goal.toLocaleString('es-AR')} ml)`;
+        previewCalc.textContent = `Meta sugerida: ${glasses} vasos (${goal.toLocaleString('es-AR')} ml)`;
       }
     } else {
       const p = window.storageManager.getProfile();
@@ -1235,7 +1403,7 @@ class HabitFlowApp {
       }
       const glasses = Math.round((p.weightKg || 70) / 7);
       if (previewCalc) {
-        previewCalc.textContent = `Recomendación Frank Suárez: ${glasses} vasos (${p.dailyGoal.toLocaleString('es-AR')} ml)`;
+        previewCalc.textContent = `Meta sugerida: ${glasses} vasos (${p.dailyGoal.toLocaleString('es-AR')} ml)`;
       }
     }
 
