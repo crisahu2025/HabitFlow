@@ -337,38 +337,42 @@ class ReminderManager {
       const times = this.getActiveTimes();
       const now = new Date();
       const notificationsToSchedule = [];
+      const userName = (window.authManager && window.authManager.currentUser) ? window.authManager.currentUser.name : '';
 
-      times.forEach((timeStr, idx) => {
-        const [h, m] = timeStr.split(':').map(Number);
-        const scheduledDate = new Date();
-        scheduledDate.setHours(h, m, 0, 0);
+      // PROGRAMACIÓN ROBUSTA DE 7 DÍAS EN ADELANTADO (ROLLING WINDOW EXACT ALARMS)
+      // En Android 12/13/14/15, 'repeats: true' no permite alarmas exactas si la app está cerrada.
+      // Al programar cada vaso individual de los próximos 7 días con fecha exacta (at: Date) y allowWhileIdle: true,
+      // el sistema operativo Android programa las alarmas directamente en el kernel (AlarmManager.setExactAndAllowWhileIdle),
+      // garantizando que suenen puntuales aunque la aplicación esté 100% cerrada y la pantalla apagada.
+      for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
+        times.forEach((timeStr, idx) => {
+          const [h, m] = timeStr.split(':').map(Number);
+          const scheduledDate = new Date();
+          scheduledDate.setDate(scheduledDate.getDate() + dayOffset);
+          scheduledDate.setHours(h, m, 0, 0);
 
-        // Si la hora ya pasó hoy, programar para mañana a esa hora
-        if (scheduledDate <= now) {
-          scheduledDate.setDate(scheduledDate.getDate() + 1);
-        }
-
-        notificationsToSchedule.push({
-          id: 1000 + idx,
-          title: '💧 ¡Momento de hidratarte, ' + (window.authManager && window.authManager.currentUser ? window.authManager.currentUser.name : '') + '!',
-          body: 'Tomá un vaso de agua fresca (250 ml) para mantener activas tus mitocondrias (Frank Suárez).',
-          schedule: {
-            at: scheduledDate,
-            repeats: true,
-            every: 'day',
-            allowWhileIdle: true // Permite sonar en Doze mode / pantalla apagada
-          },
-          channelId: 'habitflow_reminders_channel',
-          smallIcon: 'ic_notification_water',
-          iconColor: '#0284c7',
-          actionTypeId: 'WATER_REMINDER_ACTIONS', // Botones: Tomé el Agua / Posponer 10 Min
-          extra: { time: timeStr, amount: 250 }
+          if (scheduledDate > now) {
+            notificationsToSchedule.push({
+              id: (dayOffset * 100) + idx + 1000,
+              title: '💧 ¡Momento de hidratarte' + (userName ? ', ' + userName : '') + '!',
+              body: 'Tomá un vaso de agua fresca (250 ml) para activar tu metabolismo celular (Frank Suárez).',
+              schedule: {
+                at: scheduledDate,
+                allowWhileIdle: true // Permite sonar en Doze mode / pantalla apagada
+              },
+              channelId: 'habitflow_reminders_channel',
+              smallIcon: 'ic_notification_water',
+              iconColor: '#0284c7',
+              actionTypeId: 'WATER_REMINDER_ACTIONS', // Botones: Tomé el Agua / Posponer 10 Min
+              extra: { time: timeStr, amount: 250, dayOffset: dayOffset }
+            });
+          }
         });
-      });
+      }
 
       if (notificationsToSchedule.length > 0) {
         await LocalNotifications.schedule({ notifications: notificationsToSchedule });
-        console.log(`✓ ${notificationsToSchedule.length} recordatorios nativos programados en Android con acciones rápidas!`);
+        console.log(`✓ ${notificationsToSchedule.length} recordatorios nativos exactos programados para 7 días en Android!`);
       }
     } catch (e) {
       console.warn('Error al programar alarmas nativas en Capacitor:', e);
