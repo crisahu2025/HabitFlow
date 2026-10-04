@@ -46,18 +46,20 @@ class ReminderManager {
             actions: [
               {
                 id: 'drank_water',
-                title: '💧 Tomé el Agua'
+                title: '💧 Tomé el Agua',
+                foreground: false
               },
               {
                 id: 'snooze_10',
-                title: '⏰ Posponer 10 Min'
+                title: '⏰ Posponer 10 Min',
+                foreground: false
               }
             ]
           }
         ]
       });
 
-      console.log('✓ Action types de notificaciones registrados (Tomé el Agua / Posponer 10 Min)');
+      console.log('✓ Action types de notificaciones registrados (foreground: false para segundo plano silencioso)');
     } catch (e) {
       console.warn('Error al registrar actionTypes de notificaciones:', e);
     }
@@ -65,8 +67,8 @@ class ReminderManager {
 
   /**
    * Escucha las respuestas del usuario cuando toca un botón de acción en la notificación.
-   * - "drank_water" → registra +250ml automáticamente
-   * - "snooze_10" → reprograma la notificación para 10 minutos después
+   * - "drank_water" → registra +250ml automáticamente sin abrir la app
+   * - "snooze_10" → reprograma la notificación para 10 minutos después en segundo plano sin abrir la app
    * - Tap genérico (sin botón) → abre la app normalmente
    */
   setupNotificationActionListeners() {
@@ -92,14 +94,18 @@ class ReminderManager {
             window.app.renderWaterSection();
           }
         }
-        this.showToast('💧 ¡+250ml registrados desde la notificación!');
+        if (typeof document !== 'undefined' && document.visibilityState === 'visible') {
+          this.showToast('💧 ¡+250ml registrados desde la notificación!');
+        }
         return;
       }
 
       if (actionId === 'snooze_10') {
-        // Reprogramar para 10 minutos después
+        // Reprogramar para 10 minutos después en segundo plano sin abrir la app
         this.scheduleSnoozeNotification(extra);
-        this.showToast('⏰ Recordatorio pospuesto 10 minutos');
+        if (typeof document !== 'undefined' && document.visibilityState === 'visible') {
+          this.showToast('⏰ Recordatorio pospuesto 10 minutos');
+        }
         return;
       }
 

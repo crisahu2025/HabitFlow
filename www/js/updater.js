@@ -6,8 +6,8 @@
  * Code Ahumada • Director Cristian
  */
 
-const CURRENT_VERSION = 'v1.0.20';
-const CURRENT_VERSION_CODE = 20;
+const CURRENT_VERSION = 'v1.0.21';
+const CURRENT_VERSION_CODE = 21;
 const GITHUB_REPO_API = 'https://api.github.com/repos/crisahu2025/HabitFlow/releases/latest';
 
 class UpdateManager {
@@ -24,10 +24,8 @@ class UpdateManager {
     // 1. Notificar al motor de parches que el bundle actual cargó exitosamente
     this.notifyAppReady();
 
-    // 2. Verificación en segundo plano al iniciar la app tras 2.5s
-    setTimeout(() => {
-      this.checkUpdate({ silent: true });
-    }, 2500);
+    // NOTA MANDATO CRISTIAN: Cero verificaciones automáticas al iniciar.
+    // La comprobación de actualizaciones es 100% manual desde Ajustes para evitar carteles intrusivos.
   }
 
   /**
@@ -126,11 +124,8 @@ class UpdateManager {
           btnUpdateText.textContent = `⚡ Aplicar Parche ${this.latestRelease.tag}`;
         }
 
-        // CONTROL ANTI-BUCLE: No molestar en cada apertura si el usuario ya descartó este aviso
-        const dismissedTag = localStorage.getItem('habitflow_dismissed_update');
-        const downloadedTag = localStorage.getItem('habitflow_downloaded_version');
-
-        if (!silent || (dismissedTag !== this.latestRelease.tag && downloadedTag !== this.latestRelease.tag)) {
+        // Modal SOLO si fue solicitado explícitamente por el usuario (!silent)
+        if (!silent) {
           this.showUpdateModal(this.latestRelease);
         }
       } else {
@@ -339,6 +334,21 @@ class UpdateManager {
       btnModalInstall.addEventListener('click', () => {
         if (this.latestRelease) {
           this.startDownloadAndInstall(this.latestRelease);
+        }
+      });
+    }
+
+    // Botón Posponer en Modal
+    const btnModalDismiss = document.getElementById('btn-modal-dismiss-update');
+    if (btnModalDismiss) {
+      btnModalDismiss.addEventListener('click', () => {
+        if (this.latestRelease) {
+          localStorage.setItem('habitflow_dismissed_update', this.latestRelease.tag);
+        }
+        const modal = document.getElementById('apk-update-modal');
+        if (modal) {
+          modal.classList.add('hidden');
+          modal.classList.remove('flex');
         }
       });
     }

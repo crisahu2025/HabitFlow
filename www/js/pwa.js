@@ -48,8 +48,39 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// Captura del evento de instalación nativa (Android / Chrome)
+// Detección de ejecución en app nativa de Capacitor (APK Android)
+function isNativeApp() {
+  return !!(
+    typeof window !== 'undefined' &&
+    window.Capacitor &&
+    (
+      (typeof window.Capacitor.isNativePlatform === 'function' && window.Capacitor.isNativePlatform()) ||
+      (typeof window.Capacitor.getPlatform === 'function' && window.Capacitor.getPlatform() !== 'web')
+    )
+  );
+}
+
+// Limpieza inmediata del banner si es app nativa
+function purgePwaBannerIfNative() {
+  if (isNativeApp()) {
+    const banner = document.getElementById('pwa-install-banner');
+    if (banner) banner.remove();
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', purgePwaBannerIfNative);
+} else {
+  purgePwaBannerIfNative();
+}
+
+// Captura del evento de instalación nativa (Android / Chrome Web)
 window.addEventListener('beforeinstallprompt', (e) => {
+  if (isNativeApp()) {
+    purgePwaBannerIfNative();
+    return;
+  }
+
   e.preventDefault();
   deferredInstallPrompt = e;
 
@@ -77,6 +108,8 @@ window.addEventListener('appinstalled', () => {
  * Disparar el diálogo de instalación nativa
  */
 async function triggerPwaInstall() {
+  if (isNativeApp()) return;
+
   if (!deferredInstallPrompt) {
     // Si no está el prompt nativo disponible (ej: iOS Safari o ya instalada)
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
