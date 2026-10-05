@@ -1,0 +1,6 @@
+android/
+*.apk
+scripts/
+.github/
+node_modules/
+COMO_GENERAR_APK.md
