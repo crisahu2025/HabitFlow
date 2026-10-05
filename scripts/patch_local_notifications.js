@@ -19,12 +19,6 @@ function patchNotificationAction() {
     return;
   }
 
-  let content = fs.readFileSync(filePath, 'utf8');
-  if (content.includes('fun isForeground()')) {
-    console.log('[PATCH] NotificationAction.kt ya está parcheado.');
-    return;
-  }
-
   // Reemplazar clase con soporte de foreground
   const patchedContent = `package com.capacitorjs.plugins.localnotifications
 
@@ -82,11 +76,12 @@ class NotificationAction {
                     if (actions != null) {
                         val typesArray = Array(actions.length()) { i ->
                             val action = JSObject.fromJSONObject(actions.getJSONObject(i))
+                            val isFg = action.getBool("foreground") ?: true
                             NotificationAction(
                                 action.getString("id"),
                                 action.getString("title"),
                                 action.getBool("input"),
-                                action.getBool("foreground", true)
+                                isFg
                             )
                         }
                         actionTypeMap[actionGroupId] = typesArray
@@ -109,7 +104,7 @@ function patchNotificationStorage() {
   const filePath = path.join(baseDir, 'NotificationStorage.kt');
   if (!fs.existsSync(filePath)) return;
 
-  let content = fs.readFileSync(filePath, 'utf8');
+  let content = fs.readFileSync(filePath, 'utf8').replace(/\r\n/g, '\n');
   if (content.includes('foreground$i')) {
     console.log('[PATCH] NotificationStorage.kt ya está parcheado.');
     return;
@@ -135,22 +130,15 @@ function patchLocalNotificationManager() {
   const filePath = path.join(baseDir, 'LocalNotificationManager.kt');
   if (!fs.existsSync(filePath)) return;
 
-  let content = fs.readFileSync(filePath, 'utf8');
+  let content = fs.readFileSync(filePath, 'utf8').replace(/\r\n/g, '\n');
   if (content.includes('NOTIFICATION_ACTION')) {
     console.log('[PATCH] LocalNotificationManager.kt ya está parcheado.');
     return;
   }
 
-  const target = `            for (notificationAction in actionGroup) {
-                val actionIntent = buildIntent(localNotification, notificationAction.id)
-                val actionPendingIntent = PendingIntent.getActivity(
-                    context,
-                    id + (notificationAction.id?.hashCode() ?: 0),
-                    actionIntent,
-                    flags
-                )`;
+  const targetRegex = /for\s*\(\s*notificationAction\s+in\s+actionGroup\s*\)\s*\{[\s\S]*?mBuilder\.addAction\(actionBuilder\.build\(\)\)/;
 
-  const replacement = `            for (notificationAction in actionGroup) {
+  const replacement = `for (notificationAction in actionGroup) {
                 val actionPendingIntent = if (!notificationAction.isForeground()) {
                     val broadcastIntent = Intent("com.codeahumada.habitflow.NOTIFICATION_ACTION").apply {
                         setPackage(context.packageName)
@@ -176,14 +164,24 @@ function patchLocalNotificationManager() {
                         actionIntent,
                         flags
                     )
-                }`;
+                }
+                val actionBuilder = NotificationCompat.Action.Builder(
+                    R.drawable.ic_transparent,
+                    notificationAction.title,
+                    actionPendingIntent
+                )
+                if (notificationAction.isInput()) {
+                    val remoteInput = RemoteInput.Builder(REMOTE_INPUT_KEY).setLabel(notificationAction.title).build()
+                    actionBuilder.addRemoteInput(remoteInput)
+                }
+                mBuilder.addAction(actionBuilder.build())`;
 
-  if (!content.includes(target)) {
-    console.warn('[PATCH] No se encontró el bloque exacto en LocalNotificationManager.kt. Verificando estructura...');
+  if (!targetRegex.test(content)) {
+    console.warn('[PATCH] No se encontró el bloque regex en LocalNotificationManager.kt.');
     return;
   }
 
-  content = content.replace(target, replacement);
+  content = content.replace(targetRegex, replacement);
   fs.writeFileSync(filePath, content, 'utf8');
   console.log('✓ [PATCH] LocalNotificationManager.kt parcheado exitosamente para despachar PendingIntent.getBroadcast sin abrir la app.');
 }
