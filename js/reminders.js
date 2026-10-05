@@ -21,7 +21,10 @@ class ReminderManager {
     this.setupNotificationActionListeners();
     // 3. Iniciar el temporizador visual en vivo
     this.startLiveTimer();
-    // 4. Programar alarmas nativas de Android en segundo plano al iniciar
+    // 4. Sincronizar inmediatamente cualquier agua registrada en segundo plano desde notificaciones
+    this.syncPendingBackgroundWater();
+    this.setupLifecycleListeners();
+    // 5. Programar alarmas nativas de Android en segundo plano al iniciar
     setTimeout(() => {
       this.scheduleAllNativeAndroid();
     }, 1500);
@@ -86,7 +89,10 @@ class ReminderManager {
       console.log(`🔔 Acción de notificación recibida: "${actionId}"`, extra);
 
       if (actionId === 'drank_water') {
-        // Registrar 250ml de agua directamente sin abrir la app
+        if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.NativeWaterSync) {
+          window.Capacitor.Plugins.NativeWaterSync.clearPendingWater().catch(() => {});
+        }
+        // Registrar 250ml de agua directamente
         if (window.storageManager) {
           window.storageManager.addWaterEntry(250, 'Vaso de agua (Notificación)');
           // Si la app está visible, refrescar la UI
@@ -114,6 +120,79 @@ class ReminderManager {
     });
 
     console.log('✓ Listeners de acciones de notificación configurados');
+  }
+
+  /**
+   * Configura listeners del ciclo de vida para sincronizar tomas registradas en segundo plano
+   * cuando la app vuelve a primer plano o cuando el receptor nativo emite un evento en vivo.
+   */
+  setupLifecycleListeners() {
+    if (typeof document !== 'undefined') {
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          this.syncPendingBackgroundWater();
+        }
+      });
+      window.addEventListener('focus', () => {
+        this.syncPendingBackgroundWater();
+      });
+    }
+
+    if (window.Capacitor && window.Capacitor.Plugins) {
+      if (window.Capacitor.Plugins.App) {
+        window.Capacitor.Plugins.App.addListener('appStateChange', (state) => {
+          if (state && state.isActive) {
+            this.syncPendingBackgroundWater();
+          }
+        });
+      }
+
+      if (window.Capacitor.Plugins.NativeWaterSync) {
+        window.Capacitor.Plugins.NativeWaterSync.addListener('onBackgroundWaterAdded', (data) => {
+          console.log('🔔 Evento nativo onBackgroundWaterAdded recibido en vivo:', data);
+          this.syncPendingBackgroundWater();
+        });
+      }
+    }
+  }
+
+  /**
+   * Sincroniza el agua que el usuario registró directamente desde las notificaciones
+   * en segundo plano mientras la app estaba cerrada o en segundo plano.
+   */
+  async syncPendingBackgroundWater() {
+    if (!window.Capacitor || !window.Capacitor.Plugins || !window.Capacitor.Plugins.NativeWaterSync) {
+      return;
+    }
+
+    try {
+      const { NativeWaterSync } = window.Capacitor.Plugins;
+      const res = await NativeWaterSync.getPendingWater();
+
+      if (res && res.pendingMl > 0) {
+        console.log(`💧 Sincronizando +${res.pendingMl}ml registrados en segundo plano desde notificaciones...`);
+        const count = res.count || Math.max(1, Math.round(res.pendingMl / 250));
+        const amountPerEntry = Math.round(res.pendingMl / count);
+
+        if (window.storageManager) {
+          for (let i = 0; i < count; i++) {
+            window.storageManager.addWaterEntry(amountPerEntry, 'Vaso de agua (Notificación)');
+          }
+        }
+
+        await NativeWaterSync.clearPendingWater();
+
+        if (window.app && typeof window.app.renderWaterSection === 'function') {
+          window.app.renderWaterSection();
+        }
+
+        if (typeof document !== 'undefined' && document.visibilityState === 'visible') {
+          this.showToast(`💧 ¡Sincronizados +${res.pendingMl}ml registrados desde la notificación!`);
+        }
+      }
+    } catch (e) {
+      console.warn('Error al sincronizar tomas de agua pendientes de segundo plano:', e);
+    }
   }
 
   /**

@@ -32,14 +32,19 @@
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths"></meta-data>
-        </provider>
+        <!-- Receptores para acciones de notificaciones en segundo plano sin abrir MainActivity -->
+        <receiver
+            android:name=".NotificationActionReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.codeahumada.habitflow.NOTIFICATION_ACTION" />
+            </intent-filter>
+        </receiver>
 
-        <!-- Google AdMob: Preparado para monetización (descomentar al activar cuenta AdMob) -->
-        <!--
-        <meta-data
-            android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713"/>
-        -->
+        <receiver
+            android:name=".SnoozeAlarmReceiver"
+            android:exported="false" />
+
     </application>
 
     <!-- Permissions -->

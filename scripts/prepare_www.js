@@ -34,4 +34,12 @@ for (const item of itemsToCopy) {
   }
 }
 
+// Aplicar parche a @capacitor/local-notifications para soporte background foreground:false
+try {
+  const patchNotifications = require('./patch_local_notifications');
+  patchNotifications();
+} catch (e) {
+  console.warn('Advertencia al aplicar parche de notificaciones:', e.message);
+}
+
 console.log('✨ Build www completado para Capacitor Android!');
