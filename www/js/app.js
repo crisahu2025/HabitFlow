@@ -14,6 +14,8 @@ class HabitFlowApp {
     this.setupTabNavigation();
     this.setupEventListeners();
     this.setupSettingsListeners();
+    this.setupAuthListeners();
+    this.checkInitialAuthGateway();
     this.ensureScheduleMatchesGoal();
     this.renderWaterSection();
     this.renderScheduleSection();
@@ -870,9 +872,8 @@ class HabitFlowApp {
           this.updateUserHeaderUI();
           this.renderWaterSection();
           this.renderSettingsSection();
-          if (window.reminderManager) {
-            window.reminderManager.showToast(`¡Bienvenido de vuelta, ${window.authManager.currentUser.name}!`);
-          }
+          localStorage.removeItem('habitflow_guest_mode');
+          this.openWelcomeModal(user);
         } catch (err) {
           if (authError) {
             authError.textContent = err.message || 'Error al iniciar sesión';
@@ -913,6 +914,7 @@ class HabitFlowApp {
           this.updateUserHeaderUI();
           this.renderWaterSection();
           this.renderSettingsSection();
+          localStorage.removeItem('habitflow_guest_mode');
           this.openWelcomeModal(user);
         } catch (err) {
           if (authError) {
@@ -920,6 +922,30 @@ class HabitFlowApp {
             authError.classList.remove('hidden');
           }
         }
+      });
+    }
+
+    // Botón Continuar sin Cuenta (Modo Invitado)
+    const btnGuest = document.getElementById('btn-continue-as-guest');
+    if (btnGuest) {
+      btnGuest.addEventListener('click', () => {
+        if (window.soundEngine) window.soundEngine.playTap();
+        localStorage.setItem('habitflow_guest_mode', 'true');
+        this.closeModals();
+        if (window.reminderManager) {
+          window.reminderManager.showToast('🚀 Iniciando en Modo Invitado. ¡Tus datos se guardarán localmente!');
+        }
+      });
+    }
+
+    // Botón Cerrar en Modal de Autenticación
+    const btnCloseAuth = document.getElementById('btn-close-auth-modal');
+    if (btnCloseAuth) {
+      btnCloseAuth.addEventListener('click', () => {
+        if (!window.authManager || !window.authManager.isLoggedIn()) {
+          localStorage.setItem('habitflow_guest_mode', 'true');
+        }
+        this.closeModals();
       });
     }
 
@@ -952,6 +978,7 @@ class HabitFlowApp {
     if (btnLogout) {
       btnLogout.addEventListener('click', () => {
         if (confirm('¿Deseás cerrar tu sesión en HabitFlow?')) {
+          localStorage.removeItem('habitflow_guest_mode');
           window.authManager.logout();
         }
       });
@@ -1108,6 +1135,26 @@ class HabitFlowApp {
       elName.textContent = 'Ingresar';
       elName.parentElement.classList.remove('border-sky-500/40', 'bg-sky-500/10', 'text-sky-300');
       this.renderAvatarElement(elAvatarBox, profile, '👤');
+    }
+  }
+
+  checkInitialAuthGateway() {
+    const isLoggedIn = window.authManager && window.authManager.isLoggedIn();
+    const isGuest = localStorage.getItem('habitflow_guest_mode') === 'true';
+
+    if (isLoggedIn) {
+      const u = window.authManager.currentUser;
+      if (window.reminderManager && u) {
+        setTimeout(() => {
+          const firstName = (u.name || u.username || '').split(' ')[0];
+          window.reminderManager.showToast(`💧 ¡Hola, ${firstName}! Bienvenido/a de vuelta a HabitFlow.`);
+        }, 500);
+      }
+    } else if (!isGuest) {
+      // Si el usuario no inició sesión ni eligió continuar como invitado, mostrar la pantalla de bienvenida / login de entrada
+      setTimeout(() => {
+        this.openAuthModal();
+      }, 350);
     }
   }
 
@@ -1469,9 +1516,6 @@ class HabitFlowApp {
 // Inicialización global
 document.addEventListener('DOMContentLoaded', () => {
   window.app = new HabitFlowApp();
-  if (window.app.setupAuthListeners) {
-    window.app.setupAuthListeners();
-  }
 
   // Escuchar mensajes del Service Worker (acciones de notificación en modo Web/PWA)
   if ('serviceWorker' in navigator) {

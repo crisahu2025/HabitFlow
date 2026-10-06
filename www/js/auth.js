@@ -229,6 +229,7 @@ class AuthManager {
 
   logout() {
     this.clearSession();
+    localStorage.removeItem('habitflow_guest_mode');
     window.location.reload();
   }
 }

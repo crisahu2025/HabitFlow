@@ -600,11 +600,11 @@
       <div class="glass-card p-4 rounded-2xl border border-slate-800 flex flex-col gap-3">
         <div class="flex items-center justify-between">
           <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Actualizaciones de APK</span>
-          <span id="apk-installed-version-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">v1.0.27</span>
+          <span id="apk-installed-version-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">v1.0.28</span>
         </div>
         <div class="flex items-center justify-between text-xs text-slate-300">
           <span>Versión Instalada:</span>
-          <span id="apk-installed-version-text" class="font-extrabold text-white">v1.0.27 (Android APK Nativo)</span>
+          <span id="apk-installed-version-text" class="font-extrabold text-white">v1.0.28 (Android APK Nativo)</span>
         </div>
         <div class="flex items-center justify-between text-xs text-slate-300">
           <span>Estado del Sistema:</span>
@@ -642,7 +642,7 @@
         </p>
         <div class="text-[10px] text-slate-500 pt-1 border-t border-slate-800 flex items-center justify-between">
           <span>© 2026 Code Ahumada</span>
-          <span>Versión 1.0.7</span>
+          <span>Versión 1.0.28</span>
         </div>
       </div>
     </section>
@@ -802,14 +802,16 @@
   <div id="auth-modal" class="app-modal hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md items-center justify-center p-4">
     <div class="glass-card max-w-sm w-full p-5 rounded-3xl border border-sky-400/30 flex flex-col gap-4 max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between">
-        <div class="flex items-center gap-2">
-          <span class="text-2xl">👤</span>
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-sky-500 to-cyan-400 text-white flex items-center justify-center text-xl shadow-md shadow-sky-500/20">
+            💧
+          </div>
           <div>
-            <h3 id="auth-modal-title" class="text-sm font-extrabold text-white">Mi Cuenta HabitFlow</h3>
-            <p class="text-[10px] text-slate-400">Tus hábitos y metas sincronizados en tu celular</p>
+            <h3 id="auth-modal-title" class="text-sm font-extrabold text-white">¡Bienvenido a HabitFlow!</h3>
+            <p class="text-[10px] text-slate-300">Guardá tus hábitos y tu meta de agua en tu cuenta</p>
           </div>
         </div>
-        <button type="button" class="btn-close-modal text-slate-400 hover:text-white p-1 text-sm">✕</button>
+        <button id="btn-close-auth-modal" type="button" class="btn-close-modal text-slate-400 hover:text-white p-1 text-sm">✕</button>
       </div>
 
       <!-- Selector de pestaña: Login / Registro -->
@@ -835,8 +837,8 @@
           <label class="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1">Contraseña o PIN</label>
           <input id="login-password" name="password" type="password" required autocomplete="current-password" placeholder="••••••••" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs focus:outline-none focus:border-sky-500">
         </div>
-        <button type="submit" class="w-full mt-2 py-3 rounded-2xl bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-400 hover:to-cyan-400 text-white font-extrabold text-xs shadow-lg shadow-sky-500/25 active:scale-95 transition-all">
-          Entrar a mi Cuenta
+        <button type="submit" class="w-full mt-1 py-3 rounded-2xl bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-400 hover:to-cyan-400 text-white font-extrabold text-xs shadow-lg shadow-sky-500/25 active:scale-95 transition-all">
+          🔑 Entrar a mi Cuenta
         </button>
       </form>
 
@@ -866,10 +868,18 @@
           </div>
           <p class="text-[10px] text-sky-400 mt-1">Calcularemos tu meta diaria automáticamente según tu peso.</p>
         </div>
-        <button type="submit" class="w-full mt-2 py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-extrabold text-xs shadow-lg shadow-emerald-500/25 active:scale-95 transition-all">
-          Crear mi Cuenta y Comenzar
+        <button type="submit" class="w-full mt-1 py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-extrabold text-xs shadow-lg shadow-emerald-500/25 active:scale-95 transition-all">
+          ✨ Crear mi Cuenta y Comenzar
         </button>
       </form>
+
+      <!-- OPCIÓN INVITADO: CONTINUAR SIN CUENTA -->
+      <div class="pt-2 border-t border-slate-800/80 flex flex-col items-center gap-1.5 text-center">
+        <button id="btn-continue-as-guest" type="button" class="w-full py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 font-bold text-xs flex items-center justify-center gap-2 active:scale-95 transition-all">
+          <span>🚀 Continuar sin cuenta (Modo Invitado)</span>
+        </button>
+        <p class="text-[10px] text-slate-400">Tus datos se guardarán localmente en este dispositivo.</p>
+      </div>
     </div>
   </div>
 
@@ -998,11 +1008,11 @@
       <div class="p-3 rounded-2xl bg-slate-900 border border-slate-800 text-xs flex flex-col gap-1.5">
         <div class="flex items-center justify-between text-slate-400">
           <span>Versión instalada:</span>
-          <span id="modal-update-installed-version" class="font-bold text-slate-300">v1.0.27</span>
+          <span id="modal-update-installed-version" class="font-bold text-slate-300">v1.0.28</span>
         </div>
         <div class="flex items-center justify-between text-slate-400">
           <span>Nueva versión:</span>
-          <span id="modal-update-version-label" class="font-extrabold text-emerald-400">v1.0.27</span>
+          <span id="modal-update-version-label" class="font-extrabold text-emerald-400">v1.0.28</span>
         </div>
       </div>
 
@@ -1069,15 +1079,15 @@
   <!-- INPUT OCULTO DE SUBIDA DE FOTO DE PERFIL (Cámara o Galería) -->
   <input type="file" id="input-avatar-photo" accept="image/*" class="hidden">
 
-  <!-- SCRIPTS MODULARES CON VERSIONADO QUERY PARAMS (?v=2.7) -->
-  <script src="./js/storage.js?v=2.7"></script>
-  <script src="./js/auth.js?v=2.7"></script>
-  <script src="./js/audio.js?v=2.7"></script>
-  <script src="./js/reminders.js?v=2.7"></script>
-  <script src="./js/habits.js?v=2.7"></script>
-  <script src="./js/updater.js?v=2.7"></script>
-  <script src="./js/ads.js?v=2.7"></script>
-  <script src="./js/app.js?v=2.7"></script>
-  <script src="./js/pwa.js?v=2.7"></script>
+  <!-- SCRIPTS MODULARES CON VERSIONADO QUERY PARAMS (?v=2.8) -->
+  <script src="./js/storage.js?v=2.8"></script>
+  <script src="./js/auth.js?v=2.8"></script>
+  <script src="./js/audio.js?v=2.8"></script>
+  <script src="./js/reminders.js?v=2.8"></script>
+  <script src="./js/habits.js?v=2.8"></script>
+  <script src="./js/updater.js?v=2.8"></script>
+  <script src="./js/ads.js?v=2.8"></script>
+  <script src="./js/app.js?v=2.8"></script>
+  <script src="./js/pwa.js?v=2.8"></script>
 </body>
 </html>
