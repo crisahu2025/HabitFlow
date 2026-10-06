@@ -57,6 +57,150 @@
 </head>
 <body class="bg-[#070d1e] text-slate-100 min-h-screen selection:bg-sky-500/30">
 
+  <!-- ======================================================== -->
+  <!-- PANTALLA COMPLETA DE BIENVENIDA Y ACCESO (GATEWAY ONBOARDING) -->
+  <!-- ======================================================== -->
+  <div id="gateway-welcome-screen" class="hidden fixed inset-0 z-[100] bg-[#070d1e] flex-col justify-between p-6 overflow-y-auto">
+    <div class="max-w-md w-full mx-auto flex flex-col h-full justify-between gap-6 py-4 min-h-[550px]">
+
+      <!-- Header de la Pantalla de Entrada -->
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <img src="./icons/icon-192.png" alt="HabitFlow" class="w-8 h-8 rounded-xl border border-sky-400/40 shadow">
+          <span class="text-xs font-extrabold uppercase tracking-widest text-sky-400">HabitFlow</span>
+        </div>
+        <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-sky-500/10 text-sky-300 border border-sky-500/20">Code Ahumada</span>
+      </div>
+
+      <!-- VISTA 1: MENÚ PRINCIPAL DE OPCIONES -->
+      <div id="gateway-view-options" class="flex flex-col items-center text-center gap-6 my-auto">
+        <div class="relative">
+          <div class="w-24 h-24 rounded-3xl bg-gradient-to-tr from-sky-500 via-sky-400 to-cyan-300 text-white flex items-center justify-center text-5xl shadow-2xl shadow-sky-500/40 border border-sky-200/40 animate-bounce">
+            💧
+          </div>
+          <div class="absolute -inset-4 bg-sky-500/20 rounded-full blur-2xl -z-10 pointer-events-none"></div>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <h2 class="text-2xl font-black text-white tracking-tight">¡Bienvenido a HabitFlow!</h2>
+          <p class="text-xs text-slate-300 max-w-xs leading-relaxed">
+            Tu compañero inteligente para crear hábitos saludables y alcanzar tu meta de hidratación diaria.
+          </p>
+        </div>
+
+        <!-- Botones de Acción de Entrada -->
+        <div class="w-full flex flex-col gap-3 pt-2">
+          <button id="btn-gateway-choose-login" type="button" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-sky-500 via-sky-400 to-cyan-400 hover:from-sky-400 hover:to-cyan-300 text-white font-extrabold text-sm shadow-xl shadow-sky-500/30 flex items-center justify-center gap-2.5 active:scale-95 transition-all">
+            <span>🔑 Iniciar Sesión</span>
+          </button>
+          <button id="btn-gateway-choose-register" type="button" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-extrabold text-sm shadow-xl shadow-emerald-500/25 flex items-center justify-center gap-2.5 active:scale-95 transition-all">
+            <span>✨ Crear mi Cuenta</span>
+          </button>
+          <button id="btn-gateway-choose-guest" type="button" class="w-full py-3 rounded-2xl bg-slate-900/90 hover:bg-slate-800 text-slate-300 font-bold text-xs border border-slate-800 flex items-center justify-center gap-2 active:scale-95 transition-all">
+            <span>🚀 Iniciar sin Sesión (Modo Local)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- VISTA 2: FORMULARIO INICIAR SESIÓN -->
+      <div id="gateway-view-login" class="hidden flex flex-col gap-4 my-auto glass-card p-6 rounded-3xl border border-sky-500/30">
+        <button id="btn-back-from-login" type="button" class="self-start text-xs font-bold text-sky-400 hover:text-sky-300 flex items-center gap-1">
+          ← Volver a opciones
+        </button>
+        <div>
+          <h3 class="text-lg font-black text-white">Iniciar Sesión</h3>
+          <p class="text-xs text-slate-400">Ingresá tus credenciales para cargar tu cuenta</p>
+        </div>
+        <div id="gateway-login-error" class="hidden p-2.5 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-300 text-xs font-medium"></div>
+        <form id="gateway-form-login" class="flex flex-col gap-3">
+          <div>
+            <label class="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1">Usuario o Email</label>
+            <input id="gateway-login-user" type="text" required placeholder="ej: cristian" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs focus:outline-none focus:border-sky-500">
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1">Contraseña o PIN</label>
+            <input id="gateway-login-pass" type="password" required placeholder="••••••••" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs focus:outline-none focus:border-sky-500">
+          </div>
+          <button type="submit" class="w-full mt-2 py-3.5 rounded-2xl bg-gradient-to-r from-sky-500 to-cyan-500 text-white font-extrabold text-xs shadow-lg shadow-sky-500/25 active:scale-95 transition-all">
+            🔑 Entrar a mi Cuenta
+          </button>
+        </form>
+      </div>
+
+      <!-- VISTA 3: FORMULARIO CREAR CUENTA -->
+      <div id="gateway-view-register" class="hidden flex flex-col gap-4 my-auto glass-card p-6 rounded-3xl border border-emerald-500/30">
+        <button id="btn-back-from-register" type="button" class="self-start text-xs font-bold text-sky-400 hover:text-sky-300 flex items-center gap-1">
+          ← Volver a opciones
+        </button>
+        <div>
+          <h3 class="text-lg font-black text-white">Crear mi Cuenta</h3>
+          <p class="text-xs text-slate-400">Personalizaremos tu meta diaria según tu peso</p>
+        </div>
+        <div id="gateway-register-error" class="hidden p-2.5 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-300 text-xs font-medium"></div>
+        <form id="gateway-form-register" class="flex flex-col gap-2.5">
+          <div>
+            <label class="block text-[10px] font-bold text-slate-300 uppercase tracking-wider mb-0.5">Nombre Completo</label>
+            <input id="gateway-reg-name" type="text" required placeholder="ej: Cristian Ahumada" class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs focus:outline-none focus:border-sky-500">
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-300 uppercase tracking-wider mb-0.5">Nombre de Usuario</label>
+            <input id="gateway-reg-user" type="text" required placeholder="ej: cristian" class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs focus:outline-none focus:border-sky-500">
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-300 uppercase tracking-wider mb-0.5">Correo (opcional)</label>
+            <input id="gateway-reg-email" type="email" placeholder="ej: correo@ejemplo.com" class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs focus:outline-none focus:border-sky-500">
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-300 uppercase tracking-wider mb-0.5">Contraseña</label>
+            <input id="gateway-reg-pass" type="password" required placeholder="Mínimo 4 caracteres" class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs focus:outline-none focus:border-sky-500">
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-300 uppercase tracking-wider mb-0.5">Peso Corporal (kg)</label>
+            <div class="relative">
+              <input id="gateway-reg-weight" type="number" required min="30" max="250" placeholder="70" class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs focus:outline-none focus:border-sky-500">
+              <span class="absolute right-3 top-2 text-xs text-slate-400 font-bold">kg</span>
+            </div>
+          </div>
+          <button type="submit" class="w-full mt-1.5 py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-extrabold text-xs shadow-lg shadow-emerald-500/25 active:scale-95 transition-all">
+            ✨ Guardar Cuenta y Continuar
+          </button>
+        </form>
+      </div>
+
+      <!-- VISTA 4: PANTALLA DE BIENVENIDA Y ARRANQUE -->
+      <div id="gateway-view-welcome" class="hidden flex flex-col items-center text-center gap-5 my-auto">
+        <div class="w-20 h-20 rounded-3xl bg-gradient-to-tr from-sky-500 via-sky-400 to-cyan-300 text-white flex items-center justify-center text-4xl shadow-2xl shadow-sky-500/40 border border-sky-300/40 animate-pulse">
+          🎉
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <h2 id="gateway-welcome-user-title" class="text-2xl font-black text-white">¡Bienvenido a HabitFlow!</h2>
+          <p id="gateway-welcome-user-subtitle" class="text-xs text-slate-300 max-w-xs leading-relaxed">
+            Tu cuenta y tu meta personalizada de hidratación están listas.
+          </p>
+        </div>
+
+        <div class="w-full p-4 rounded-2xl bg-slate-900/90 border border-sky-500/30 flex items-center justify-between px-5">
+          <div class="text-left">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Tu Meta de Agua</span>
+            <span id="gateway-welcome-glasses" class="text-xs font-semibold text-sky-300">8 vasos al día</span>
+          </div>
+          <div class="text-right">
+            <span id="gateway-welcome-ml" class="text-xl font-black bg-gradient-to-r from-sky-400 to-cyan-300 bg-clip-text text-transparent">2.000 ml</span>
+          </div>
+        </div>
+
+        <button id="btn-gateway-start-app" type="button" class="w-full py-4 rounded-2xl bg-gradient-to-r from-sky-500 via-sky-400 to-cyan-400 hover:from-sky-400 hover:to-cyan-300 text-white font-extrabold text-sm shadow-2xl shadow-sky-500/35 active:scale-95 transition-all flex items-center justify-center gap-2">
+          <span>Comenzar mi día 💧</span>
+        </button>
+      </div>
+
+      <!-- Footer inferior -->
+      <div class="text-center text-[10px] text-slate-400">
+        Hábitos e Hidratación Inteligente • Dr. Frank Suárez
+      </div>
+    </div>
+  </div>
+
   <!-- CONTENEDOR MÓVIL PRINCIPAL (Centrado en Desktop como Smartphone flotante) -->
   <div class="max-w-md mx-auto min-h-screen flex flex-col relative px-4 pt-4 pb-28 md:shadow-2xl md:border-x md:border-slate-800/60 md:bg-[#091124]">
 
@@ -600,11 +744,11 @@
       <div class="glass-card p-4 rounded-2xl border border-slate-800 flex flex-col gap-3">
         <div class="flex items-center justify-between">
           <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Actualizaciones de APK</span>
-          <span id="apk-installed-version-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">v1.0.28</span>
+          <span id="apk-installed-version-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">v1.0.29</span>
         </div>
         <div class="flex items-center justify-between text-xs text-slate-300">
           <span>Versión Instalada:</span>
-          <span id="apk-installed-version-text" class="font-extrabold text-white">v1.0.28 (Android APK Nativo)</span>
+          <span id="apk-installed-version-text" class="font-extrabold text-white">v1.0.29 (Android APK Nativo)</span>
         </div>
         <div class="flex items-center justify-between text-xs text-slate-300">
           <span>Estado del Sistema:</span>
@@ -642,7 +786,7 @@
         </p>
         <div class="text-[10px] text-slate-500 pt-1 border-t border-slate-800 flex items-center justify-between">
           <span>© 2026 Code Ahumada</span>
-          <span>Versión 1.0.28</span>
+          <span>Versión 1.0.29</span>
         </div>
       </div>
     </section>
@@ -1008,11 +1152,11 @@
       <div class="p-3 rounded-2xl bg-slate-900 border border-slate-800 text-xs flex flex-col gap-1.5">
         <div class="flex items-center justify-between text-slate-400">
           <span>Versión instalada:</span>
-          <span id="modal-update-installed-version" class="font-bold text-slate-300">v1.0.28</span>
+          <span id="modal-update-installed-version" class="font-bold text-slate-300">v1.0.29</span>
         </div>
         <div class="flex items-center justify-between text-slate-400">
           <span>Nueva versión:</span>
-          <span id="modal-update-version-label" class="font-extrabold text-emerald-400">v1.0.28</span>
+          <span id="modal-update-version-label" class="font-extrabold text-emerald-400">v1.0.29</span>
         </div>
       </div>
 
@@ -1079,15 +1223,15 @@
   <!-- INPUT OCULTO DE SUBIDA DE FOTO DE PERFIL (Cámara o Galería) -->
   <input type="file" id="input-avatar-photo" accept="image/*" class="hidden">
 
-  <!-- SCRIPTS MODULARES CON VERSIONADO QUERY PARAMS (?v=2.8) -->
-  <script src="./js/storage.js?v=2.8"></script>
-  <script src="./js/auth.js?v=2.8"></script>
-  <script src="./js/audio.js?v=2.8"></script>
-  <script src="./js/reminders.js?v=2.8"></script>
-  <script src="./js/habits.js?v=2.8"></script>
-  <script src="./js/updater.js?v=2.8"></script>
-  <script src="./js/ads.js?v=2.8"></script>
-  <script src="./js/app.js?v=2.8"></script>
-  <script src="./js/pwa.js?v=2.8"></script>
+  <!-- SCRIPTS MODULARES CON VERSIONADO QUERY PARAMS (?v=2.9) -->
+  <script src="./js/storage.js?v=2.9"></script>
+  <script src="./js/auth.js?v=2.9"></script>
+  <script src="./js/audio.js?v=2.9"></script>
+  <script src="./js/reminders.js?v=2.9"></script>
+  <script src="./js/habits.js?v=2.9"></script>
+  <script src="./js/updater.js?v=2.9"></script>
+  <script src="./js/ads.js?v=2.9"></script>
+  <script src="./js/app.js?v=2.9"></script>
+  <script src="./js/pwa.js?v=2.9"></script>
 </body>
 </html>

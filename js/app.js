@@ -15,6 +15,7 @@ class HabitFlowApp {
     this.setupEventListeners();
     this.setupSettingsListeners();
     this.setupAuthListeners();
+    this.setupGatewayScreen();
     this.checkInitialAuthGateway();
     this.ensureScheduleMatchesGoal();
     this.renderWaterSection();
@@ -1139,10 +1140,16 @@ class HabitFlowApp {
   }
 
   checkInitialAuthGateway() {
+    const screen = document.getElementById('gateway-welcome-screen');
     const isLoggedIn = window.authManager && window.authManager.isLoggedIn();
     const isGuest = localStorage.getItem('habitflow_guest_mode') === 'true';
 
     if (isLoggedIn) {
+      // Ya tiene cuenta activa: ocultar gateway y saludar
+      if (screen) {
+        screen.classList.add('hidden');
+        screen.classList.remove('flex');
+      }
       const u = window.authManager.currentUser;
       if (window.reminderManager && u) {
         setTimeout(() => {
@@ -1150,11 +1157,189 @@ class HabitFlowApp {
           window.reminderManager.showToast(`💧 ¡Hola, ${firstName}! Bienvenido/a de vuelta a HabitFlow.`);
         }, 500);
       }
-    } else if (!isGuest) {
-      // Si el usuario no inició sesión ni eligió continuar como invitado, mostrar la pantalla de bienvenida / login de entrada
-      setTimeout(() => {
-        this.openAuthModal();
-      }, 350);
+    } else if (isGuest) {
+      // Modo invitado recordado
+      if (screen) {
+        screen.classList.add('hidden');
+        screen.classList.remove('flex');
+      }
+    } else {
+      // NO logueado y NO invitado: mostrar pantalla completa de bienvenida y acceso
+      if (screen) {
+        screen.classList.remove('hidden');
+        screen.classList.add('flex');
+      }
+    }
+  }
+
+  setupGatewayScreen() {
+    const screen = document.getElementById('gateway-welcome-screen');
+    if (!screen) return;
+
+    const viewOptions = document.getElementById('gateway-view-options');
+    const viewLogin = document.getElementById('gateway-view-login');
+    const viewRegister = document.getElementById('gateway-view-register');
+    const viewWelcome = document.getElementById('gateway-view-welcome');
+
+    const switchGatewayView = (viewToShow) => {
+      [viewOptions, viewLogin, viewRegister, viewWelcome].forEach(v => {
+        if (v) {
+          v.classList.add('hidden');
+          v.classList.remove('flex');
+        }
+      });
+      if (viewToShow) {
+        viewToShow.classList.remove('hidden');
+        viewToShow.classList.add('flex');
+      }
+    };
+
+    // Navegación de opciones de entrada
+    const btnChooseLogin = document.getElementById('btn-gateway-choose-login');
+    if (btnChooseLogin) {
+      btnChooseLogin.addEventListener('click', () => {
+        if (window.soundEngine) window.soundEngine.playTap();
+        switchGatewayView(viewLogin);
+      });
+    }
+
+    const btnChooseRegister = document.getElementById('btn-gateway-choose-register');
+    if (btnChooseRegister) {
+      btnChooseRegister.addEventListener('click', () => {
+        if (window.soundEngine) window.soundEngine.playTap();
+        switchGatewayView(viewRegister);
+      });
+    }
+
+    const btnBackLogin = document.getElementById('btn-back-from-login');
+    if (btnBackLogin) {
+      btnBackLogin.addEventListener('click', () => {
+        if (window.soundEngine) window.soundEngine.playTap();
+        switchGatewayView(viewOptions);
+      });
+    }
+
+    const btnBackReg = document.getElementById('btn-back-from-register');
+    if (btnBackReg) {
+      btnBackReg.addEventListener('click', () => {
+        if (window.soundEngine) window.soundEngine.playTap();
+        switchGatewayView(viewOptions);
+      });
+    }
+
+    // Submit Login desde Gateway
+    const formLogin = document.getElementById('gateway-form-login');
+    const errLogin = document.getElementById('gateway-login-error');
+    if (formLogin) {
+      formLogin.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const userVal = document.getElementById('gateway-login-user').value;
+        const passVal = document.getElementById('gateway-login-pass').value;
+        try {
+          const user = await window.authManager.login(userVal, passVal);
+          localStorage.removeItem('habitflow_guest_mode');
+          this.showGatewayWelcomeScreen(user);
+        } catch (err) {
+          if (errLogin) {
+            errLogin.textContent = err.message || 'Error al iniciar sesión';
+            errLogin.classList.remove('hidden');
+          }
+        }
+      });
+    }
+
+    // Submit Registro desde Gateway
+    const formReg = document.getElementById('gateway-form-register');
+    const errReg = document.getElementById('gateway-register-error');
+    if (formReg) {
+      formReg.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = document.getElementById('gateway-reg-name').value;
+        const username = document.getElementById('gateway-reg-user').value;
+        const email = document.getElementById('gateway-reg-email').value;
+        const password = document.getElementById('gateway-reg-pass').value;
+        const weightKg = document.getElementById('gateway-reg-weight').value;
+
+        try {
+          const user = await window.authManager.register({ name, username, email, password, weightKg });
+          localStorage.removeItem('habitflow_guest_mode');
+          this.showGatewayWelcomeScreen(user);
+        } catch (err) {
+          if (errReg) {
+            errReg.textContent = err.message || 'Error al crear cuenta';
+            errReg.classList.remove('hidden');
+          }
+        }
+      });
+    }
+
+    // Iniciar sin Sesión (Modo Local / Invitado)
+    const btnGuest = document.getElementById('btn-gateway-choose-guest');
+    if (btnGuest) {
+      btnGuest.addEventListener('click', () => {
+        if (window.soundEngine) window.soundEngine.playTap();
+        localStorage.setItem('habitflow_guest_mode', 'true');
+        this.showGatewayWelcomeScreen(null);
+      });
+    }
+
+    // Botón Comenzar en Vista de Bienvenida de Gateway
+    const btnStart = document.getElementById('btn-gateway-start-app');
+    if (btnStart) {
+      btnStart.addEventListener('click', () => {
+        if (window.soundEngine) window.soundEngine.playTap();
+        screen.classList.add('opacity-0');
+        setTimeout(() => {
+          screen.classList.add('hidden');
+          screen.classList.remove('flex', 'opacity-0');
+          this.updateUserHeaderUI();
+          this.renderWaterSection();
+          this.renderSettingsSection();
+        }, 250);
+      });
+    }
+  }
+
+  showGatewayWelcomeScreen(user) {
+    const viewOptions = document.getElementById('gateway-view-options');
+    const viewLogin = document.getElementById('gateway-view-login');
+    const viewRegister = document.getElementById('gateway-view-register');
+    const viewWelcome = document.getElementById('gateway-view-welcome');
+
+    [viewOptions, viewLogin, viewRegister].forEach(v => {
+      if (v) {
+        v.classList.add('hidden');
+        v.classList.remove('flex');
+      }
+    });
+
+    const titleEl = document.getElementById('gateway-welcome-user-title');
+    const subtitleEl = document.getElementById('gateway-welcome-user-subtitle');
+    const glassesEl = document.getElementById('gateway-welcome-glasses');
+    const mlEl = document.getElementById('gateway-welcome-ml');
+
+    if (user) {
+      const firstName = (user.name || user.username || '').split(' ')[0];
+      if (titleEl) titleEl.textContent = `¡Bienvenido/a, ${firstName}!`;
+      if (subtitleEl) subtitleEl.textContent = 'Tu cuenta ha sido guardada. Tu meta personalizada está lista.';
+      const goalMl = user.recommendedWaterMl || 2000;
+      const glasses = Math.round(goalMl / 250);
+      if (glassesEl) glassesEl.textContent = `${glasses} vasos al día`;
+      if (mlEl) mlEl.textContent = `${goalMl.toLocaleString('es-AR')} ml`;
+    } else {
+      if (titleEl) titleEl.textContent = '¡Bienvenido a HabitFlow!';
+      if (subtitleEl) subtitleEl.textContent = 'Iniciando en Modo Local. Podés registrar tu cuenta cuando quieras desde el menú superior.';
+      if (glassesEl) glassesEl.textContent = '8 vasos al día';
+      if (mlEl) mlEl.textContent = '2.000 ml';
+    }
+
+    if (window.soundEngine) {
+      window.soundEngine.playGoalCelebration();
+    }
+
+    if (viewWelcome) {
+      viewWelcome.classList.remove('hidden');
+      viewWelcome.classList.add('flex');
     }
   }
 

@@ -101,8 +101,12 @@ class AuthManager {
     this.saveUsers(users);
     this.saveSession(newUser);
 
-    // Actualizar meta diaria inicial con la fórmula de hidratación
+    // Actualizar perfil y meta diaria inicial con la fórmula de hidratación
     if (window.storageManager) {
+      const p = window.storageManager.getProfile();
+      p.weightKg = weight;
+      p.dailyGoal = recommendedWaterMl;
+      window.storageManager.saveProfile(p);
       window.storageManager.setDailyGoal(recommendedWaterMl);
     }
 
@@ -165,9 +169,13 @@ class AuthManager {
 
     this.saveSession(user);
 
-    // Cargar meta del usuario
-    if (window.storageManager && user.recommendedWaterMl) {
-      window.storageManager.setDailyGoal(user.recommendedWaterMl);
+    // Cargar meta y perfil del usuario
+    if (window.storageManager) {
+      const p = window.storageManager.getProfile();
+      p.weightKg = user.weightKg || p.weightKg || 70;
+      p.dailyGoal = user.recommendedWaterMl || p.dailyGoal || 2000;
+      window.storageManager.saveProfile(p);
+      window.storageManager.setDailyGoal(p.dailyGoal);
     }
 
     // Disparar guardado en Google Password Manager si está disponible
