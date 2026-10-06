@@ -5,8 +5,8 @@
  * Code Ahumada • Director Cristian
  */
 
-const CURRENT_VERSION = 'v1.0.29';
-const CURRENT_VERSION_CODE = 29;
+const CURRENT_VERSION = 'v1.0.30';
+const CURRENT_VERSION_CODE = 30;
 const GITHUB_REPO_API = 'https://api.github.com/repos/crisahu2025/HabitFlow/releases/latest';
 
 class UpdateManager {
@@ -222,14 +222,31 @@ class UpdateManager {
         if (window.reminderManager) {
           window.reminderManager.showToast('📥 Descargando actualización oficial...');
         }
-        await AppUpdate.installApk({ url: release.apkUrl });
+        const res = await AppUpdate.installApk({ url: release.apkUrl });
+        if (res && res.status === 'fallback_browser') {
+          if (window.reminderManager) {
+            window.reminderManager.showToast('🌐 Abriendo descarga directa en el navegador de tu dispositivo...');
+          }
+        } else {
+          if (window.reminderManager) {
+            window.reminderManager.showToast('🚀 Abriendo instalador. Si tu celular o Play Protect pide confirmar, seleccioná Permitir / Instalar.');
+          }
+        }
       } catch (err) {
         console.error('Error nativo al instalar APK:', err);
-        statusTexts.forEach(s => s && (s.textContent = 'Abriendo descarga directa...'));
+        statusTexts.forEach(s => s && (s.textContent = 'Descargando mediante el navegador...'));
         if (window.reminderManager) {
-          window.reminderManager.showToast('Abriendo enlace de descarga: ' + err.message);
+          window.reminderManager.showToast('⚠️ Descargando APK desde el navegador de tu teléfono...');
         }
-        window.open(release.apkUrl, '_blank');
+        try {
+          if (AppUpdate.openBrowserDownload) {
+            await AppUpdate.openBrowserDownload({ url: release.apkUrl });
+          } else {
+            window.location.href = release.apkUrl;
+          }
+        } catch (e2) {
+          window.location.href = release.apkUrl;
+        }
       } finally {
         this.isDownloading = false;
       }
