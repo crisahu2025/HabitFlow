@@ -600,11 +600,11 @@
       <div class="glass-card p-4 rounded-2xl border border-slate-800 flex flex-col gap-3">
         <div class="flex items-center justify-between">
           <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Actualizaciones de APK</span>
-          <span id="apk-installed-version-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">v1.0.22</span>
+          <span id="apk-installed-version-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">v1.0.27</span>
         </div>
         <div class="flex items-center justify-between text-xs text-slate-300">
           <span>Versión Instalada:</span>
-          <span id="apk-installed-version-text" class="font-extrabold text-white">v1.0.22 (Android APK Nativo)</span>
+          <span id="apk-installed-version-text" class="font-extrabold text-white">v1.0.27 (Android APK Nativo)</span>
         </div>
         <div class="flex items-center justify-between text-xs text-slate-300">
           <span>Estado del Sistema:</span>
@@ -992,17 +992,17 @@
 
       <h3 id="modal-update-title" class="text-sm font-extrabold text-white">¡Nueva Versión Disponible!</h3>
       <p id="modal-update-notes" class="text-xs text-slate-300 leading-relaxed max-h-32 overflow-y-auto">
-        Se detectó una actualización en el servidor. Presioná el botón abajo para descargarla e instalarla automáticamente sin salir de la app.
+        Se descargará el instalador oficial de HabitFlow. Al completarse, Android abrirá la ventana de instalación. Si aparece la consulta de seguridad de Play Protect, seleccioná "Instalar" o "Aceptar" para completar la actualización.
       </p>
 
       <div class="p-3 rounded-2xl bg-slate-900 border border-slate-800 text-xs flex flex-col gap-1.5">
         <div class="flex items-center justify-between text-slate-400">
           <span>Versión instalada:</span>
-          <span id="modal-update-installed-version" class="font-bold text-slate-300">v1.0.22</span>
+          <span id="modal-update-installed-version" class="font-bold text-slate-300">v1.0.27</span>
         </div>
         <div class="flex items-center justify-between text-slate-400">
           <span>Nueva versión:</span>
-          <span id="modal-update-version-label" class="font-extrabold text-emerald-400">v1.0.22</span>
+          <span id="modal-update-version-label" class="font-extrabold text-emerald-400">v1.0.27</span>
         </div>
       </div>
 
@@ -1019,7 +1019,7 @@
 
       <button id="btn-modal-install-update" type="button" class="w-full py-3 rounded-2xl bg-gradient-to-r from-sky-500 to-cyan-500 text-white font-extrabold text-xs shadow-lg shadow-sky-500/30 text-center flex items-center justify-center gap-2 active:scale-95 transition-all">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-        <span>Descargar e Instalar en 1 Toque</span>
+        <span>📥 Descargar e Instalar APK</span>
       </button>
       <button id="btn-modal-dismiss-update" type="button" class="w-full py-2.5 rounded-2xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 font-bold text-xs active:scale-95 transition-all">
         Posponer (Recordar más tarde)
@@ -1069,15 +1069,15 @@
   <!-- INPUT OCULTO DE SUBIDA DE FOTO DE PERFIL (Cámara o Galería) -->
   <input type="file" id="input-avatar-photo" accept="image/*" class="hidden">
 
-  <!-- SCRIPTS MODULARES CON VERSIONADO QUERY PARAMS (?v=2.2) -->
-  <script src="./js/storage.js?v=2.2"></script>
-  <script src="./js/auth.js?v=2.2"></script>
-  <script src="./js/audio.js?v=2.2"></script>
-  <script src="./js/reminders.js?v=2.2"></script>
-  <script src="./js/habits.js?v=2.2"></script>
-  <script src="./js/updater.js?v=2.2"></script>
-  <script src="./js/ads.js?v=2.2"></script>
-  <script src="./js/app.js?v=2.2"></script>
-  <script src="./js/pwa.js?v=2.2"></script>
+  <!-- SCRIPTS MODULARES CON VERSIONADO QUERY PARAMS (?v=2.7) -->
+  <script src="./js/storage.js?v=2.7"></script>
+  <script src="./js/auth.js?v=2.7"></script>
+  <script src="./js/audio.js?v=2.7"></script>
+  <script src="./js/reminders.js?v=2.7"></script>
+  <script src="./js/habits.js?v=2.7"></script>
+  <script src="./js/updater.js?v=2.7"></script>
+  <script src="./js/ads.js?v=2.7"></script>
+  <script src="./js/app.js?v=2.7"></script>
+  <script src="./js/pwa.js?v=2.7"></script>
 </body>
 </html>
