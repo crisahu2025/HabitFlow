@@ -162,7 +162,16 @@ class StorageManager {
       const raw = localStorage.getItem(STORAGE_KEYS.TODAY);
       if (raw) {
         const parsed = JSON.parse(raw);
-        if (parsed.date === todayStr) {
+        if (parsed && parsed.date === todayStr) {
+          if (!Array.isArray(parsed.entries)) {
+            parsed.entries = [];
+          }
+          if (typeof parsed.totalMl !== 'number' || isNaN(parsed.totalMl)) {
+            parsed.totalMl = parsed.entries.reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
+          }
+          if (typeof parsed.goalMl !== 'number' || isNaN(parsed.goalMl) || parsed.goalMl <= 0) {
+            parsed.goalMl = this.getProfile().dailyGoal || 2000;
+          }
           return parsed;
         }
       }
@@ -170,12 +179,12 @@ class StorageManager {
       console.warn('Error al leer datos del día:', e);
     }
 
-    // Si es un nuevo día, inicializar
+    // Si es un nuevo día o no existe, inicializar de forma limpia
     const profile = this.getProfile();
     const newDay = {
       date: todayStr,
       totalMl: 0,
-      goalMl: profile.dailyGoal,
+      goalMl: profile.dailyGoal || 2000,
       entries: [],
       celebratedToday: false
     };
@@ -184,6 +193,11 @@ class StorageManager {
   }
 
   saveTodayData(data) {
+    if (!data) return;
+    if (!Array.isArray(data.entries)) data.entries = [];
+    if (typeof data.totalMl !== 'number' || isNaN(data.totalMl)) {
+      data.totalMl = data.entries.reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
+    }
     localStorage.setItem(STORAGE_KEYS.TODAY, JSON.stringify(data));
   }
 
@@ -193,40 +207,45 @@ class StorageManager {
     if (raw) {
       try {
         const parsed = JSON.parse(raw);
-        if (parsed.date !== todayStr) {
+        if (parsed && parsed.date !== todayStr) {
           // Archivar el día anterior en el historial antes de rotar
           this.archiveDay(parsed);
           const profile = this.getProfile();
           const fresh = {
             date: todayStr,
             totalMl: 0,
-            goalMl: profile.dailyGoal,
+            goalMl: profile.dailyGoal || 2000,
             entries: [],
             celebratedToday: false
           };
           this.saveTodayData(fresh);
         }
       } catch (e) {
-        // Fallback
+        // Fallback silencioso
       }
     }
   }
 
   addWaterEntry(amount, label = 'Vaso de agua') {
     const today = this.getTodayData();
+    if (!Array.isArray(today.entries)) {
+      today.entries = [];
+    }
+
+    const cleanAmount = Math.max(1, Math.round(Number(amount) || 250));
     const now = new Date();
     const time = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
     
     const entry = {
       id: 'entry_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
-      amount: Number(amount),
-      label: String(label),
+      amount: cleanAmount,
+      label: String(label || 'Vaso de agua'),
       time: time,
       timestamp: Date.now()
     };
 
     today.entries.unshift(entry); // El más reciente primero
-    today.totalMl = today.entries.reduce((sum, e) => sum + e.amount, 0);
+    today.totalMl = today.entries.reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
 
     const goalMetJustNow = !today.celebratedToday && today.totalMl >= today.goalMl;
     if (goalMetJustNow) {
@@ -239,8 +258,9 @@ class StorageManager {
 
   removeWaterEntry(entryId) {
     const today = this.getTodayData();
+    if (!Array.isArray(today.entries)) today.entries = [];
     today.entries = today.entries.filter(e => e.id !== entryId);
-    today.totalMl = today.entries.reduce((sum, e) => sum + e.amount, 0);
+    today.totalMl = today.entries.reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
     if (today.totalMl < today.goalMl) {
       today.celebratedToday = false;
     }
@@ -250,9 +270,10 @@ class StorageManager {
 
   undoLastEntry() {
     const today = this.getTodayData();
+    if (!Array.isArray(today.entries)) today.entries = [];
     if (today.entries.length > 0) {
       const removed = today.entries.shift();
-      today.totalMl = today.entries.reduce((sum, e) => sum + e.amount, 0);
+      today.totalMl = today.entries.reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
       if (today.totalMl < today.goalMl) {
         today.celebratedToday = false;
       }
@@ -319,7 +340,7 @@ class StorageManager {
     // Mirar hacia atrás a partir de ayer
     checkDate.setDate(checkDate.getDate() - 1);
 
-    while (true) {
+    for (let i = 0; i < 365; i++) {
       const y = checkDate.getFullYear();
       const m = String(checkDate.getMonth() + 1).padStart(2, '0');
       const d = String(checkDate.getDate()).padStart(2, '0');

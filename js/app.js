@@ -23,6 +23,12 @@ class HabitFlowApp {
     this.renderProgressSection();
     this.renderHabitsSection();
     this.handleUrlParams();
+
+    // Sincronización en frío de tomas registradas desde notificaciones nativas de Android
+    if (window.reminderManager && typeof window.reminderManager.syncPendingBackgroundWater === 'function') {
+      window.reminderManager.syncPendingBackgroundWater();
+    }
+
     if (window.adsManager && typeof window.adsManager.init === 'function') {
       window.adsManager.init();
     }
@@ -181,29 +187,51 @@ class HabitFlowApp {
   }
 
   addWater(amount, label = 'Vaso de agua') {
-    const result = window.storageManager.addWaterEntry(amount, label);
+    try {
+      const cleanAmount = Math.max(1, Math.round(Number(amount) || 250));
+      const cleanLabel = String(label || 'Vaso de agua');
+      const result = window.storageManager.addWaterEntry(cleanAmount, cleanLabel);
 
-    // Sonidos y vibración
-    if (window.soundEngine) {
-      if (result.goalMetJustNow) {
-        window.soundEngine.playGoalCelebration();
-        if (window.reminderManager) {
-          window.reminderManager.showToast('🎉 ¡Felicitaciones! ¡Alcanzaste tu meta diaria de hidratación!');
+      // Sonidos y vibración blindados en try/catch
+      if (window.soundEngine) {
+        try {
+          if (result && result.goalMetJustNow) {
+            window.soundEngine.playGoalCelebration();
+            if (window.reminderManager) {
+              window.reminderManager.showToast('🎉 ¡Felicitaciones! ¡Alcanzaste tu meta diaria de hidratación!');
+            }
+          } else {
+            window.soundEngine.playDrinkWater();
+          }
+        } catch (audioErr) {
+          console.warn('Audio feedback error:', audioErr);
         }
-      } else {
-        window.soundEngine.playDrinkWater();
       }
-    }
 
-    // Animación de pulso en el círculo de agua
-    const circle = document.getElementById('main-water-circle');
-    if (circle) {
-      circle.classList.remove('pulse-active');
-      void circle.offsetWidth; // Forzar reflow para reiniciar animación
-      circle.classList.add('pulse-active');
-    }
+      // Animación de pulso en el círculo de agua
+      try {
+        const circle = document.getElementById('main-water-circle');
+        if (circle) {
+          circle.classList.remove('pulse-active');
+          void circle.offsetWidth; // Forzar reflow para reiniciar animación
+          circle.classList.add('pulse-active');
+        }
+      } catch (animErr) {
+        console.warn('Animación pulso error:', animErr);
+      }
 
-    this.renderWaterSection();
+      // Renderizar UI inmediatamente
+      this.renderWaterSection();
+
+      // Toast de confirmación si no fue festejo de meta
+      if (window.reminderManager && (!result || !result.goalMetJustNow)) {
+        window.reminderManager.showToast(`💧 ¡+${cleanAmount} ml sumados con éxito!`);
+      }
+
+      return result;
+    } catch (err) {
+      console.error('Error al registrar agua en HabitFlowApp:', err);
+    }
   }
 
   undoLastDrink() {
@@ -1698,9 +1726,74 @@ class HabitFlowApp {
   }
 }
 
-// Inicialización global
-document.addEventListener('DOMContentLoaded', () => {
-  window.app = new HabitFlowApp();
+// ==========================================
+// ACCESO GLOBAL Y ARRANQUE ROBUSTO
+// ==========================================
+
+/**
+ * Función global resiliente de registro de agua.
+ * Puede invocarse directamente desde inline onclick, plugins, o delegación de eventos.
+ */
+window.addWater = function(amount, label = 'Vaso de agua') {
+  try {
+    const cleanAmount = Math.max(1, Math.round(Number(amount) || 250));
+    const cleanLabel = String(label || 'Vaso de agua');
+
+    if (window.app && typeof window.app.addWater === 'function') {
+      return window.app.addWater(cleanAmount, cleanLabel);
+    }
+
+    // Fallback defensivo inmediato si window.app aún no se terminó de montar
+    if (window.storageManager) {
+      const res = window.storageManager.addWaterEntry(cleanAmount, cleanLabel);
+      if (window.soundEngine) {
+        try { window.soundEngine.playDrinkWater(); } catch (e) {}
+      }
+      if (window.reminderManager) {
+        try { window.reminderManager.showToast(`💧 ¡+${cleanAmount} ml sumados con éxito!`); } catch (e) {}
+      }
+      if (window.app && typeof window.app.renderWaterSection === 'function') {
+        window.app.renderWaterSection();
+      }
+      return res;
+    }
+  } catch (err) {
+    console.error('Error en window.addWater global:', err);
+  }
+};
+
+/**
+ * Delegación global de clicks para captura infalible de botones de agua
+ */
+document.addEventListener('click', (event) => {
+  const quickBtn = event.target.closest('.btn-quick-water');
+  if (quickBtn) {
+    const ml = Number(quickBtn.getAttribute('data-ml')) || 250;
+    const label = quickBtn.getAttribute('data-label') || 'Vaso de agua';
+    window.addWater(ml, label);
+    return;
+  }
+
+  const waterCircle = event.target.closest('#main-water-circle');
+  if (waterCircle && !waterCircle.dataset.clickedByInline) {
+    // Si la esfera no tiene onclick activo o falló inline
+    waterCircle.dataset.clickedByInline = 'true';
+    setTimeout(() => { delete waterCircle.dataset.clickedByInline; }, 300);
+    window.addWater(250, 'Vaso rápido (250 ml)');
+  }
+});
+
+/**
+ * Inicializador instantáneo idempotente
+ */
+function initHabitFlowApp() {
+  if (window.app) return;
+  try {
+    window.app = new HabitFlowApp();
+    console.log('✓ HabitFlowApp inicializado correctamente.');
+  } catch (err) {
+    console.error('Error al inicializar HabitFlowApp:', err);
+  }
 
   // Escuchar mensajes del Service Worker (acciones de notificación en modo Web/PWA)
   if ('serviceWorker' in navigator) {
@@ -1710,15 +1803,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (data.type === 'QUICK_ADD_WATER') {
         const amount = data.amount || 250;
-        if (window.storageManager) {
-          window.storageManager.addWaterEntry(amount, 'Vaso de agua (Notificación)');
-        }
-        if (window.app) {
-          window.app.renderWaterSection();
-        }
-        if (window.reminderManager) {
-          window.reminderManager.showToast(`💧 ¡+${amount}ml registrados desde la notificación!`);
-        }
+        window.addWater(amount, 'Vaso de agua (Notificación)');
       }
 
       if (data.type === 'SNOOZE_REMINDER') {
@@ -1729,4 +1814,11 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
-});
+}
+
+// Arrancar inmediatamente si el DOM ya está listo (interactive o complete)
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initHabitFlowApp);
+} else {
+  initHabitFlowApp();
+}
