@@ -8,6 +8,7 @@ public class MainActivity extends BridgeActivity {
     public void onCreate(Bundle savedInstanceState) {
         registerPlugin(AppUpdatePlugin.class);
         registerPlugin(NativeWaterSyncPlugin.class);
+        registerPlugin(NativeAlarmsPlugin.class);
         super.onCreate(savedInstanceState);
     }
 }

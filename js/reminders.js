@@ -24,9 +24,10 @@ class ReminderManager {
     // 4. Sincronizar inmediatamente cualquier agua registrada en segundo plano desde notificaciones
     this.syncPendingBackgroundWater();
     this.setupLifecycleListeners();
-    // 5. Programar alarmas nativas de Android en segundo plano al iniciar
+    // 5. Programar alarmas nativas de Android en segundo plano al iniciar y chequear permisos
     setTimeout(() => {
       this.scheduleAllNativeAndroid();
+      this.checkPermissionsStatus();
     }, 1500);
   }
 
@@ -131,10 +132,12 @@ class ReminderManager {
       document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'visible') {
           this.syncPendingBackgroundWater();
+          this.checkPermissionsStatus();
         }
       });
       window.addEventListener('focus', () => {
         this.syncPendingBackgroundWater();
+        this.checkPermissionsStatus();
       });
     }
 
@@ -384,83 +387,79 @@ class ReminderManager {
    * para que suenen incluso con la app cerrada y la pantalla bloqueada.
    * Ahora con botones de acción: "Tomé el Agua" / "Posponer 10 Min"
    */
-  async scheduleAllNativeAndroid() {
-    if (!window.Capacitor || !window.Capacitor.Plugins || !window.Capacitor.Plugins.LocalNotifications) {
-      return;
-    }
+    async scheduleAllNativeAndroid() {
+    if (!window.Capacitor || !window.Capacitor.Plugins) return;
 
     try {
-      const { LocalNotifications } = window.Capacitor.Plugins;
-      
-      // Pedir permisos si es necesario
-      const permStatus = await LocalNotifications.requestPermissions();
-      if (permStatus.display !== 'granted') {
-        console.warn('Permiso de notificaciones nativas Android denegado');
-        return;
-      }
-
-      // Crear canal de notificación prioritario en Android
-      await LocalNotifications.createChannel({
-        id: 'habitflow_reminders_channel',
-        name: 'Recordatorios de Hidratación HabitFlow',
-        description: 'Alarmas periódicas para tomar agua y mantener tu bienestar',
-        importance: 5, // High importance
-        visibility: 1,
-        sound: 'beep.wav',
-        vibration: true
-      });
-
-      // Cancelar notificaciones pendientes previas
-      const pending = await LocalNotifications.getPending();
-      if (pending && pending.notifications && pending.notifications.length > 0) {
-        await LocalNotifications.cancel({ notifications: pending.notifications });
+      // Cancelar viejas notificaciones de @capacitor/local-notifications para evitar duplicados
+      if (window.Capacitor.Plugins.LocalNotifications) {
+        const { LocalNotifications } = window.Capacitor.Plugins;
+        const pending = await LocalNotifications.getPending();
+        if (pending && pending.notifications && pending.notifications.length > 0) {
+          await LocalNotifications.cancel({ notifications: pending.notifications });
+        }
       }
 
       const config = window.storageManager.getSchedule();
-      if (!config.notificationsEnabled) return;
+      const enabled = !!config.notificationsEnabled;
+      const times = this.getActiveTimes(); 
 
-      const times = this.getActiveTimes();
-      const now = new Date();
-      const notificationsToSchedule = [];
-      const userName = (window.authManager && window.authManager.currentUser) ? window.authManager.currentUser.name : '';
-
-      // PROGRAMACIÓN ROBUSTA DE 7 DÍAS EN ADELANTADO (ROLLING WINDOW EXACT ALARMS)
-      // En Android 12/13/14/15, 'repeats: true' no permite alarmas exactas si la app está cerrada.
-      // Al programar cada vaso individual de los próximos 7 días con fecha exacta (at: Date) y allowWhileIdle: true,
-      // el sistema operativo Android programa las alarmas directamente en el kernel (AlarmManager.setExactAndAllowWhileIdle),
-      // garantizando que suenen puntuales aunque la aplicación esté 100% cerrada y la pantalla apagada.
-      for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
-        times.forEach((timeStr, idx) => {
-          const [h, m] = timeStr.split(':').map(Number);
-          const scheduledDate = new Date();
-          scheduledDate.setDate(scheduledDate.getDate() + dayOffset);
-          scheduledDate.setHours(h, m, 0, 0);
-
-          if (scheduledDate > now) {
-            notificationsToSchedule.push({
-              id: (dayOffset * 100) + idx + 1000,
-              title: '💧 ¡Momento de hidratarte' + (userName ? ', ' + userName : '') + '!',
-              body: 'Tomá un vaso de agua fresca (250 ml) para mantener tu hidratación y energía.',
-              schedule: {
-                at: scheduledDate,
-                allowWhileIdle: true // Permite sonar en Doze mode / pantalla apagada
-              },
-              channelId: 'habitflow_reminders_channel',
-              smallIcon: 'ic_notification_water',
-              iconColor: '#0284c7',
-              actionTypeId: 'WATER_REMINDER_ACTIONS', // Botones: Tomé el Agua / Posponer 10 Min
-              extra: { time: timeStr, amount: 250, dayOffset: dayOffset }
-            });
-          }
+      if (window.Capacitor.Plugins.NativeAlarms) {
+        await window.Capacitor.Plugins.NativeAlarms.scheduleAlarms({
+          times: times,
+          enabled: enabled
         });
-      }
-
-      if (notificationsToSchedule.length > 0) {
-        await LocalNotifications.schedule({ notifications: notificationsToSchedule });
-        console.log(`✓ ${notificationsToSchedule.length} recordatorios nativos exactos programados para 7 días en Android!`);
+        console.log('✓ Recordatorios nativos configurados en NativeAlarms Plugin: ' + times.length + ' horarios. Activo: ' + enabled);
       }
     } catch (e) {
-      console.warn('Error al programar alarmas nativas en Capacitor:', e);
+      console.warn('Error al programar alarmas nativas en NativeAlarms:', e);
+    }
+  }
+
+  /**
+   * Consulta el estado de los permisos de Alarmas Exactas y Optimización de Batería en Android
+   * y actualiza el panel correspondiente en la pantalla de Ajustes.
+   */
+  async checkPermissionsStatus() {
+    if (!window.Capacitor || !window.Capacitor.Plugins || !window.Capacitor.Plugins.NativeAlarms) return;
+    try {
+      const res = await window.Capacitor.Plugins.NativeAlarms.checkPermissionsStatus();
+      if (!res) return;
+
+      const panel = document.getElementById('native-alarms-status-panel');
+      if (panel) panel.classList.remove('hidden');
+
+      const elExact = document.getElementById('status-exact-alarms');
+      const btnExact = document.getElementById('btn-request-exact-alarms');
+      if (elExact) {
+        elExact.textContent = res.exactAlarmsGranted ? 'Concedido ✅' : 'Denegado ❌ (Toca Configurar)';
+        elExact.className = res.exactAlarmsGranted ? 'text-[10px] text-emerald-400 font-bold' : 'text-[10px] text-amber-400 font-bold';
+      }
+      if (btnExact) {
+        btnExact.classList.toggle('hidden', !!res.exactAlarmsGranted);
+        btnExact.onclick = () => {
+          if (window.Capacitor.Plugins.NativeAlarms.requestExactAlarms) {
+            window.Capacitor.Plugins.NativeAlarms.requestExactAlarms();
+          }
+        };
+      }
+
+      const elBattery = document.getElementById('status-battery-opt');
+      const btnBattery = document.getElementById('btn-request-battery-opt');
+      if (elBattery) {
+        elBattery.textContent = res.batteryOptimizationIgnored ? 'Sin restricciones ✅' : 'Restringida ❌ (Toca Configurar)';
+        elBattery.className = res.batteryOptimizationIgnored ? 'text-[10px] text-emerald-400 font-bold' : 'text-[10px] text-amber-400 font-bold';
+      }
+      if (btnBattery) {
+        btnBattery.classList.toggle('hidden', !!res.batteryOptimizationIgnored);
+        btnBattery.onclick = () => {
+          if (window.Capacitor.Plugins.NativeAlarms.requestIgnoreBatteryOptimizations) {
+            window.Capacitor.Plugins.NativeAlarms.requestIgnoreBatteryOptimizations();
+          }
+        };
+      }
+    } catch (e) {
+      console.warn('Error al verificar estado de permisos nativos:', e);
     }
   }
 
@@ -660,3 +659,4 @@ class ReminderManager {
 }
 
 window.reminderManager = new ReminderManager();
+
