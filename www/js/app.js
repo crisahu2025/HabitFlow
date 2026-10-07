@@ -188,6 +188,13 @@ class HabitFlowApp {
 
   addWater(amount, label = 'Vaso de agua') {
     try {
+      const now = Date.now();
+      if (this.lastWaterAddTimestamp && (now - this.lastWaterAddTimestamp < 400)) {
+        console.log('Ignorando disparo duplicado de agua (candado anti-rebote)');
+        return;
+      }
+      this.lastWaterAddTimestamp = now;
+
       const cleanAmount = Math.max(1, Math.round(Number(amount) || 250));
       const cleanLabel = String(label || 'Vaso de agua');
       const result = window.storageManager.addWaterEntry(cleanAmount, cleanLabel);
@@ -541,14 +548,26 @@ class HabitFlowApp {
   // EVENT LISTENERS GLOBALES
   // ==========================================
   setupEventListeners() {
-    // 1. Botones Rápidos de Agua
+    // 1. Botones Rápidos de Agua (con protección anti-burbujeo)
     document.querySelectorAll('.btn-quick-water').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const ml = Number(btn.getAttribute('data-ml'));
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const ml = Number(btn.getAttribute('data-ml')) || 250;
         const label = btn.getAttribute('data-label') || 'Vaso de agua';
         this.addWater(ml, label);
       });
     });
+
+    // 1.1. Esfera Central de Agua
+    const mainWaterCircle = document.getElementById('main-water-circle');
+    if (mainWaterCircle) {
+      mainWaterCircle.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.addWater(250, 'Vaso rápido (250 ml)');
+      });
+    }
 
     // 2. Botón Deshacer Ingesta
     const btnUndo = document.getElementById('btn-undo-drink');
@@ -1732,10 +1751,18 @@ class HabitFlowApp {
 
 /**
  * Función global resiliente de registro de agua.
- * Puede invocarse directamente desde inline onclick, plugins, o delegación de eventos.
+ * Protegida con candado anti-rebote de 400ms para garantizar que cada toque sume exactamente una vez.
  */
+let lastGlobalWaterAddTimestamp = 0;
 window.addWater = function(amount, label = 'Vaso de agua') {
   try {
+    const now = Date.now();
+    if (now - lastGlobalWaterAddTimestamp < 400) {
+      console.log('Ignorando disparo global duplicado (candado anti-rebote)');
+      return;
+    }
+    lastGlobalWaterAddTimestamp = now;
+
     const cleanAmount = Math.max(1, Math.round(Number(amount) || 250));
     const cleanLabel = String(label || 'Vaso de agua');
 
@@ -1761,27 +1788,6 @@ window.addWater = function(amount, label = 'Vaso de agua') {
     console.error('Error en window.addWater global:', err);
   }
 };
-
-/**
- * Delegación global de clicks para captura infalible de botones de agua
- */
-document.addEventListener('click', (event) => {
-  const quickBtn = event.target.closest('.btn-quick-water');
-  if (quickBtn) {
-    const ml = Number(quickBtn.getAttribute('data-ml')) || 250;
-    const label = quickBtn.getAttribute('data-label') || 'Vaso de agua';
-    window.addWater(ml, label);
-    return;
-  }
-
-  const waterCircle = event.target.closest('#main-water-circle');
-  if (waterCircle && !waterCircle.dataset.clickedByInline) {
-    // Si la esfera no tiene onclick activo o falló inline
-    waterCircle.dataset.clickedByInline = 'true';
-    setTimeout(() => { delete waterCircle.dataset.clickedByInline; }, 300);
-    window.addWater(250, 'Vaso rápido (250 ml)');
-  }
-});
 
 /**
  * Inicializador instantáneo idempotente
