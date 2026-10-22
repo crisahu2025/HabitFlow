@@ -9,7 +9,10 @@ const STORAGE_KEYS = {
   HISTORY: 'habitflow_history_v1',
   SCHEDULE: 'habitflow_schedule_v1',
   HABITS: 'habitflow_habits_v1',
-  THEME: 'habitflow_theme_mode'
+  THEME: 'habitflow_theme_mode',
+  MEALS_TODAY: 'habitflow_meals_today_v1',
+  MEALS_HISTORY: 'habitflow_meals_history_v1',
+  GEMINI_KEY: 'habitflow_gemini_api_key'
 };
 
 const DEFAULT_PROFILE = {
@@ -219,6 +222,24 @@ class StorageManager {
             celebratedToday: false
           };
           this.saveTodayData(fresh);
+        }
+      } catch (e) {
+        // Fallback silencioso
+      }
+    }
+
+    // Rotación de comidas si cambió el día
+    const rawMeals = localStorage.getItem(STORAGE_KEYS.MEALS_TODAY);
+    if (rawMeals) {
+      try {
+        const parsedMeals = JSON.parse(rawMeals);
+        if (parsedMeals && parsedMeals.date !== todayStr) {
+          this.archiveMealsDay(parsedMeals);
+          const freshMeals = {
+            date: todayStr,
+            meals: []
+          };
+          this.saveTodayMeals(freshMeals);
         }
       } catch (e) {
         // Fallback silencioso
@@ -506,6 +527,104 @@ class StorageManager {
       this.saveExtraHabits(habits);
     }
     return habits;
+  }
+
+  // --- Dieta 3x1 de Frank Suárez (Comidas y Calorías) ---
+  getTodayMeals() {
+    const todayStr = this.getTodayString();
+    try {
+      const raw = localStorage.getItem(STORAGE_KEYS.MEALS_TODAY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && parsed.date === todayStr) {
+          if (!Array.isArray(parsed.meals)) parsed.meals = [];
+          return parsed;
+        }
+      }
+    } catch (e) {
+      console.warn('Error al leer comidas de hoy:', e);
+    }
+
+    const initial = {
+      date: todayStr,
+      meals: []
+    };
+    this.saveTodayMeals(initial);
+    return initial;
+  }
+
+  saveTodayMeals(data) {
+    if (!data) return;
+    if (!Array.isArray(data.meals)) data.meals = [];
+    localStorage.setItem(STORAGE_KEYS.MEALS_TODAY, JSON.stringify(data));
+  }
+
+  addMealEntry(meal) {
+    const today = this.getTodayMeals();
+    const now = new Date();
+    const time = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+    const newEntry = {
+      id: 'meal_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+      type: meal.type || 'almuerzo', // 'desayuno' | 'almuerzo' | 'merienda' | 'cena'
+      title: String(meal.title || 'Comida 3x1'),
+      calories: Math.max(0, Math.round(Number(meal.calories) || 0)),
+      protein: Math.max(0, Math.round(Number(meal.protein) || 0)),
+      carbs: Math.max(0, Math.round(Number(meal.carbs) || 0)),
+      fat: Math.max(0, Math.round(Number(meal.fat) || 0)),
+      typeAPercent: Number(meal.typeAPercent !== undefined ? meal.typeAPercent : 75),
+      typeEPercent: Number(meal.typeEPercent !== undefined ? meal.typeEPercent : 25),
+      itemsA: Array.isArray(meal.itemsA) ? meal.itemsA : [],
+      itemsE: Array.isArray(meal.itemsE) ? meal.itemsE : [],
+      photoUrl: meal.photoUrl || null,
+      time: meal.time || time,
+      timestamp: Date.now()
+    };
+
+    today.meals.unshift(newEntry);
+    this.saveTodayMeals(today);
+    return { today, newEntry };
+  }
+
+  removeMealEntry(mealId) {
+    const today = this.getTodayMeals();
+    today.meals = today.meals.filter(m => m.id !== mealId);
+    this.saveTodayMeals(today);
+    return today;
+  }
+
+  getMealsHistory() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEYS.MEALS_HISTORY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  archiveMealsDay(dayMeals) {
+    if (!dayMeals || !dayMeals.date) return;
+    const history = this.getMealsHistory();
+    const existingIdx = history.findIndex(h => h.date === dayMeals.date);
+    if (existingIdx >= 0) {
+      history[existingIdx] = dayMeals;
+    } else {
+      history.unshift(dayMeals);
+      if (history.length > 30) history.pop();
+    }
+    localStorage.setItem(STORAGE_KEYS.MEALS_HISTORY, JSON.stringify(history));
+  }
+
+  getGeminiApiKey() {
+    return localStorage.getItem(STORAGE_KEYS.GEMINI_KEY) || '';
+  }
+
+  saveGeminiApiKey(key) {
+    if (!key) {
+      localStorage.removeItem(STORAGE_KEYS.GEMINI_KEY);
+    } else {
+      localStorage.setItem(STORAGE_KEYS.GEMINI_KEY, key.trim());
+    }
   }
 }
 

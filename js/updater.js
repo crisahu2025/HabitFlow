@@ -5,8 +5,8 @@
  * Code Ahumada • Director Cristian
  */
 
-const CURRENT_VERSION = 'v1.0.33';
-const CURRENT_VERSION_CODE = 33;
+const CURRENT_VERSION = 'v1.0.34';
+const CURRENT_VERSION_CODE = 34;
 const GITHUB_REPO_API = 'https://api.github.com/repos/crisahu2025/HabitFlow/releases/latest';
 
 class UpdateManager {

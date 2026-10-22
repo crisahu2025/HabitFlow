@@ -22,6 +22,9 @@ class HabitFlowApp {
     this.renderScheduleSection();
     this.renderProgressSection();
     this.renderHabitsSection();
+    if (window.dietManager && typeof window.dietManager.init === 'function') {
+      window.dietManager.init();
+    }
     this.handleUrlParams();
 
     // Sincronización en frío de tomas registradas desde notificaciones nativas de Android
@@ -97,6 +100,13 @@ class HabitFlowApp {
       this.renderScheduleSection();
     } else if (tabId === 'habits') {
       this.renderHabitsSection();
+    if (window.dietManager && typeof window.dietManager.init === 'function') {
+      window.dietManager.init();
+    }
+    } else if (tabId === 'diet') {
+      if (window.dietManager && typeof window.dietManager.renderDietSection === 'function') {
+        window.dietManager.renderDietSection();
+      }
     } else if (tabId === 'water') {
       this.renderWaterSection();
     } else if (tabId === 'settings') {
@@ -117,7 +127,7 @@ class HabitFlowApp {
     const quickAmount = params.get('quick');
     const targetTab = params.get('tab');
 
-    if (targetTab && ['water', 'schedule', 'progress', 'habits', 'settings'].includes(targetTab)) {
+    if (targetTab && ['water', 'diet', 'schedule', 'progress', 'habits', 'settings'].includes(targetTab)) {
       this.switchTab(targetTab);
     }
 
@@ -1519,6 +1529,10 @@ class HabitFlowApp {
   }
 
   renderSettingsSection() {
+    const inputGemini = document.getElementById('gemini-api-key-input');
+    if (inputGemini && window.storageManager) {
+      inputGemini.value = window.storageManager.getGeminiApiKey();
+    }
     // 1. Perfil de Usuario con Avatar
     const elAvatarBox = document.getElementById('settings-avatar-container');
     const elName = document.getElementById('settings-display-name');
@@ -1600,6 +1614,18 @@ class HabitFlowApp {
   }
 
   setupSettingsListeners() {
+    const btnSaveGemini = document.getElementById('btn-save-gemini-key');
+    const inputGemini = document.getElementById('gemini-api-key-input');
+    if (btnSaveGemini && inputGemini) {
+      btnSaveGemini.addEventListener('click', () => {
+        const val = inputGemini.value.trim();
+        window.storageManager.saveGeminiApiKey(val);
+        if (window.soundEngine) window.soundEngine.playSuccess();
+        if (window.reminderManager) {
+          window.reminderManager.showToast(val ? '✓ API Key de Gemini guardada' : '✓ Usando analizador local offline');
+        }
+      });
+    }
     // Switch de Tema Claro / Oscuro
     const switchTheme = document.getElementById('switch-theme-mode');
     if (switchTheme) {
