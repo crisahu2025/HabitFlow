@@ -25,6 +25,9 @@ class HabitFlowApp {
     if (window.dietManager && typeof window.dietManager.init === 'function') {
       window.dietManager.init();
     }
+    if (window.tipsManager && typeof window.tipsManager.init === 'function') {
+      window.tipsManager.init();
+    }
     this.handleUrlParams();
 
     // Sincronización en frío de tomas registradas desde notificaciones nativas de Android
@@ -96,13 +99,11 @@ class HabitFlowApp {
     // Actualizaciones específicas por pestaña
     if (tabId === 'progress') {
       this.renderProgressSection();
-    } else if (tabId === 'schedule') {
-      this.renderScheduleSection();
-    } else if (tabId === 'habits') {
+    } else if (tabId === 'tips') {
+      if (window.tipsManager && typeof window.tipsManager.renderTipsSection === 'function') {
+        window.tipsManager.renderTipsSection();
+      }
       this.renderHabitsSection();
-    if (window.dietManager && typeof window.dietManager.init === 'function') {
-      window.dietManager.init();
-    }
     } else if (tabId === 'diet') {
       if (window.dietManager && typeof window.dietManager.renderDietSection === 'function') {
         window.dietManager.renderDietSection();
@@ -111,8 +112,8 @@ class HabitFlowApp {
       this.renderWaterSection();
     } else if (tabId === 'settings') {
       this.renderSettingsSection();
+      this.renderScheduleSection();
     }
-
     // Actualizar visibilidad de anuncios según la pestaña (excluye Agua y Ajustes)
     if (window.adsManager && typeof window.adsManager.onTabChange === 'function') {
       window.adsManager.onTabChange(tabId);
@@ -127,7 +128,7 @@ class HabitFlowApp {
     const quickAmount = params.get('quick');
     const targetTab = params.get('tab');
 
-    if (targetTab && ['water', 'diet', 'schedule', 'progress', 'habits', 'settings'].includes(targetTab)) {
+    if (targetTab && ['water', 'diet', 'tips', 'progress', 'settings'].includes(targetTab)) {
       this.switchTab(targetTab);
     }
 

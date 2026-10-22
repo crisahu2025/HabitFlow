@@ -1,0 +1,91 @@
+{
+  "updatedAt": "2026-10-22T18:09:43.952Z",
+  "renewalHour": 6,
+  "channel": "Metabolismo TV (Frank Suárez)",
+  "todayTip": {
+    "id": "tip-2026-10-22",
+    "date": "2026-10-22",
+    "title": "Arándanos y el Cerebro: Regeneración Neuronal y Memoria",
+    "category": "Fruta y Órgano del Día",
+    "badge": "🫐 Fruta & Órgano",
+    "fruit": {
+      "name": "Arándanos y Frutos Rojos",
+      "icon": "🫐",
+      "targetOrgan": "🧠 Cerebro y Sistema Nervioso Central",
+      "keyNutrient": "Antocianinas + Polifenoles antioxidantes",
+      "mechanism": "Cruzan la barrera hematoencefálica protegiendo a las neuronas del estrés oxidativo y mejorando la comunicación entre sinapsis sin disparar la glucosa."
+    },
+    "metabolismoTvShort": {
+      "title": "Los frutos rojos son los únicos que recomiendo",
+      "youtubeUrl": "https://www.youtube.com/@MetabolismoTV/shorts",
+      "caption": "Frank Suárez explica por qué las frutas bajas en fructosa son las mejores aliadas para adelgazar sin dañar el hígado."
+    },
+    "frankAdvice": "Evitá las frutas cargadas de fructosa líquida. Los arándanos tienen poca azúcar y un poder antioxidante insuperable para tu mente.",
+    "quickAction": "Sumá 1/3 taza de arándanos a tu yogur griego o merienda."
+  },
+  "pastTips": [
+    {
+      "id": "tip-2026-10-21",
+      "date": "2026-10-21",
+      "title": "Arándanos y el Cerebro: Regeneración Neuronal y Memoria",
+      "category": "Fruta y Órgano del Día",
+      "badge": "🫐 Fruta & Órgano",
+      "fruit": {
+        "name": "Arándanos y Frutos Rojos",
+        "icon": "🫐",
+        "targetOrgan": "🧠 Cerebro y Sistema Nervioso Central",
+        "keyNutrient": "Antocianinas + Polifenoles antioxidantes",
+        "mechanism": "Cruzan la barrera hematoencefálica protegiendo a las neuronas del estrés oxidativo y mejorando la comunicación entre sinapsis sin disparar la glucosa."
+      },
+      "metabolismoTvShort": {
+        "title": "Los frutos rojos son los únicos que recomiendo",
+        "youtubeUrl": "https://www.youtube.com/@MetabolismoTV/shorts",
+        "caption": "Frank Suárez explica por qué las frutas bajas en fructosa son las mejores aliadas para adelgazar sin dañar el hígado."
+      },
+      "frankAdvice": "Evitá las frutas cargadas de fructosa líquida. Los arándanos tienen poca azúcar y un poder antioxidante insuperable para tu mente.",
+      "quickAction": "Sumá 1/3 taza de arándanos a tu yogur griego o merienda."
+    },
+    {
+      "id": "tip-2026-10-20",
+      "date": "2026-10-20",
+      "title": "El Limón y el Hígado Graso: Desintoxicación Matutina",
+      "category": "Fruta y Órgano del Día",
+      "badge": "🍋 Fruta & Órgano",
+      "fruit": {
+        "name": "Limón Fresco",
+        "icon": "🍋",
+        "targetOrgan": "🫀 Hígado y Vesícula Biliar",
+        "keyNutrient": "Ácido Cítrico + Vitamina C Pura",
+        "mechanism": "Estimula la producción de bilis y ayuda al hígado a disolver los depósitos de grasa estancada y toxinas acumuladas."
+      },
+      "metabolismoTvShort": {
+        "title": "El jugo de limón en ayunas y el metabolismo",
+        "youtubeUrl": "https://www.youtube.com/@MetabolismoTV/shorts",
+        "caption": "Cómo un vaso de agua tibia con medio limón al despertar activa tu sistema digestivo en 5 minutos."
+      },
+      "frankAdvice": "El limón parece ácido al paladar, pero dentro del cuerpo se convierte en uno de los mayores alcalinizantes y depuradores hepáticos.",
+      "quickAction": "Exprimí 1/2 limón en tu primer vaso de agua de la mañana (a las 06:00 hs)."
+    },
+    {
+      "id": "tip-2026-10-19",
+      "date": "2026-10-19",
+      "title": "La Piña y el Páncreas: La Enzima Bromelina",
+      "category": "Fruta y Órgano del Día",
+      "badge": "🍍 Fruta & Órgano",
+      "fruit": {
+        "name": "Piña / Ananá",
+        "icon": "🍍",
+        "targetOrgan": "🫁 Páncreas y Tracto Intestinal",
+        "keyNutrient": "Bromelina (Enzima Proteolítica)",
+        "mechanism": "Descompone las proteínas densas en aminoácidos asimilables, aliviando la carga de trabajo del páncreas y reduciendo la inflamación abdominal."
+      },
+      "metabolismoTvShort": {
+        "title": "La enzima mágica para personas con digestión lenta",
+        "youtubeUrl": "https://www.youtube.com/@MetabolismoTV/shorts",
+        "caption": "Frank Suárez detalla cómo la bromelina ayuda a quienes sienten pesadez estomacal después de comer carne."
+      },
+      "frankAdvice": "Consumila con moderación (1 rodaja fina) como parte del 25% Tipo E después de una comida proteica abundante.",
+      "quickAction": "Comé 1 rodaja fina de ananá natural después de tu almuerzo con carnes rojas."
+    }
+  ]
+}

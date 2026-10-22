@@ -31,7 +31,7 @@ const ADS_CONFIG = {
   BANNER_AD_ID: 'ca-app-pub-3940256099942544/6300978111', // ID de prueba oficial de Google (Banner Android)
 
   // Pestañas donde está PERMITIDO mostrar el banner (NO invasivo: excluye 'water' y 'settings')
-  ALLOWED_TABS: ['progress', 'habits'],
+  ALLOWED_TABS: ['progress', 'tips'],
 
   // Altura estimada del banner para ajustar el padding si es necesario (px)
   BANNER_HEIGHT: 50

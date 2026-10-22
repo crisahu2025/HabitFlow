@@ -1,0 +1,40 @@
+name: Publicador Autónomo de Novedades Diarias HabitFlow
+
+on:
+  schedule:
+    # 09:00 UTC = 06:00 AM Hora de Argentina (UTC-3)
+    - cron: '0 9 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-daily-news:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del Repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Generar Novedad del Día (06:00 AM)
+        run: |
+          node scripts/daily_news_generator.js
+
+      - name: Sincronizar Web Assets (prepare_www.js)
+        run: |
+          node scripts/prepare_www.js
+
+      - name: Hacer Commit y Push del Feed Diario
+        run: |
+          git config --global user.name "Atlas - Director General Code Ahumada"
+          git config --global user.email "atlas@codeahumada.com"
+          git add data/daily_tips.json www/data/daily_tips.json || true
+          git diff --staged --quiet || git commit -m "chore(feed): publicacion autonoma diaria de novedad y tip de salud [06:00 AM]"
+          git push origin main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

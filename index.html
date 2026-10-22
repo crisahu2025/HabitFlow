@@ -48,7 +48,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- Custom Stylesheets con Versionado -->
-  <link rel="stylesheet" href="./css/styles.css?v=3.4">
+  <link rel="stylesheet" href="./css/styles.css?v=3.5">
   <style>
     body {
       font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -611,8 +611,290 @@
     </section>
 
 <!-- ======================================================== -->
-    <section id="tab-schedule" class="tab-content flex-col gap-4">
+    
+
+    <!-- ======================================================== -->
+    <!-- TAB 3: PROGRESO Y ESTADÍSTICAS -->
+    <!-- ======================================================== -->
+        <!-- ======================================================== -->
+    <!-- TAB 3: NOVEDADES DIARIAS, FRUTAS & METABOLISMO TV        -->
+    <!-- ======================================================== -->
+    <section id="tab-tips" class="tab-content flex-col gap-4">
+      <!-- HEADER CON FECHA Y BOTÓN REFRESH -->
       <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-base font-extrabold text-white flex items-center gap-1.5">
+            <span>💡</span> Novedades y Tips de Salud
+          </h2>
+          <p id="tips-today-date-badge" class="text-xs text-sky-400 font-medium">Hoy • Renueva todos los días a las 06:00 AM</p>
+        </div>
+        <button id="btn-refresh-tips-feed" type="button" onclick="window.tipsManager.refreshFeedManual()" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-sky-300 border border-slate-700 active:scale-95 transition-all flex items-center gap-1 text-xs font-bold" title="Comprobar novedades en la nube">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- TARJETA DESTACADA: NOVEDAD DEL DÍA (FRUTA, ÓRGANO & METABOLISMO TV) -->
+      <div class="glass-card p-5 rounded-3xl border border-sky-500/30 bg-gradient-to-br from-sky-950/40 via-slate-900 to-cyan-950/30 flex flex-col gap-4 shadow-xl">
+        <div class="flex items-center justify-between gap-2">
+          <span id="tips-today-badge" class="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+            🥑 Fruta & Órgano del Día
+          </span>
+          <span class="text-[10px] font-bold text-sky-300 bg-sky-500/10 px-2 py-0.5 rounded-full border border-sky-400/20">
+            ⏰ 06:00 AM
+          </span>
+        </div>
+
+        <div>
+          <h3 id="tips-today-title" class="text-sm font-extrabold text-white leading-snug">
+            Cargando novedad del día...
+          </h3>
+        </div>
+
+        <!-- BLOQUE: FRUTA Y ÓRGANO QUE BENEFICIA -->
+        <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 flex flex-col gap-2.5">
+          <div class="flex items-center gap-3">
+            <span id="tips-fruit-icon" class="text-3xl p-2 rounded-2xl bg-slate-800 border border-slate-700 shrink-0">
+              🥑
+            </span>
+            <div class="min-w-0">
+              <span class="text-[9px] uppercase font-bold text-slate-400 tracking-wider">Alimento Funcional</span>
+              <h4 id="tips-fruit-name" class="text-xs font-black text-white truncate">Palta / Aguacate</h4>
+              <p id="tips-key-nutrient" class="text-[10px] text-emerald-400 font-semibold truncate">Potasio y Ácido Oleico</p>
+            </div>
+          </div>
+
+          <div class="pt-2 border-t border-slate-800/80">
+            <div class="flex items-center gap-1.5 mb-1">
+              <span class="text-[10px] uppercase font-bold text-slate-400">Órgano que Protege:</span>
+              <span id="tips-target-organ" class="text-[11px] font-extrabold text-rose-400">❤️ Corazón</span>
+            </div>
+            <p id="tips-mechanism" class="text-xs text-slate-300 leading-relaxed"></p>
+          </div>
+        </div>
+
+        <!-- BLOQUE: YOUTUBE SHORT OFICIAL DE METABOLISMO TV -->
+        <div class="p-3.5 rounded-2xl bg-gradient-to-br from-red-950/30 via-slate-900 to-slate-900 border border-red-500/30 flex flex-col gap-2.5">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="text-base">🎬</span>
+              <span class="text-[10px] font-black uppercase tracking-wider text-red-400">Metabolismo TV Shorts</span>
+            </div>
+            <span class="text-[9px] font-bold text-slate-400">Frank Suárez</span>
+          </div>
+
+          <div>
+            <h4 id="tips-short-title" class="text-xs font-bold text-white leading-snug">¿Por qué la palta no engorda?</h4>
+            <p id="tips-short-caption" class="text-[11px] text-slate-400 mt-1 leading-snug"></p>
+          </div>
+
+          <button id="tips-short-link-btn" type="button" class="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-black text-xs shadow-md shadow-red-600/30 flex items-center justify-center gap-2 active:scale-95 transition-all">
+            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            <span>Ver Short en YouTube (Metabolismo TV)</span>
+          </button>
+        </div>
+
+        <!-- EL CONSEJO METABÓLICO DE FRANK -->
+        <div class="p-3.5 rounded-2xl bg-sky-950/30 border border-sky-500/25 flex flex-col gap-1">
+          <div class="flex items-center gap-1.5 text-sky-300 font-bold text-xs">
+            <span>💡</span>
+            <span>El Consejo de Frank Suárez:</span>
+          </div>
+          <p id="tips-frank-advice" class="text-xs text-slate-300 leading-relaxed"></p>
+        </div>
+
+        <!-- TU ACCIÓN / RETO DE HOY -->
+        <div class="p-3 rounded-2xl bg-emerald-950/20 border border-emerald-500/25 flex items-start gap-2.5">
+          <span class="text-emerald-400 font-bold text-base">✓</span>
+          <div>
+            <span class="text-[10px] uppercase font-bold text-emerald-400 tracking-wider">Tu Reto Práctico de Hoy</span>
+            <p id="tips-quick-action" class="text-xs text-emerald-200 mt-0.5 leading-snug"></p>
+          </div>
+        </div>
+
+        <!-- BOTÓN COMPARTIR NOVEDAD -->
+        <button type="button" onclick="window.tipsManager.shareTodayTip()" class="w-full py-2.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-sky-300 font-bold text-xs active:scale-95 transition-all flex items-center justify-center gap-2 border border-slate-700">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+          <span>Compartir Novedad del Día</span>
+        </button>
+      </div>
+
+      <!-- SECCIÓN HÁBITOS ACTIVABLES (ECOSISTEMA CODE AHUMADA) -->
+      <div class="flex flex-col gap-2.5">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-base">⚡</span>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300">Hábitos Saludables Complementarios</h3>
+          </div>
+          <span class="text-[10px] font-semibold text-slate-400">Activables</span>
+        </div>
+        <div id="extra-habits-container" class="flex flex-col gap-2.5"></div>
+      </div>
+
+      <!-- CONSEJOS DE BIENESTAR DE FRANK -->
+      <div class="flex flex-col gap-2.5">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-base">💧</span>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-sky-300">Biblioteca de Principios Frank Suárez</h3>
+          </div>
+        </div>
+        <div id="frank-tips-container" class="flex flex-col gap-2.5"></div>
+      </div>
+
+      <!-- ARCHIVO DE NOVEDADES ANTERIORES -->
+      <div class="flex flex-col gap-2.5">
+        <div class="flex items-center justify-between">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Archivo de Días Anteriores</h3>
+          <span class="text-[10px] text-slate-500">Últimos días</span>
+        </div>
+        <div id="tips-past-list-container" class="flex flex-col gap-2"></div>
+      </div>
+    </section>
+
+<section id="tab-progress" class="tab-content flex-col gap-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-base font-extrabold text-white">Progreso Semanal</h2>
+          <p class="text-xs text-slate-400">Tu constancia de hidratación en los últimos 7 días</p>
+        </div>
+      </div>
+
+      <!-- GRÁFICO DE BARRAS SEMANAL -->
+      <div class="glass-card p-4 rounded-2xl border border-slate-800 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-slate-300">Cumplimiento Diario (%)</span>
+          <span class="text-[11px] text-emerald-400 font-semibold flex items-center gap-1">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Verde: Meta cumplida
+          </span>
+        </div>
+
+        <!-- Contenedor dinámico de barras -->
+        <div id="weekly-chart-bars" class="flex items-end justify-between gap-2 pt-2 pb-1"></div>
+      </div>
+
+      <!-- TARJETAS DE MÉTRICAS -->
+      <div class="grid grid-cols-2 gap-2.5">
+        <div class="glass-card p-3.5 rounded-2xl border border-slate-800">
+          <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wide block">Total Semanal</span>
+          <p id="stat-weekly-total" class="text-xl font-extrabold text-sky-300 mt-1">0.0 L</p>
+          <span class="text-[10px] text-slate-400">Litros consumidos</span>
+        </div>
+
+        <div class="glass-card p-3.5 rounded-2xl border border-slate-800">
+          <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wide block">Promedio Diario</span>
+          <p id="stat-daily-avg" class="text-xl font-extrabold text-cyan-300 mt-1">0 ml</p>
+          <span class="text-[10px] text-slate-400">Mililitros por día</span>
+        </div>
+
+        <div class="glass-card p-3.5 rounded-2xl border border-slate-800">
+          <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wide block">Metas Logradas</span>
+          <p id="stat-days-met" class="text-xl font-extrabold text-emerald-400 mt-1">0 de 7 días</p>
+          <span class="text-[10px] text-slate-400">100% completado</span>
+        </div>
+
+        <div class="glass-card p-3.5 rounded-2xl border border-slate-800">
+          <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wide block">Racha Actual</span>
+          <p id="stat-streak-progress" class="text-xl font-extrabold text-amber-400 mt-1">0 días 🔥</p>
+          <span class="text-[10px] text-slate-400">Días consecutivos</span>
+        </div>
+      </div>
+
+      <!-- MÉTRICA: ENERGÍA Y VITALIDAD ESTIMADA -->
+      <div class="glass-card p-4 rounded-2xl border border-sky-500/20 bg-gradient-to-br from-sky-950/30 to-slate-900/60 flex items-center gap-3">
+        <div class="w-12 h-12 rounded-2xl bg-sky-500/20 text-sky-400 flex items-center justify-center text-2xl shrink-0">
+          ⚡
+        </div>
+        <div>
+          <h4 class="text-xs font-bold uppercase tracking-wider text-sky-300">Energía y Vitalidad Estimada</h4>
+          <p id="stat-frank-atp" class="text-sm font-extrabold text-white mt-0.5">~0 x 10 Julios</p>
+          <p class="text-[10px] text-slate-400 leading-snug mt-0.5">Estimación calculada a partir de tu nivel de hidratación y oxigenación diaria.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 4: MÁS HÁBITOS Y CONSEJOS DE BIENESTAR -->
+    <!-- ======================================================== -->
+    
+
+    <!-- ======================================================== -->
+    <!-- TAB 5: AJUSTES Y CONFIGURACIÓN (CODE AHUMADA) -->
+    <!-- ======================================================== -->
+    <section id="tab-settings" class="tab-content flex-col gap-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-base font-extrabold text-white">Configuración</h2>
+          <p class="text-xs text-slate-400">Perfil, apariencia, tus métricas y versión</p>
+        </div>
+      </div>
+
+      <!-- 1. TARJETA MI CUENTA & PERFIL -->
+      <div class="glass-card p-4 rounded-2xl border border-slate-800 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Mi Cuenta</span>
+          <button id="btn-settings-edit-profile" type="button" class="text-[11px] font-bold px-3 py-1 rounded-xl bg-sky-500/20 text-sky-300 border border-sky-400/30 hover:bg-sky-500/30 active:scale-95 transition-all">
+            ✏️ Editar Perfil
+          </button>
+        </div>
+        <div class="flex items-center gap-3.5 pt-1">
+          <div class="relative group shrink-0">
+            <div id="settings-avatar-container" class="w-14 h-14 rounded-full bg-gradient-to-tr from-sky-600 to-cyan-400 text-white flex items-center justify-center text-xl font-black shadow-md shadow-sky-500/20 overflow-hidden border-2 border-sky-400/40 cursor-pointer" title="Cambiar foto de perfil">
+              <span id="settings-avatar-letter">C</span>
+            </div>
+            <button id="btn-change-avatar-settings" type="button" class="absolute -bottom-1 -right-1 p-1 rounded-full bg-sky-500 hover:bg-sky-400 text-white shadow-md border border-slate-900 text-[10px]" title="Cambiar foto de perfil">
+              📷
+            </button>
+          </div>
+          <div class="min-w-0 flex-1">
+            <h3 id="settings-display-name" class="text-sm font-extrabold text-white truncate">Cristian</h3>
+            <p id="settings-display-user" class="text-xs text-slate-400 truncate">@cristian</p>
+            <p id="settings-display-email" class="text-[10px] text-slate-500 truncate">Cuenta activa</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-800/80">
+          <div class="p-2 rounded-xl bg-slate-900/60">
+            <span class="text-[10px] text-slate-400 uppercase font-semibold">Peso Registrado</span>
+            <p id="settings-display-weight" class="text-xs font-bold text-white mt-0.5">70 kg</p>
+          </div>
+          <div class="p-2 rounded-xl bg-slate-900/60">
+            <span class="text-[10px] text-slate-400 uppercase font-semibold">Meta Diaria</span>
+            <p id="settings-display-goal" class="text-xs font-bold text-sky-400 mt-0.5">2.000 ml</p>
+          </div>
+        </div>
+        <button id="btn-settings-logout" type="button" class="w-full mt-1 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-300 font-bold text-xs active:scale-95 transition-all">
+          Cerrar Sesión / Cambiar Usuario
+        </button>
+      </div>
+
+      <!-- 2. APARIENCIA: MODO NOCTURNO / MODO SOLEADO -->
+      <div class="glass-card p-4 rounded-2xl border border-slate-800 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div id="theme-icon-container" class="w-10 h-10 rounded-xl bg-slate-800 text-amber-300 flex items-center justify-center text-lg">
+            🌙
+          </div>
+          <div>
+            <p id="theme-title-text" class="text-xs font-bold text-white">Modo Nocturno</p>
+            <p id="theme-subtitle-text" class="text-[10px] text-slate-400">Tocá para cambiar a Modo Soleado ☀️</p>
+          </div>
+        </div>
+        <button id="switch-theme-mode" type="button" class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out bg-sky-500" title="Alternar Modo Nocturno / Soleado">
+          <span id="switch-theme-circle" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out translate-x-5"></span>
+        </button>
+      </div>
+
+
+      <!-- MIS HORARIOS Y RECORDATORIOS DE AGUA (CONFIGURACIÓN) -->
+      <div class="glass-card p-4 rounded-3xl border border-slate-800 flex flex-col gap-3.5 shadow-lg">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-base">⏰</span>
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-300">Mis Horarios y Recordatorios de Agua</span>
+          </div>
+          <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-400/30">Adaptables</span>
+        </div>
+        <div class="flex items-center justify-between">
         <div>
           <h2 class="text-base font-extrabold text-white">Horarios y Alarmas</h2>
           <p class="text-xs text-slate-400">Adaptá tus recordatorios a tu rutina diaria</p>
@@ -695,175 +977,6 @@
         <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Horarios Activos para Hoy</h3>
         <div id="schedule-times-grid" class="grid grid-cols-3 gap-2"></div>
       </div>
-    </section>
-
-    <!-- ======================================================== -->
-    <!-- TAB 3: PROGRESO Y ESTADÍSTICAS -->
-    <!-- ======================================================== -->
-    <section id="tab-progress" class="tab-content flex-col gap-4">
-      <div class="flex items-center justify-between">
-        <div>
-          <h2 class="text-base font-extrabold text-white">Progreso Semanal</h2>
-          <p class="text-xs text-slate-400">Tu constancia de hidratación en los últimos 7 días</p>
-        </div>
-      </div>
-
-      <!-- GRÁFICO DE BARRAS SEMANAL -->
-      <div class="glass-card p-4 rounded-2xl border border-slate-800 flex flex-col gap-3">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-slate-300">Cumplimiento Diario (%)</span>
-          <span class="text-[11px] text-emerald-400 font-semibold flex items-center gap-1">
-            <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Verde: Meta cumplida
-          </span>
-        </div>
-
-        <!-- Contenedor dinámico de barras -->
-        <div id="weekly-chart-bars" class="flex items-end justify-between gap-2 pt-2 pb-1"></div>
-      </div>
-
-      <!-- TARJETAS DE MÉTRICAS -->
-      <div class="grid grid-cols-2 gap-2.5">
-        <div class="glass-card p-3.5 rounded-2xl border border-slate-800">
-          <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wide block">Total Semanal</span>
-          <p id="stat-weekly-total" class="text-xl font-extrabold text-sky-300 mt-1">0.0 L</p>
-          <span class="text-[10px] text-slate-400">Litros consumidos</span>
-        </div>
-
-        <div class="glass-card p-3.5 rounded-2xl border border-slate-800">
-          <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wide block">Promedio Diario</span>
-          <p id="stat-daily-avg" class="text-xl font-extrabold text-cyan-300 mt-1">0 ml</p>
-          <span class="text-[10px] text-slate-400">Mililitros por día</span>
-        </div>
-
-        <div class="glass-card p-3.5 rounded-2xl border border-slate-800">
-          <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wide block">Metas Logradas</span>
-          <p id="stat-days-met" class="text-xl font-extrabold text-emerald-400 mt-1">0 de 7 días</p>
-          <span class="text-[10px] text-slate-400">100% completado</span>
-        </div>
-
-        <div class="glass-card p-3.5 rounded-2xl border border-slate-800">
-          <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wide block">Racha Actual</span>
-          <p id="stat-streak-progress" class="text-xl font-extrabold text-amber-400 mt-1">0 días 🔥</p>
-          <span class="text-[10px] text-slate-400">Días consecutivos</span>
-        </div>
-      </div>
-
-      <!-- MÉTRICA: ENERGÍA Y VITALIDAD ESTIMADA -->
-      <div class="glass-card p-4 rounded-2xl border border-sky-500/20 bg-gradient-to-br from-sky-950/30 to-slate-900/60 flex items-center gap-3">
-        <div class="w-12 h-12 rounded-2xl bg-sky-500/20 text-sky-400 flex items-center justify-center text-2xl shrink-0">
-          ⚡
-        </div>
-        <div>
-          <h4 class="text-xs font-bold uppercase tracking-wider text-sky-300">Energía y Vitalidad Estimada</h4>
-          <p id="stat-frank-atp" class="text-sm font-extrabold text-white mt-0.5">~0 x 10 Julios</p>
-          <p class="text-[10px] text-slate-400 leading-snug mt-0.5">Estimación calculada a partir de tu nivel de hidratación y oxigenación diaria.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ======================================================== -->
-    <!-- TAB 4: MÁS HÁBITOS Y CONSEJOS DE BIENESTAR -->
-    <!-- ======================================================== -->
-    <section id="tab-habits" class="tab-content flex-col gap-4">
-      <div class="flex items-center justify-between">
-        <div>
-          <h2 class="text-base font-extrabold text-white">Hábitos y Bienestar</h2>
-          <p class="text-xs text-slate-400">Consejos prácticos para optimizar tu salud e hidratación</p>
-        </div>
-      </div>
-
-      <!-- SECCIÓN: CONSEJOS DE BIENESTAR -->
-      <div class="flex flex-col gap-2.5">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <span class="text-base">💡</span>
-            <h3 class="text-xs font-bold uppercase tracking-wider text-sky-300">Consejos de Bienestar</h3>
-          </div>
-          <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300">Hábitos Saludables</span>
-        </div>
-
-        <!-- Contenedor dinámico de tips -->
-        <div id="frank-tips-container" class="flex flex-col gap-2.5"></div>
-      </div>
-
-      <!-- SECCIÓN: HÁBITOS COMPLEMENTARIOS (Ecosistema Code Ahumada) -->
-      <div class="flex flex-col gap-2.5 mt-2">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <span class="text-base">⚡</span>
-            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300">Módulos de Hábitos</h3>
-          </div>
-          <span class="text-[10px] font-semibold text-slate-400">Activables</span>
-        </div>
-
-        <!-- Contenedor dinámico de hábitos extra -->
-        <div id="extra-habits-container" class="flex flex-col gap-2.5"></div>
-      </div>
-    </section>
-
-    <!-- ======================================================== -->
-    <!-- TAB 5: AJUSTES Y CONFIGURACIÓN (CODE AHUMADA) -->
-    <!-- ======================================================== -->
-    <section id="tab-settings" class="tab-content flex-col gap-4">
-      <div class="flex items-center justify-between">
-        <div>
-          <h2 class="text-base font-extrabold text-white">Configuración</h2>
-          <p class="text-xs text-slate-400">Perfil, apariencia, tus métricas y versión</p>
-        </div>
-      </div>
-
-      <!-- 1. TARJETA MI CUENTA & PERFIL -->
-      <div class="glass-card p-4 rounded-2xl border border-slate-800 flex flex-col gap-3">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Mi Cuenta</span>
-          <button id="btn-settings-edit-profile" type="button" class="text-[11px] font-bold px-3 py-1 rounded-xl bg-sky-500/20 text-sky-300 border border-sky-400/30 hover:bg-sky-500/30 active:scale-95 transition-all">
-            ✏️ Editar Perfil
-          </button>
-        </div>
-        <div class="flex items-center gap-3.5 pt-1">
-          <div class="relative group shrink-0">
-            <div id="settings-avatar-container" class="w-14 h-14 rounded-full bg-gradient-to-tr from-sky-600 to-cyan-400 text-white flex items-center justify-center text-xl font-black shadow-md shadow-sky-500/20 overflow-hidden border-2 border-sky-400/40 cursor-pointer" title="Cambiar foto de perfil">
-              <span id="settings-avatar-letter">C</span>
-            </div>
-            <button id="btn-change-avatar-settings" type="button" class="absolute -bottom-1 -right-1 p-1 rounded-full bg-sky-500 hover:bg-sky-400 text-white shadow-md border border-slate-900 text-[10px]" title="Cambiar foto de perfil">
-              📷
-            </button>
-          </div>
-          <div class="min-w-0 flex-1">
-            <h3 id="settings-display-name" class="text-sm font-extrabold text-white truncate">Cristian</h3>
-            <p id="settings-display-user" class="text-xs text-slate-400 truncate">@cristian</p>
-            <p id="settings-display-email" class="text-[10px] text-slate-500 truncate">Cuenta activa</p>
-          </div>
-        </div>
-        <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-800/80">
-          <div class="p-2 rounded-xl bg-slate-900/60">
-            <span class="text-[10px] text-slate-400 uppercase font-semibold">Peso Registrado</span>
-            <p id="settings-display-weight" class="text-xs font-bold text-white mt-0.5">70 kg</p>
-          </div>
-          <div class="p-2 rounded-xl bg-slate-900/60">
-            <span class="text-[10px] text-slate-400 uppercase font-semibold">Meta Diaria</span>
-            <p id="settings-display-goal" class="text-xs font-bold text-sky-400 mt-0.5">2.000 ml</p>
-          </div>
-        </div>
-        <button id="btn-settings-logout" type="button" class="w-full mt-1 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-300 font-bold text-xs active:scale-95 transition-all">
-          Cerrar Sesión / Cambiar Usuario
-        </button>
-      </div>
-
-      <!-- 2. APARIENCIA: MODO NOCTURNO / MODO SOLEADO -->
-      <div class="glass-card p-4 rounded-2xl border border-slate-800 flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <div id="theme-icon-container" class="w-10 h-10 rounded-xl bg-slate-800 text-amber-300 flex items-center justify-center text-lg">
-            🌙
-          </div>
-          <div>
-            <p id="theme-title-text" class="text-xs font-bold text-white">Modo Nocturno</p>
-            <p id="theme-subtitle-text" class="text-[10px] text-slate-400">Tocá para cambiar a Modo Soleado ☀️</p>
-          </div>
-        </div>
-        <button id="switch-theme-mode" type="button" class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out bg-sky-500" title="Alternar Modo Nocturno / Soleado">
-          <span id="switch-theme-circle" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out translate-x-5"></span>
-        </button>
       </div>
 
       <!-- 3. CANALES DE ALERTA Y NOTIFICACIONES -->
@@ -974,11 +1087,11 @@
       <div class="glass-card p-4 rounded-2xl border border-slate-800 flex flex-col gap-3">
         <div class="flex items-center justify-between">
           <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Actualizaciones de APK</span>
-          <span id="apk-installed-version-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">v1.0.34</span>
+          <span id="apk-installed-version-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">v1.0.35</span>
         </div>
         <div class="flex items-center justify-between text-xs text-slate-300">
           <span>Versión Instalada:</span>
-          <span id="apk-installed-version-text" class="font-extrabold text-white">v1.0.34 (Android APK Nativo)</span>
+          <span id="apk-installed-version-text" class="font-extrabold text-white">v1.0.35 (Android APK Nativo)</span>
         </div>
         <div class="flex items-center justify-between text-xs text-slate-300">
           <span>Estado del Sistema:</span>
@@ -1036,7 +1149,7 @@
         </p>
         <div class="text-[10px] text-slate-500 pt-1 border-t border-slate-800 flex items-center justify-between">
           <span>© 2026 Code Ahumada</span>
-          <span>Versión 1.0.34</span>
+          <span>Versión 1.0.35</span>
         </div>
       </div>
     </section>
@@ -1050,39 +1163,31 @@
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
         </svg>
-        <span class="text-[10px] font-bold">Agua</span>
+        <span class="text-[9.5px] font-bold">Agua</span>
       </button>
 
-      <!-- Tab 2: Dieta 3x1 Frank Suárez -->
+      <!-- Tab 2: Dieta 3x1 -->
       <button type="button" data-tab="diet" class="nav-tab-btn flex-1 flex flex-col items-center gap-1">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
         </svg>
-        <span class="text-[9px] font-bold">Dieta 3x1</span>
+        <span class="text-[9.5px] font-bold">Dieta 3x1</span>
       </button>
 
-      <!-- Tab 2: Horarios -->
-      <button type="button" data-tab="schedule" class="nav-tab-btn flex-1 flex flex-col items-center gap-1">
+      <!-- Tab 3: Novedades & Tips (Nuevo) -->
+      <button type="button" data-tab="tips" class="nav-tab-btn flex-1 flex flex-col items-center gap-1">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
         </svg>
-        <span class="text-[10px] font-bold">Horarios</span>
+        <span class="text-[9.5px] font-bold">Novedades</span>
       </button>
 
-      <!-- Tab 3: Progreso -->
+      <!-- Tab 4: Progreso -->
       <button type="button" data-tab="progress" class="nav-tab-btn flex-1 flex flex-col items-center gap-1">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
         </svg>
-        <span class="text-[10px] font-bold">Progreso</span>
-      </button>
-
-      <!-- Tab 4: Más Hábitos -->
-      <button type="button" data-tab="habits" class="nav-tab-btn flex-1 flex flex-col items-center gap-1">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-        </svg>
-        <span class="text-[10px] font-bold">Hábitos</span>
+        <span class="text-[9.5px] font-bold">Progreso</span>
       </button>
 
       <!-- Tab 5: Ajustes -->
@@ -1091,7 +1196,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
         </svg>
-        <span class="text-[10px] font-bold">Ajustes</span>
+        <span class="text-[9.5px] font-bold">Ajustes</span>
       </button>
     </nav>
 
@@ -1270,6 +1375,41 @@
       <!-- Botón Registrar Receta como Comida -->
       <button id="btn-register-recipe-meal" type="button" class="w-full py-3 rounded-2xl bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-400 hover:to-cyan-400 text-slate-950 font-black text-xs shadow-lg shadow-sky-500/25 active:scale-95 transition-all">
         🍽️ Registrar en Mi Día
+      </button>
+    </div>
+  </div>
+
+  
+  <!-- ======================================================== -->
+  <!-- MODAL: VISOR DE NOVEDAD / TIP ANTERIOR                    -->
+  <!-- ======================================================== -->
+  <div id="tip-viewer-modal" class="app-modal hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md items-center justify-center p-4">
+    <div class="glass-card max-w-sm w-full p-5 rounded-3xl border border-sky-400/30 flex flex-col gap-4 animate-scaleUp max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between">
+        <span id="modal-tip-viewer-organ" class="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-400/30">
+          Órgano
+        </span>
+        <button type="button" onclick="window.tipsManager.closeTipModal()" class="btn-close-modal text-slate-400 hover:text-white p-1 text-sm">✕</button>
+      </div>
+
+      <div>
+        <h3 id="modal-tip-viewer-title" class="text-sm font-extrabold text-white leading-snug"></h3>
+        <p id="modal-tip-viewer-fruit" class="text-xs font-bold text-emerald-400 mt-1"></p>
+      </div>
+
+      <div class="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 text-xs text-slate-300 leading-relaxed">
+        <span class="text-[10px] uppercase font-bold text-slate-400 block mb-1">Mecanismo Celular:</span>
+        <p id="modal-tip-viewer-mechanism"></p>
+      </div>
+
+      <div class="p-3.5 rounded-2xl bg-sky-950/30 border border-sky-500/25 text-xs text-slate-300 leading-relaxed">
+        <span class="text-[10px] uppercase font-bold text-sky-400 block mb-1">El Consejo de Frank:</span>
+        <p id="modal-tip-viewer-advice"></p>
+      </div>
+
+      <button id="modal-tip-viewer-short-btn" type="button" class="w-full py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-black text-xs shadow-md shadow-red-600/30 flex items-center justify-center gap-2 active:scale-95 transition-all">
+        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+        <span>Ver Short en YouTube</span>
       </button>
     </div>
   </div>
@@ -1581,11 +1721,11 @@
       <div class="p-3 rounded-2xl bg-slate-900 border border-slate-800 text-xs flex flex-col gap-1.5">
         <div class="flex items-center justify-between text-slate-400">
           <span>Versión instalada:</span>
-          <span id="modal-update-installed-version" class="font-bold text-slate-300">v1.0.34</span>
+          <span id="modal-update-installed-version" class="font-bold text-slate-300">v1.0.35</span>
         </div>
         <div class="flex items-center justify-between text-slate-400">
           <span>Nueva versión:</span>
-          <span id="modal-update-version-label" class="font-extrabold text-emerald-400">v1.0.34</span>
+          <span id="modal-update-version-label" class="font-extrabold text-emerald-400">v1.0.35</span>
         </div>
       </div>
 
@@ -1652,16 +1792,17 @@
   <!-- INPUT OCULTO DE SUBIDA DE FOTO DE PERFIL (Cámara o Galería) -->
   <input type="file" id="input-avatar-photo" accept="image/*" class="hidden">
 
-  <!-- SCRIPTS MODULARES CON VERSIONADO QUERY PARAMS (?v=3.4) -->
-  <script src="./js/storage.js?v=3.4"></script>
-  <script src="./js/auth.js?v=3.4"></script>
-  <script src="./js/audio.js?v=3.4"></script>
-  <script src="./js/reminders.js?v=3.4"></script>
-  <script src="./js/habits.js?v=3.4"></script>
-  <script src="./js/diet.js?v=3.4"></script>
-  <script src="./js/updater.js?v=3.4"></script>
-  <script src="./js/ads.js?v=3.4"></script>
-  <script src="./js/app.js?v=3.4"></script>
-  <script src="./js/pwa.js?v=3.4"></script>
+  <!-- SCRIPTS MODULARES CON VERSIONADO QUERY PARAMS (?v=3.5) -->
+  <script src="./js/storage.js?v=3.5"></script>
+  <script src="./js/auth.js?v=3.5"></script>
+  <script src="./js/audio.js?v=3.5"></script>
+  <script src="./js/reminders.js?v=3.5"></script>
+  <script src="./js/habits.js?v=3.5"></script>
+  <script src="./js/diet.js?v=3.5"></script>
+  <script src="./js/tips.js?v=3.5"></script>
+  <script src="./js/updater.js?v=3.5"></script>
+  <script src="./js/ads.js?v=3.5"></script>
+  <script src="./js/app.js?v=3.5"></script>
+  <script src="./js/pwa.js?v=3.5"></script>
 </body>
 </html>

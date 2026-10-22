@@ -1,7 +1,7 @@
 // HabitFlow Service Worker - Code Ahumada
-// Versión: habitflow-v1.0.34
+// Versión: habitflow-v1.0.35
 
-const CACHE_NAME = 'habitflow-v1.0.34';
+const CACHE_NAME = 'habitflow-v1.0.35';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -13,6 +13,8 @@ const ASSETS_TO_CACHE = [
   './js/reminders.js',
   './js/habits.js',
   './js/diet.js',
+  './js/tips.js',
+  './data/daily_tips.json',
   './js/updater.js',
   './js/ads.js',
   './js/app.js',
