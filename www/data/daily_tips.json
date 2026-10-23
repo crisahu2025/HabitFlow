@@ -1,29 +1,50 @@
 {
-  "updatedAt": "2026-10-22T18:09:43.952Z",
+  "updatedAt": "2026-10-23T14:11:31.314Z",
   "renewalHour": 6,
   "channel": "Metabolismo TV (Frank Suárez)",
   "todayTip": {
-    "id": "tip-2026-10-22",
-    "date": "2026-10-22",
-    "title": "Arándanos y el Cerebro: Regeneración Neuronal y Memoria",
+    "id": "tip-2026-10-23",
+    "date": "2026-10-23",
+    "title": "El Limón y el Hígado Graso: Desintoxicación Matutina",
     "category": "Fruta y Órgano del Día",
-    "badge": "🫐 Fruta & Órgano",
+    "badge": "🍋 Fruta & Órgano",
     "fruit": {
-      "name": "Arándanos y Frutos Rojos",
-      "icon": "🫐",
-      "targetOrgan": "🧠 Cerebro y Sistema Nervioso Central",
-      "keyNutrient": "Antocianinas + Polifenoles antioxidantes",
-      "mechanism": "Cruzan la barrera hematoencefálica protegiendo a las neuronas del estrés oxidativo y mejorando la comunicación entre sinapsis sin disparar la glucosa."
+      "name": "Limón Fresco",
+      "icon": "🍋",
+      "targetOrgan": "🫀 Hígado y Vesícula Biliar",
+      "keyNutrient": "Ácido Cítrico + Vitamina C Pura",
+      "mechanism": "Estimula la producción de bilis y ayuda al hígado a disolver los depósitos de grasa estancada y toxinas acumuladas."
     },
     "metabolismoTvShort": {
-      "title": "Los frutos rojos son los únicos que recomiendo",
+      "title": "El jugo de limón en ayunas y el metabolismo",
       "youtubeUrl": "https://www.youtube.com/@MetabolismoTV/shorts",
-      "caption": "Frank Suárez explica por qué las frutas bajas en fructosa son las mejores aliadas para adelgazar sin dañar el hígado."
+      "caption": "Cómo un vaso de agua tibia con medio limón al despertar activa tu sistema digestivo en 5 minutos."
     },
-    "frankAdvice": "Evitá las frutas cargadas de fructosa líquida. Los arándanos tienen poca azúcar y un poder antioxidante insuperable para tu mente.",
-    "quickAction": "Sumá 1/3 taza de arándanos a tu yogur griego o merienda."
+    "frankAdvice": "El limón parece ácido al paladar, pero dentro del cuerpo se convierte en uno de los mayores alcalinizantes y depuradores hepáticos.",
+    "quickAction": "Exprimí 1/2 limón en tu primer vaso de agua de la mañana (a las 06:00 hs)."
   },
   "pastTips": [
+    {
+      "id": "tip-2026-10-22",
+      "date": "2026-10-22",
+      "title": "Arándanos y el Cerebro: Regeneración Neuronal y Memoria",
+      "category": "Fruta y Órgano del Día",
+      "badge": "🫐 Fruta & Órgano",
+      "fruit": {
+        "name": "Arándanos y Frutos Rojos",
+        "icon": "🫐",
+        "targetOrgan": "🧠 Cerebro y Sistema Nervioso Central",
+        "keyNutrient": "Antocianinas + Polifenoles antioxidantes",
+        "mechanism": "Cruzan la barrera hematoencefálica protegiendo a las neuronas del estrés oxidativo y mejorando la comunicación entre sinapsis sin disparar la glucosa."
+      },
+      "metabolismoTvShort": {
+        "title": "Los frutos rojos son los únicos que recomiendo",
+        "youtubeUrl": "https://www.youtube.com/@MetabolismoTV/shorts",
+        "caption": "Frank Suárez explica por qué las frutas bajas en fructosa son las mejores aliadas para adelgazar sin dañar el hígado."
+      },
+      "frankAdvice": "Evitá las frutas cargadas de fructosa líquida. Los arándanos tienen poca azúcar y un poder antioxidante insuperable para tu mente.",
+      "quickAction": "Sumá 1/3 taza de arándanos a tu yogur griego o merienda."
+    },
     {
       "id": "tip-2026-10-21",
       "date": "2026-10-21",
