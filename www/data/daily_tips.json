@@ -1,29 +1,50 @@
 {
-  "updatedAt": "2026-10-23T14:11:31.314Z",
+  "updatedAt": "2026-10-24T13:14:13.505Z",
   "renewalHour": 6,
   "channel": "Metabolismo TV (Frank Suárez)",
   "todayTip": {
-    "id": "tip-2026-10-23",
-    "date": "2026-10-23",
-    "title": "El Limón y el Hígado Graso: Desintoxicación Matutina",
+    "id": "tip-2026-10-24",
+    "date": "2026-10-24",
+    "title": "La Piña y el Páncreas: La Enzima Bromelina",
     "category": "Fruta y Órgano del Día",
-    "badge": "🍋 Fruta & Órgano",
+    "badge": "🍍 Fruta & Órgano",
     "fruit": {
-      "name": "Limón Fresco",
-      "icon": "🍋",
-      "targetOrgan": "🫀 Hígado y Vesícula Biliar",
-      "keyNutrient": "Ácido Cítrico + Vitamina C Pura",
-      "mechanism": "Estimula la producción de bilis y ayuda al hígado a disolver los depósitos de grasa estancada y toxinas acumuladas."
+      "name": "Piña / Ananá",
+      "icon": "🍍",
+      "targetOrgan": "🫁 Páncreas y Tracto Intestinal",
+      "keyNutrient": "Bromelina (Enzima Proteolítica)",
+      "mechanism": "Descompone las proteínas densas en aminoácidos asimilables, aliviando la carga de trabajo del páncreas y reduciendo la inflamación abdominal."
     },
     "metabolismoTvShort": {
-      "title": "El jugo de limón en ayunas y el metabolismo",
+      "title": "La enzima mágica para personas con digestión lenta",
       "youtubeUrl": "https://www.youtube.com/@MetabolismoTV/shorts",
-      "caption": "Cómo un vaso de agua tibia con medio limón al despertar activa tu sistema digestivo en 5 minutos."
+      "caption": "Frank Suárez detalla cómo la bromelina ayuda a quienes sienten pesadez estomacal después de comer carne."
     },
-    "frankAdvice": "El limón parece ácido al paladar, pero dentro del cuerpo se convierte en uno de los mayores alcalinizantes y depuradores hepáticos.",
-    "quickAction": "Exprimí 1/2 limón en tu primer vaso de agua de la mañana (a las 06:00 hs)."
+    "frankAdvice": "Consumila con moderación (1 rodaja fina) como parte del 25% Tipo E después de una comida proteica abundante.",
+    "quickAction": "Comé 1 rodaja fina de ananá natural después de tu almuerzo con carnes rojas."
   },
   "pastTips": [
+    {
+      "id": "tip-2026-10-23",
+      "date": "2026-10-23",
+      "title": "El Limón y el Hígado Graso: Desintoxicación Matutina",
+      "category": "Fruta y Órgano del Día",
+      "badge": "🍋 Fruta & Órgano",
+      "fruit": {
+        "name": "Limón Fresco",
+        "icon": "🍋",
+        "targetOrgan": "🫀 Hígado y Vesícula Biliar",
+        "keyNutrient": "Ácido Cítrico + Vitamina C Pura",
+        "mechanism": "Estimula la producción de bilis y ayuda al hígado a disolver los depósitos de grasa estancada y toxinas acumuladas."
+      },
+      "metabolismoTvShort": {
+        "title": "El jugo de limón en ayunas y el metabolismo",
+        "youtubeUrl": "https://www.youtube.com/@MetabolismoTV/shorts",
+        "caption": "Cómo un vaso de agua tibia con medio limón al despertar activa tu sistema digestivo en 5 minutos."
+      },
+      "frankAdvice": "El limón parece ácido al paladar, pero dentro del cuerpo se convierte en uno de los mayores alcalinizantes y depuradores hepáticos.",
+      "quickAction": "Exprimí 1/2 limón en tu primer vaso de agua de la mañana (a las 06:00 hs)."
+    },
     {
       "id": "tip-2026-10-22",
       "date": "2026-10-22",
