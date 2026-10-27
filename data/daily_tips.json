@@ -1,29 +1,50 @@
 {
-  "updatedAt": "2026-10-26T16:03:37.914Z",
+  "updatedAt": "2026-10-27T15:17:13.926Z",
   "renewalHour": 6,
   "channel": "Metabolismo TV (Frank Suárez)",
   "todayTip": {
-    "id": "tip-2026-10-26",
-    "date": "2026-10-26",
-    "title": "El Coco y la Tiroides: Aceite de Coco y Grasa como Combustible",
+    "id": "tip-2026-10-27",
+    "date": "2026-10-27",
+    "title": "La Sandía y los Riñones: Limpieza y Eliminación de Ácido Úrico",
     "category": "Fruta y Órgano del Día",
-    "badge": "🥥 Fruta & Órgano",
+    "badge": "🍉 Fruta & Órgano",
     "fruit": {
-      "name": "Coco y Aceite de Coco Virgen",
-      "icon": "🥥",
-      "targetOrgan": "🦋 Glándula Tiroides y Metabolismo Basal",
-      "keyNutrient": "Ácido Láurico + Triglicéridos de Cadena Media (MCT)",
-      "mechanism": "Los MCT del coco van directamente por la vena porta hacia el hígado, donde se convierten en cetonas y energía limpia sin requerir insulina, reactivando la tiroides perezosa."
+      "name": "Sandía Fresca",
+      "icon": "🍉",
+      "targetOrgan": "💧 Riñones y Vías Urinarias",
+      "keyNutrient": "Citrulina + 92% Agua Biológica Estructurada",
+      "mechanism": "La citrulina se transforma en L-arginina, promoviendo la dilatación vascular en los glomérulos renales y ayudando a barrer sedimentos y exceso de ácido úrico."
     },
     "metabolismoTvShort": {
-      "title": "El aceite de coco no engorda: despierta tu tiroides",
+      "title": "La citrulina: el aminoácido para la circulación",
       "youtubeUrl": "https://www.youtube.com/@MetabolismoTV/shorts",
-      "caption": "Frank Suárez explica por qué el aceite de coco es el acelerador metabólico por excelencia."
+      "caption": "Frank Suárez explica cómo mejorar el flujo sanguíneo hacia los riñones y extremidades."
     },
-    "frankAdvice": "Empezá con 1/2 cucharadita por la mañana con tu café o té. Aumentará tu temperatura corporal porque tu metabolismo empieza a quemar.",
-    "quickAction": "Sumá 1/2 cucharadita de aceite de coco a tu desayuno metabólico de hoy."
+    "frankAdvice": "La sandía es muy diurética pero tiene índice glucémico moderado. Comé un triángulo pequeño solo después de una comida rica en proteínas.",
+    "quickAction": "Disfrutá de 1 rodaja fina de sandía bien fría como postre medido de tu almuerzo."
   },
   "pastTips": [
+    {
+      "id": "tip-2026-10-26",
+      "date": "2026-10-26",
+      "title": "El Coco y la Tiroides: Aceite de Coco y Grasa como Combustible",
+      "category": "Fruta y Órgano del Día",
+      "badge": "🥥 Fruta & Órgano",
+      "fruit": {
+        "name": "Coco y Aceite de Coco Virgen",
+        "icon": "🥥",
+        "targetOrgan": "🦋 Glándula Tiroides y Metabolismo Basal",
+        "keyNutrient": "Ácido Láurico + Triglicéridos de Cadena Media (MCT)",
+        "mechanism": "Los MCT del coco van directamente por la vena porta hacia el hígado, donde se convierten en cetonas y energía limpia sin requerir insulina, reactivando la tiroides perezosa."
+      },
+      "metabolismoTvShort": {
+        "title": "El aceite de coco no engorda: despierta tu tiroides",
+        "youtubeUrl": "https://www.youtube.com/@MetabolismoTV/shorts",
+        "caption": "Frank Suárez explica por qué el aceite de coco es el acelerador metabólico por excelencia."
+      },
+      "frankAdvice": "Empezá con 1/2 cucharadita por la mañana con tu café o té. Aumentará tu temperatura corporal porque tu metabolismo empieza a quemar.",
+      "quickAction": "Sumá 1/2 cucharadita de aceite de coco a tu desayuno metabólico de hoy."
+    },
     {
       "id": "tip-2026-10-25",
       "date": "2026-10-25",
