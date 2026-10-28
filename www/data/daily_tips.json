@@ -1,29 +1,50 @@
 {
-  "updatedAt": "2026-10-27T15:17:13.926Z",
+  "updatedAt": "2026-10-28T15:54:13.686Z",
   "renewalHour": 6,
   "channel": "Metabolismo TV (Frank Suárez)",
   "todayTip": {
-    "id": "tip-2026-10-27",
-    "date": "2026-10-27",
-    "title": "La Sandía y los Riñones: Limpieza y Eliminación de Ácido Úrico",
+    "id": "tip-2026-10-28",
+    "date": "2026-10-28",
+    "title": "La Palta y el Corazón: Cómo Calmar el Cortisol y Quemar Grasa",
     "category": "Fruta y Órgano del Día",
-    "badge": "🍉 Fruta & Órgano",
+    "badge": "🥑 Fruta & Órgano",
     "fruit": {
-      "name": "Sandía Fresca",
-      "icon": "🍉",
-      "targetOrgan": "💧 Riñones y Vías Urinarias",
-      "keyNutrient": "Citrulina + 92% Agua Biológica Estructurada",
-      "mechanism": "La citrulina se transforma en L-arginina, promoviendo la dilatación vascular en los glomérulos renales y ayudando a barrer sedimentos y exceso de ácido úrico."
+      "name": "Palta / Aguacate",
+      "icon": "🥑",
+      "targetOrgan": "❤️ Corazón y Glándulas Suprarrenales",
+      "keyNutrient": "Potasio Natural (800mg) + Ácido Oleico (Omega-9)",
+      "mechanism": "El potasio de la palta contrarresta el sodio celular y desactiva el exceso de cortisol (la hormona del estrés), permitiendo que el cuerpo desinflame el sistema cardiovascular y queme grasa abdominal profunda."
     },
     "metabolismoTvShort": {
-      "title": "La citrulina: el aminoácido para la circulación",
+      "title": "¿Por qué la palta no engorda y ayuda a tu corazón?",
       "youtubeUrl": "https://www.youtube.com/@MetabolismoTV/shorts",
-      "caption": "Frank Suárez explica cómo mejorar el flujo sanguíneo hacia los riñones y extremidades."
+      "caption": "Frank Suárez explica cómo las grasas monoinsaturadas activan la tiroides y sacian sin disparar la insulina."
     },
-    "frankAdvice": "La sandía es muy diurética pero tiene índice glucémico moderado. Comé un triángulo pequeño solo después de una comida rica en proteínas.",
-    "quickAction": "Disfrutá de 1 rodaja fina de sandía bien fría como postre medido de tu almuerzo."
+    "frankAdvice": "Si tenés un sistema nervioso excitado (te cuesta dormir o vivís estresado), comer 1/2 palta en la cena es el mejor relajante natural que existe.",
+    "quickAction": "Agregá 1/2 palta fileteada a tu cena de hoy con una pizca de sal marina y gotas de limón fresco."
   },
   "pastTips": [
+    {
+      "id": "tip-2026-10-27",
+      "date": "2026-10-27",
+      "title": "La Sandía y los Riñones: Limpieza y Eliminación de Ácido Úrico",
+      "category": "Fruta y Órgano del Día",
+      "badge": "🍉 Fruta & Órgano",
+      "fruit": {
+        "name": "Sandía Fresca",
+        "icon": "🍉",
+        "targetOrgan": "💧 Riñones y Vías Urinarias",
+        "keyNutrient": "Citrulina + 92% Agua Biológica Estructurada",
+        "mechanism": "La citrulina se transforma en L-arginina, promoviendo la dilatación vascular en los glomérulos renales y ayudando a barrer sedimentos y exceso de ácido úrico."
+      },
+      "metabolismoTvShort": {
+        "title": "La citrulina: el aminoácido para la circulación",
+        "youtubeUrl": "https://www.youtube.com/@MetabolismoTV/shorts",
+        "caption": "Frank Suárez explica cómo mejorar el flujo sanguíneo hacia los riñones y extremidades."
+      },
+      "frankAdvice": "La sandía es muy diurética pero tiene índice glucémico moderado. Comé un triángulo pequeño solo después de una comida rica en proteínas.",
+      "quickAction": "Disfrutá de 1 rodaja fina de sandía bien fría como postre medido de tu almuerzo."
+    },
     {
       "id": "tip-2026-10-26",
       "date": "2026-10-26",
