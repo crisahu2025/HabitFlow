@@ -5,12 +5,31 @@
 
 let deferredInstallPrompt = null;
 
-// Registro de Service Worker con auto-recarga ante actualizaciones
+// Detección temprana de Capacitor nativo para evitar Service Worker dentro de Android APK
+function _isCapacitorNative() {
+  return !!(
+    typeof window !== 'undefined' &&
+    window.Capacitor &&
+    (
+      (typeof window.Capacitor.isNativePlatform === 'function' && window.Capacitor.isNativePlatform()) ||
+      (typeof window.Capacitor.getPlatform === 'function' && window.Capacitor.getPlatform() !== 'web')
+    )
+  );
+}
+
+// Registro de Service Worker SOLO en versión Web/PWA (en APK nativo Capacitor sirve los archivos locales)
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
+    if (_isCapacitorNative()) {
+      // Purgar cualquier Service Worker residual en WebView para evitar cuelgues y recargas inesperadas
+      navigator.serviceWorker.getRegistrations()
+        .then((regs) => regs.forEach((r) => r.unregister()))
+        .catch(() => {});
+      return;
+    }
+
     navigator.serviceWorker.register('./sw.js')
       .then((registration) => {
-        // Escuchar actualizaciones pendientes
         registration.addEventListener('updatefound', () => {
           const newWorker = registration.installing;
           if (newWorker) {
@@ -26,7 +45,7 @@ if ('serviceWorker' in navigator) {
         console.warn('Error al registrar Service Worker:', err);
       });
 
-    // Protocolo Code Ahumada: auto-recarga ante controllerchange
+    // Protocolo Code Ahumada: auto-recarga ante controllerchange (solo Web PWA)
     let refreshing = false;
     navigator.serviceWorker.addEventListener('controllerchange', () => {
       if (!refreshing) {

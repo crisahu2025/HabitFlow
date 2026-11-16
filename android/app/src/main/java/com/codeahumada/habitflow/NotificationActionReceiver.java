@@ -14,6 +14,8 @@ import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.util.Log;
 import android.widget.Toast;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * Receptor de difusión (BroadcastReceiver) para acciones de notificaciones de HabitFlow.
@@ -62,22 +64,61 @@ public class NotificationActionReceiver extends BroadcastReceiver {
     }
 
     private void handleDrankWater(Context context) {
-        // 1. Persistir +250ml en SharedPreferences nativo
+        long now = System.currentTimeMillis();
+        boolean recorded = false;
+
+        // 1. Persistir +250ml con timestamp exacto de forma atómica y anti-rebote
         try {
-            SharedPreferences prefs = context.getSharedPreferences(NativeWaterSyncPlugin.PREFS_NAME, Context.MODE_PRIVATE);
-            int currentMl = prefs.getInt(NativeWaterSyncPlugin.KEY_PENDING_ML, 0);
-            int currentCount = prefs.getInt(NativeWaterSyncPlugin.KEY_PENDING_COUNT, 0);
+            synchronized (NativeWaterSyncPlugin.LOCK) {
+                SharedPreferences prefs = context.getSharedPreferences(NativeWaterSyncPlugin.PREFS_NAME, Context.MODE_PRIVATE);
+                long lastTimestamp = prefs.getLong(NativeWaterSyncPlugin.KEY_LAST_TIMESTAMP, 0);
 
-            prefs.edit()
-                    .putInt(NativeWaterSyncPlugin.KEY_PENDING_ML, currentMl + 250)
-                    .putInt(NativeWaterSyncPlugin.KEY_PENDING_COUNT, currentCount + 1)
-                    .putLong(NativeWaterSyncPlugin.KEY_LAST_TIMESTAMP, System.currentTimeMillis())
-                    .apply();
+                // Candado anti-rebote de 1200ms para evitar disparos duplicados del sistema operativo
+                if (now - lastTimestamp < 1200) {
+                    Log.d(TAG, "Ignorando disparo duplicado de drank_water en ventana de 1.2s");
+                    return;
+                }
 
-            Log.d(TAG, "Guardados +250ml en SharedPreferences. Total pendiente: " + (currentMl + 250) + "ml");
+                int currentMl = prefs.getInt(NativeWaterSyncPlugin.KEY_PENDING_ML, 0);
+                int currentCount = prefs.getInt(NativeWaterSyncPlugin.KEY_PENDING_COUNT, 0);
+                String entriesJson = prefs.getString(NativeWaterSyncPlugin.KEY_PENDING_ENTRIES, "[]");
+
+                JSONArray arr;
+                try {
+                    arr = new JSONArray(entriesJson);
+                } catch (Exception e) {
+                    arr = new JSONArray();
+                }
+
+                JSONObject entry = new JSONObject();
+                entry.put("amount", 250);
+                entry.put("timestamp", now);
+                arr.put(entry);
+
+                // Tope de seguridad: máximo 40 registros pendientes si no se abrió en semanas
+                if (arr.length() > 40) {
+                    JSONArray trimmed = new JSONArray();
+                    for (int i = arr.length() - 40; i < arr.length(); i++) {
+                        trimmed.put(arr.get(i));
+                    }
+                    arr = trimmed;
+                }
+
+                prefs.edit()
+                        .putInt(NativeWaterSyncPlugin.KEY_PENDING_ML, currentMl + 250)
+                        .putInt(NativeWaterSyncPlugin.KEY_PENDING_COUNT, currentCount + 1)
+                        .putLong(NativeWaterSyncPlugin.KEY_LAST_TIMESTAMP, now)
+                        .putString(NativeWaterSyncPlugin.KEY_PENDING_ENTRIES, arr.toString())
+                        .commit();
+
+                recorded = true;
+                Log.d(TAG, "Guardados +250ml atómicamente. Total pendiente: " + (currentMl + 250) + "ml (" + arr.length() + " entradas)");
+            }
         } catch (Exception e) {
             Log.e(TAG, "Error guardando en SharedPreferences: " + e.getMessage());
         }
+
+        if (!recorded) return;
 
         // 2. Feedback háptico sutil (vibración corta)
         try {
@@ -98,7 +139,7 @@ public class NotificationActionReceiver extends BroadcastReceiver {
             } catch (Exception ignored) {}
         });
 
-        // 4. Si la app está abierta en primer plano, avisar al plugin para actualizar UI en vivo
+        // 4. Si la app está en memoria, avisar al plugin DESPUÉS del commit() síncrono
         NativeWaterSyncPlugin.notifyWaterAdded(250);
     }
 

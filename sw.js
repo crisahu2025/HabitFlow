@@ -1,11 +1,12 @@
 // HabitFlow Service Worker - Code Ahumada
-// Versión: habitflow-v1.0.35
+// Versión: habitflow-v1.0.36
 
-const CACHE_NAME = 'habitflow-v1.0.35';
+const CACHE_NAME = 'habitflow-v1.0.36';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './manifest.json',
+  './css/tailwind.min.css',
   './css/styles.css',
   './js/storage.js',
   './js/auth.js',

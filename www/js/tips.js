@@ -115,7 +115,11 @@ class TipsManager {
   constructor() {
     this.feedData = null;
     this.activeTip = null;
-    this.REMOTE_FEED_URL = './data/daily_tips.json';
+    const isNative = !!(window.Capacitor && typeof window.Capacitor.isNativePlatform === 'function' && window.Capacitor.isNativePlatform());
+    this.REMOTE_FEED_URL = isNative
+      ? 'https://habitflow-gray.vercel.app/data/daily_tips.json'
+      : './data/daily_tips.json';
+    this.LOCAL_FEED_URL = './data/daily_tips.json';
     this.STORAGE_KEY = 'habitflow_cached_tips_v1';
   }
 
@@ -137,15 +141,28 @@ class TipsManager {
   }
 
   async fetchRemoteFeed() {
+    const tryFetch = async (baseUrl, timeoutMs = 4000) => {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), timeoutMs);
+      try {
+        const res = await fetch(`${baseUrl}?t=${Date.now()}`, { signal: controller.signal });
+        clearTimeout(timer);
+        if (res.ok) return await res.json();
+      } catch (e) {
+        clearTimeout(timer);
+      }
+      return null;
+    };
+
     try {
-      // Query param aleatorio anti-caché de red para asegurar que si el agente actualizó el archivo, se descargue fresco
-      const url = `${this.REMOTE_FEED_URL}?t=${Date.now()}`;
-      const res = await fetch(url);
-      if (res.ok) {
-        const data = await res.json();
+      let data = await tryFetch(this.REMOTE_FEED_URL, 4000);
+      if (!data && this.REMOTE_FEED_URL !== this.LOCAL_FEED_URL) {
+        data = await tryFetch(this.LOCAL_FEED_URL, 2000);
+      }
+      if (data) {
         this.feedData = data;
         localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
-        console.log('✓ Feed de Novedades y Tips actualizado desde la nube exitosamente');
+        console.log('✓ Feed de Novedades y Tips actualizado exitosamente');
         this.renderTipsSection();
       }
     } catch (e) {

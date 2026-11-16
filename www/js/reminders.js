@@ -11,6 +11,9 @@ class ReminderManager {
   constructor() {
     this.timerInterval = null;
     this.lastTriggeredTime = null;
+    this._isSyncingWater = false;
+    this._lastResumeCheck = 0;
+    this._lastPermCheck = 0;
     this.init();
   }
 
@@ -90,13 +93,15 @@ class ReminderManager {
       console.log(`🔔 Acción de notificación recibida: "${actionId}"`, extra);
 
       if (actionId === 'drank_water') {
+        // Si está el plugin nativo, NotificationActionReceiver ya persistió en SharedPreferences:
+        // solo sincronizamos atómicamente para no duplicar tomas.
         if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.NativeWaterSync) {
-          window.Capacitor.Plugins.NativeWaterSync.clearPendingWater().catch(() => {});
+          this.syncPendingBackgroundWater();
+          return;
         }
-        // Registrar 250ml de agua directamente
+        // Fallback Web/iOS sin NativeWaterSync
         if (window.storageManager) {
           window.storageManager.addWaterEntry(250, 'Vaso de agua (Notificación)');
-          // Si la app está visible, refrescar la UI
           if (window.app && typeof window.app.renderWaterSection === 'function') {
             window.app.renderWaterSection();
           }
@@ -131,13 +136,17 @@ class ReminderManager {
     if (typeof document !== 'undefined') {
       document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'visible') {
-          this.syncPendingBackgroundWater();
-          this.checkPermissionsStatus();
+          this.startLiveTimer();
+          this.handleAppResume();
+        } else {
+          if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+            this.timerInterval = null;
+          }
         }
       });
       window.addEventListener('focus', () => {
-        this.syncPendingBackgroundWater();
-        this.checkPermissionsStatus();
+        this.handleAppResume();
       });
     }
 
@@ -145,7 +154,13 @@ class ReminderManager {
       if (window.Capacitor.Plugins.App) {
         window.Capacitor.Plugins.App.addListener('appStateChange', (state) => {
           if (state && state.isActive) {
-            this.syncPendingBackgroundWater();
+            this.startLiveTimer();
+            this.handleAppResume();
+          } else {
+            if (this.timerInterval) {
+              clearInterval(this.timerInterval);
+              this.timerInterval = null;
+            }
           }
         });
       }
@@ -160,41 +175,117 @@ class ReminderManager {
   }
 
   /**
-   * Sincroniza el agua que el usuario registró directamente desde las notificaciones
-   * en segundo plano mientras la app estaba cerrada o en segundo plano.
+   * Manejador unificado y con anti-rebote (debounce) cuando la app vuelve a primer plano.
+   * Evita tormentas de llamadas concurrentes al despertar tras días sin abrirla.
+   */
+  handleAppResume() {
+    const now = Date.now();
+    if (now - this._lastResumeCheck < 800) {
+      return;
+    }
+    this._lastResumeCheck = now;
+
+    try {
+      if (window.storageManager && typeof window.storageManager.ensureTodayData === 'function') {
+        window.storageManager.ensureTodayData();
+      }
+      if (window.app && typeof window.app.renderWaterSection === 'function') {
+        window.app.renderWaterSection();
+      }
+      if (window.tipsManager && typeof window.tipsManager.renderTipsSection === 'function') {
+        window.tipsManager.renderTipsSection();
+      }
+    } catch (e) {
+      console.warn('Error en refresco de reanudación:', e);
+    }
+
+    this.syncPendingBackgroundWater();
+
+    if (now - this._lastPermCheck > 15000) {
+      this._lastPermCheck = now;
+      this.checkPermissionsStatus();
+    }
+  }
+
+  /**
+   * Sincroniza de forma atómica y por fecha real el agua registrada desde las notificaciones
+   * en segundo plano, protegiendo con mutex para evitar lecturas concurrentes duplicadas.
    */
   async syncPendingBackgroundWater() {
     if (!window.Capacitor || !window.Capacitor.Plugins || !window.Capacitor.Plugins.NativeWaterSync) {
       return;
     }
 
+    if (this._isSyncingWater) {
+      return;
+    }
+    this._isSyncingWater = true;
+
     try {
       const { NativeWaterSync } = window.Capacitor.Plugins;
-      const res = await NativeWaterSync.getPendingWater();
+      let res = null;
 
-      if (res && res.pendingMl > 0) {
-        console.log(`💧 Sincronizando +${res.pendingMl}ml registrados en segundo plano desde notificaciones...`);
-        const count = res.count || Math.max(1, Math.round(res.pendingMl / 250));
-        const amountPerEntry = Math.round(res.pendingMl / count);
+      if (typeof NativeWaterSync.consumePendingWater === 'function') {
+        res = await NativeWaterSync.consumePendingWater();
+      } else {
+        res = await NativeWaterSync.getPendingWater();
+        if (res && res.pendingMl > 0) {
+          await NativeWaterSync.clearPendingWater();
+        }
+      }
 
-        if (window.storageManager) {
-          for (let i = 0; i < count; i++) {
-            window.storageManager.addWaterEntry(amountPerEntry, 'Vaso de agua (Notificación)');
+      if (!res || !window.storageManager) return;
+
+      const todayStr = window.storageManager.getTodayString();
+      const entries = Array.isArray(res.entries) ? res.entries : [];
+
+      let addedTodayMl = 0;
+      let archivedPastMl = 0;
+
+      if (entries.length > 0) {
+        for (const item of entries) {
+          const amount = Math.max(1, Math.round(Number(item.amount) || 250));
+          const ts = Number(item.timestamp) || Date.now();
+          const itemDate = window.storageManager.getDateStringFromTimestamp(ts);
+
+          if (itemDate === todayStr) {
+            window.storageManager.addWaterEntry(amount, 'Vaso de agua (Notificación)', ts);
+            addedTodayMl += amount;
+          } else {
+            // Toma de un día anterior: archivar en el historial de ese día sin inflar hoy
+            window.storageManager.addWaterEntryForDate(itemDate, amount);
+            archivedPastMl += amount;
           }
         }
+      } else if (res.pendingMl > 0) {
+        const lastTs = Number(res.lastTimestamp) || Date.now();
+        const itemDate = window.storageManager.getDateStringFromTimestamp(lastTs);
+        const safeCount = Math.min(20, res.count || Math.max(1, Math.round(res.pendingMl / 250)));
+        const amountPerEntry = Math.min(500, Math.round(res.pendingMl / safeCount));
 
-        await NativeWaterSync.clearPendingWater();
+        if (itemDate === todayStr) {
+          for (let i = 0; i < safeCount; i++) {
+            window.storageManager.addWaterEntry(amountPerEntry, 'Vaso de agua (Notificación)', lastTs);
+            addedTodayMl += amountPerEntry;
+          }
+        } else {
+          window.storageManager.addWaterEntryForDate(itemDate, safeCount * amountPerEntry);
+          archivedPastMl += safeCount * amountPerEntry;
+        }
+      }
 
+      if (addedTodayMl > 0 || archivedPastMl > 0) {
         if (window.app && typeof window.app.renderWaterSection === 'function') {
           window.app.renderWaterSection();
         }
-
-        if (typeof document !== 'undefined' && document.visibilityState === 'visible') {
-          this.showToast(`💧 ¡Sincronizados +${res.pendingMl}ml registrados desde la notificación!`);
+        if (typeof document !== 'undefined' && document.visibilityState === 'visible' && addedTodayMl > 0) {
+          this.showToast(`💧 ¡Sincronizados +${addedTodayMl}ml registrados desde la notificación!`);
         }
       }
     } catch (e) {
       console.warn('Error al sincronizar tomas de agua pendientes de segundo plano:', e);
+    } finally {
+      this._isSyncingWater = false;
     }
   }
 
@@ -251,13 +342,19 @@ class ReminderManager {
     // Modo Intervalo Dinámico
     const [startH, startM] = (config.startTime || '08:00').split(':').map(Number);
     const [endH, endM] = (config.endTime || '22:00').split(':').map(Number);
-    const interval = Number(config.intervalMinutes) || 90;
+    const interval = Math.max(15, Number(config.intervalMinutes) || 90);
+
+    if (isNaN(startH) || isNaN(startM) || isNaN(endH) || isNaN(endM)) {
+      return [];
+    }
 
     const times = [];
     let currentMins = (startH * 60) + startM;
-    const endMins = (endH * 60) + endM;
+    const endMins = Math.min(24 * 60, (endH * 60) + endM);
+    let safetyCounter = 0;
 
-    while (currentMins <= endMins) {
+    while (currentMins <= endMins && safetyCounter < 100) {
+      safetyCounter++;
       const h = Math.floor(currentMins / 60);
       const m = currentMins % 60;
       const formatted = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
@@ -378,6 +475,9 @@ class ReminderManager {
     const times = this.getActiveTimes();
     if (times.includes(curTime)) {
       this.lastTriggeredTime = curTime;
+      if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.NativeAlarms) {
+        return;
+      }
       this.triggerAlert('¡Momento de hidratarte!', 'Tomá un vaso de agua fresca para mantener tu energía y bienestar.');
     }
   }

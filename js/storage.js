@@ -83,15 +83,21 @@ const DEFAULT_EXTRA_HABITS = [
 
 class StorageManager {
   constructor() {
+    this._scheduleCache = null;
     this.ensureTodayData();
+    this.sanitizeDuplicateNotificationEntries();
+  }
+
+  getDateStringFromTimestamp(ts) {
+    const d = ts ? new Date(ts) : new Date();
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   getTodayString() {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
+    return this.getDateStringFromTimestamp(Date.now());
   }
 
   // --- Perfil y Metas ---
@@ -176,6 +182,8 @@ class StorageManager {
             parsed.goalMl = this.getProfile().dailyGoal || 2000;
           }
           return parsed;
+        } else if (parsed && parsed.date && parsed.date !== todayStr) {
+          this.archiveDay(parsed);
         }
       }
     } catch (e) {
@@ -247,22 +255,23 @@ class StorageManager {
     }
   }
 
-  addWaterEntry(amount, label = 'Vaso de agua') {
+  addWaterEntry(amount, label = 'Vaso de agua', customTimestamp = null) {
     const today = this.getTodayData();
     if (!Array.isArray(today.entries)) {
       today.entries = [];
     }
 
     const cleanAmount = Math.max(1, Math.round(Number(amount) || 250));
-    const now = new Date();
-    const time = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    const ts = (customTimestamp && Number(customTimestamp) > 0) ? Number(customTimestamp) : Date.now();
+    const d = new Date(ts);
+    const time = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
     
     const entry = {
-      id: 'entry_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+      id: 'entry_' + ts + '_' + Math.random().toString(36).substring(2, 6),
       amount: cleanAmount,
       label: String(label || 'Vaso de agua'),
       time: time,
-      timestamp: Date.now()
+      timestamp: ts
     };
 
     today.entries.unshift(entry); // El más reciente primero
@@ -275,6 +284,77 @@ class StorageManager {
 
     this.saveTodayData(today);
     return { today, newEntry: entry, goalMetJustNow };
+  }
+
+  /**
+   * Registra tomas atrasadas en el historial de un día pasado sin inflar el día de hoy
+   */
+  addWaterEntryForDate(dateStr, amount = 250) {
+    if (!dateStr) return;
+    if (dateStr === this.getTodayString()) {
+      return this.addWaterEntry(amount, 'Vaso de agua (Notificación)');
+    }
+    const history = this.getHistory();
+    const profile = this.getProfile();
+    const goalMl = profile.dailyGoal || 2000;
+    const cleanAmount = Math.max(1, Math.round(Number(amount) || 250));
+
+    const existingIdx = history.findIndex(h => h.date === dateStr);
+    if (existingIdx >= 0) {
+      history[existingIdx].totalMl = (Number(history[existingIdx].totalMl) || 0) + cleanAmount;
+      history[existingIdx].goalMet = history[existingIdx].totalMl >= (history[existingIdx].goalMl || goalMl);
+      history[existingIdx].glassCount = Math.round(history[existingIdx].totalMl / 250);
+    } else {
+      history.push({
+        date: dateStr,
+        totalMl: cleanAmount,
+        goalMl: goalMl,
+        goalMet: cleanAmount >= goalMl,
+        glassCount: Math.round(cleanAmount / 250)
+      });
+    }
+
+    if (history.length > 30) {
+      history.sort((a, b) => a.date.localeCompare(b.date));
+      history.splice(0, history.length - 30);
+    }
+    localStorage.setItem(STORAGE_KEYS.HISTORY, JSON.stringify(history));
+  }
+
+  /**
+   * Limpia duplicados exactos generados por condiciones de carrera en notificaciones (< 1500ms)
+   */
+  sanitizeDuplicateNotificationEntries() {
+    try {
+      const today = this.getTodayData();
+      if (!today || !Array.isArray(today.entries) || today.entries.length < 2) return;
+
+      const cleaned = [];
+      const seenNotifTimestamps = [];
+
+      for (const entry of today.entries) {
+        if (entry && entry.label === 'Vaso de agua (Notificación)' && entry.timestamp) {
+          const isBurstDuplicate = seenNotifTimestamps.some(ts => Math.abs(ts - entry.timestamp) < 1500);
+          if (isBurstDuplicate) {
+            continue;
+          }
+          seenNotifTimestamps.push(entry.timestamp);
+        }
+        cleaned.push(entry);
+      }
+
+      if (cleaned.length !== today.entries.length) {
+        today.entries = cleaned;
+        today.totalMl = cleaned.reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
+        if (today.totalMl < today.goalMl) {
+          today.celebratedToday = false;
+        }
+        this.saveTodayData(today);
+        console.log('✓ Limpiados duplicados de notificación en today.entries');
+      }
+    } catch (e) {
+      console.warn('Error sanitizando entradas duplicadas:', e);
+    }
   }
 
   removeWaterEntry(entryId) {
@@ -428,16 +508,21 @@ class StorageManager {
 
   // --- Horarios y Configuración ---
   getSchedule() {
+    if (this._scheduleCache) {
+      return this._scheduleCache;
+    }
     try {
       const raw = localStorage.getItem(STORAGE_KEYS.SCHEDULE);
-      return raw ? { ...DEFAULT_SCHEDULE, ...JSON.parse(raw) } : { ...DEFAULT_SCHEDULE };
+      this._scheduleCache = raw ? { ...DEFAULT_SCHEDULE, ...JSON.parse(raw) } : { ...DEFAULT_SCHEDULE };
+      return this._scheduleCache;
     } catch (e) {
       return { ...DEFAULT_SCHEDULE };
     }
   }
 
   saveSchedule(sched) {
-    localStorage.setItem(STORAGE_KEYS.SCHEDULE, JSON.stringify(sched));
+    this._scheduleCache = { ...DEFAULT_SCHEDULE, ...sched };
+    localStorage.setItem(STORAGE_KEYS.SCHEDULE, JSON.stringify(this._scheduleCache));
     if (window.reminderManager && typeof window.reminderManager.scheduleAllNativeAndroid === 'function') {
       window.reminderManager.scheduleAllNativeAndroid();
     }
@@ -539,6 +624,8 @@ class StorageManager {
         if (parsed && parsed.date === todayStr) {
           if (!Array.isArray(parsed.meals)) parsed.meals = [];
           return parsed;
+        } else if (parsed && parsed.date && parsed.date !== todayStr) {
+          this.archiveMealsDay(parsed);
         }
       }
     } catch (e) {

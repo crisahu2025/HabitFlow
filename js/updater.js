@@ -5,8 +5,8 @@
  * Code Ahumada • Director Cristian
  */
 
-const CURRENT_VERSION = 'v1.0.35';
-const CURRENT_VERSION_CODE = 35;
+const CURRENT_VERSION = 'v1.0.36';
+const CURRENT_VERSION_CODE = 36;
 const GITHUB_REPO_API = 'https://api.github.com/repos/crisahu2025/HabitFlow/releases/latest';
 
 class UpdateManager {
@@ -63,10 +63,14 @@ class UpdateManager {
       statusLabel.className = 'font-medium text-sky-400 animate-pulse';
     }
 
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 6000);
     try {
       const response = await fetch(GITHUB_REPO_API, {
-        headers: { 'Accept': 'application/vnd.github.v3+json' }
+        headers: { 'Accept': 'application/vnd.github.v3+json' },
+        signal: controller.signal
       });
+      clearTimeout(timer);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const data = await response.json();
 
@@ -115,6 +119,7 @@ class UpdateManager {
         }
       }
     } catch (err) {
+      clearTimeout(timer);
       console.warn('Error al verificar actualizaciones:', err);
       if (!silent) {
         if (statusLabel) {
